@@ -1,4 +1,12 @@
-# Caffe
+# MobileNet-YOLO Caffe
+
+## MobileNet-YOLO 
+
+A caffe implementation of MobileNet-YOLO detection network, with pretrained weights on VOC0712 and mAP=0.70
+
+Network|mAP|Download|Download
+:---:|:---:|:---:|:---:
+MobileNet-YOLO|0.70|[train]()
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](LICENSE)
