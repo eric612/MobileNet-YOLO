@@ -1,0 +1,1 @@
+./tools/caffe train --solver models/yolov2/yolov2_solver.prototxt --weights=examples/conv18.caffemodel
