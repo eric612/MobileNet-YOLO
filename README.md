@@ -2,11 +2,19 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network, with pretrained weights on VOC0712 and mAP=0.70
+A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.70
 
-Network|mAP|Download|Download
+Network|mAP|Download|
 :---:|:---:|:---:|:---:
-MobileNet-YOLO|0.70|[train]()
+MobileNet-YOLO|0.70|[Deploy]()
+
+Compare [YOLOv2](https://pjreddie.com/darknet/yolov2/)
+
+Network|mAP|Weight size
+:---:|:---:|:---:|:---:
+MobileNet-YOLO|0.70|42.8 mb
+Tiny-YOLO|57.1|60.5 mb
+YOLOv2|76.8|193 mb
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](LICENSE)
