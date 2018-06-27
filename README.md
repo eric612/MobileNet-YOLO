@@ -4,9 +4,9 @@
 
 A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.70
 
-Network|mAP|Download|
+Network|mAP|Download|Download
 :---:|:---:|:---:|:---:
-MobileNet-YOLO|0.70|[Deploy]()
+MobileNet-YOLO|0.70|[train]()|[Deploy]()
 
 Compare [YOLOv2](https://pjreddie.com/darknet/yolov2/)
 
