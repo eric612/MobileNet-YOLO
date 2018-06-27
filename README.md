@@ -11,7 +11,7 @@ MobileNet-YOLO|0.70|[train]()|[Deploy]()
 Compare [YOLOv2](https://pjreddie.com/darknet/yolov2/)
 
 Network|mAP|Weight size
-:---:|:---:|:---:|:---:
+:---:|:---:|:---:
 MobileNet-YOLO|0.70|42.8 mb
 Tiny-YOLO|57.1|60.5 mb
 YOLOv2|76.8|193 mb
