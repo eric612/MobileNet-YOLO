@@ -233,32 +233,7 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 	Blob<Dtype> swap;
 	swap.Reshape(bottom[0]->num(), bottom[0]->height()*bottom[0]->width(), num_, bottom[0]->channels() / num_);
 	//std::cout<<"4"<<std::endl;  
-#ifdef verify_data
-	FILE* fp = fopen("test//input.txt","rb");
-	float data[21125];
-	for (int i = 0; i < 21125; i++)
-	{
-		fscanf(fp, "%f", &data[i]);
-	}
-	fclose(fp);
-	fp = fopen("test//truth.txt", "rb");
 
-	for (int i = 0; i < 150; i++)
-	{
-		fscanf(fp, "%f", &label_data[i]);
-	}
-	fclose(fp);
-	fp = fopen("test\\input2.txt", "wb");
-
-	for (int i = 0; i < 21125; i++)
-		fprintf(fp, "%f\n", data[i]);
-	fclose(fp);
-	fp = fopen("test\\truth2.txt", "wb");
-
-	for (int i = 0; i < 150; i++)
-		fprintf(fp, "%f\n", label_data[i]);
-	fclose(fp);
-#endif
   Dtype* swap_data = swap.mutable_cpu_data();
   int index = 0;
   for (int b = 0; b < bottom[0]->num(); ++b)
@@ -274,9 +249,7 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 		//std::cout<<"5"<<std::endl;
 		//*********************************************************Activation********************************************************//
 		//disp(swap);
-#ifdef verify_data
-  memcpy(swap_data, data, 21125*4);
-#endif
+
   for (int b = 0; b < swap.num(); ++b)
     for (int c = 0; c < swap.channels(); ++c)
       for (int h = 0; h < swap.height(); ++h)
@@ -286,13 +259,7 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 		//LOG(INFO) << "swap_data: " << swap_data[index - 1];
         CHECK_GE(swap_data[index], 0);
       }
-#ifdef verify_data
-  fp = fopen("test\\logistic_activate2.txt", "wb");
 
-  for (int i = 0; i < 21125; i++)
-	  fprintf(fp, "%f\n", swap_data[i]);
-  fclose(fp);
-#endif
   for (int b = 0; b < swap.num(); ++b)
 	  for (int c = 0; c < swap.channels(); ++c)
 		  for (int h = 0; h < swap.height(); ++h)
@@ -304,46 +271,9 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 				  CHECK_GE(swap_data[index + i], 0);
 		  }
 
-
-
-
-#ifdef verify_data
-  fp = fopen("test\\softmax2.txt", "wb");
-
-		for (int i = 0; i < 21125; i++)
-			fprintf(fp, "%f\n", swap_data[i]);
-		fclose(fp);
-
-		//std::cout<<"7"<<std::endl;
-		//disp(swap);
-		//LOG(INFO) << "data ok!";
-		//*********************************************************Diff********************************************************//
-		for (int b = 0; b < swap.num(); ++b) {
-			for (int t = 0; t < 30; ++t) {
-				vector<Dtype> truth;
-				Dtype c = label_data[b * 30 * 5 + t * 5 + 0];
-				Dtype x = label_data[b * 30 * 5 + t * 5 + 1];
-				if (!x) break;
-				Dtype y = label_data[b * 30 * 5 + t * 5 + 2];
-				Dtype w = label_data[b * 30 * 5 + t * 5 + 3];
-				Dtype h = label_data[b * 30 * 5 + t * 5 + 4];
-				LOG(INFO) << "Truth box 2" << "," << c << "," << x << "," << y << "," << w << "," << h;
-			}
-		}
-#endif
-
 	int best_num = 0;
 	for (int b = 0; b < swap.num(); ++b) {
 
-
-	//char buf[1000];
-	//sprintf(buf, "%d", side_);
-	//printf(buf);
-#ifdef verify_data
-	fp = fopen("test\\v2.txt", "wb");
-	FILE* fp2 = fopen("test\\w2.txt", "wb");
-	FILE* fp3 = fopen("test\\y2.txt", "wb");
-#endif
     for (int j = 0; j < side_; ++j)
       for (int i = 0; i < side_; ++i)
         for (int n = 0; n < num_; ++n){
@@ -354,9 +284,6 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 		  vector<Dtype> pred;
 		  get_region_box(pred,swap_data, biases_, n, index, i, j, side_, side_);
 		  //fprintf(fp, "%f\n", swap_data[index]);
-#ifdef verify_data
-		  fprintf(fp, "%f,%f,%f,%f\n", pred[0], pred[1], pred[2], pred[3]);
-#endif
           float best_iou = 0;
 		  int best_class = -1;
 		  vector<Dtype> best_truth;
@@ -375,10 +302,6 @@ void RegionLossLayer<Dtype>::Forward_cpu(
             truth.push_back(w);
             truth.push_back(h);
             Dtype iou = box_iou(pred, truth);
-#ifdef verify_data
-			fprintf(fp2, "%f,%f,%f,%f\n", truth[0], truth[1], truth[2], truth[3]);
-			fprintf(fp3, "%f\n", iou);
-#endif
 			if (iou > best_iou) {
 				best_class = label_data[b * 30 * 5 + t * 5 ];
 				best_iou = iou;
@@ -414,17 +337,7 @@ void RegionLossLayer<Dtype>::Forward_cpu(
             delta_region_box(truth, swap_data, biases_, n, index, i, j, side_, side_, diff, .01);
           }
         }
-#ifdef verify_data
-	fclose(fp);
-	fclose(fp2);
-	fclose(fp3);
 
-	fp = fopen("test\\delta2.txt", "wb");
-
-	for (int i = 0; i < 21125; i++)
-		fprintf(fp, "%f\n", diff[i]);
-	fclose(fp);
-#endif
     //std::cout<<"2####"<<index<<std::endl;    
     //std::cout<<"best_num:"<<best_num<<std::endl;
     //LOG(INFO) << "obj ok"; 
@@ -516,13 +429,7 @@ void RegionLossLayer<Dtype>::Forward_cpu(
     }
      // std::cout<<"5####"<<std::endl;
   }
-#ifdef verify_data
-  fp = fopen("test\\class2.txt", "wb");
 
-  for (int i = 0; i < 21125; i++)
-	  fprintf(fp, "%f\n", diff[i]);
-  fclose(fp);
-#endif
   //std::cout<<"8"<<std::endl;
   //caffe_set(diff_.count(), Dtype(0.0), diff);
   diff_.Reshape(bottom[0]->num(), bottom[0]->height()*bottom[0]->width(), num_, bottom[0]->channels() / num_);
@@ -552,20 +459,12 @@ void RegionLossLayer<Dtype>::Forward_cpu(
   // LOG(INFO) << swap.shape_string();
   //LOG(INFO) << bottom[1]->shape_string();
   // LOG(INFO) << bottom[0]->count();
-#ifdef verify_data
-  fp = fopen("test\\realdiff2.txt", "wb");
-#endif
+
 
   for (int i = 0; i < real_diff_.count(); ++i)
   {
-#ifdef verify_data
-	fprintf(fp, "%f\n", real_diff[i]);
-#endif	
     loss += real_diff[i] * real_diff[i];
   }
-#ifdef verify_data
-  fclose(fp);
-#endif
   top[0]->mutable_cpu_data()[0] = loss;
   //LOG(INFO) << "avg_noobj: " << avg_anyobj / (side_ * side_ * num_ * bottom[0]->num());	
   iter ++;

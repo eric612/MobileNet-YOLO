@@ -2,19 +2,36 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.70
+A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.667
 
 Network|mAP|Download|Download
 :---:|:---:|:---:|:---:
-MobileNet-YOLO|0.70|[train]()|[Deploy]()
+MobileNet-YOLO-Lite|0.66|[train](models\MobileNet\mobilenet_iter_73000.caffemodel)|[Deploy](models\yolov2\mobilenet_yolo_deploy_iter_95000.caffemodel)
 
-Compare [YOLOv2](https://pjreddie.com/darknet/yolov2/)
+## Performance
+
+Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/)
 
 Network|mAP|Weight size
 :---:|:---:|:---:
-MobileNet-YOLO|0.70|42.8 mb
-Tiny-YOLO|57.1|60.5 mb
-YOLOv2|76.8|193 mb
+MobileNet-YOLO-Lite|0.66|22.8 mb
+Tiny-YOLO|0.57|60.5 mb
+YOLOv2|0.76|193 mb
+
+## Training 
+
+Download [lmdb](https://drive.google.com/open?id=19pBP1NwomDvm43xxgDaRuj_X4KubwuCZ)
+
+Unzip into $caffe_root/ 
+
+Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb" and "$caffe_root\examples\VOC0712\VOC0712_test_lmdb"
+
+```
+> cd $caffe_root/
+> sh train_yolo.sh
+```
+
+## Caffe 
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](LICENSE)
