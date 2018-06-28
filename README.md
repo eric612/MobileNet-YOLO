@@ -6,7 +6,7 @@ A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with p
 
 Network|mAP|Download|Download
 :---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.66|[train](models\MobileNet\mobilenet_iter_73000.caffemodel)|[Deploy](models\yolov2\mobilenet_yolo_deploy_iter_95000.caffemodel)
+MobileNet-YOLO-Lite|0.66|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[Deploy](models/yolov2/mobilenet_yolo_deploy_iter_95000.caffemodel)
 
 ## Performance
 
