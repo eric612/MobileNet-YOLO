@@ -31,6 +31,16 @@ Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb"
 > sh train_yolo.sh
 ```
 
+## Demo
+
+```
+> cd $caffe_root/
+> sh demo_yolo.sh
+```
+If load success , you can see the image window like this 
+
+![alt tag](00002.jpg)
+
 ## Caffe 
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)
