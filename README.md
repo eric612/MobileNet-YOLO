@@ -4,19 +4,19 @@
 
 A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.667
 
-Network|mAP|Download|Download
-:---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.66|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_deploy_iter_95000.caffemodel)
-
+Network|mAP|Download|Download|NetScope
+:---:|:---:|:---:|:---:|:---:
+MobileNet-YOLO-Lite|0.66|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_deploy_iter_95000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
+MobileNet-YOLO||[train]()|[deploy]()|[graph](http://ethereon.github.io/netscope/#/gist/52f298d84f8fa4ebb2bb94767fa6ca88)
 ## Performance
 
 Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/)
 
-Network|mAP|Weight size
-:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.66|22.8 mb
-Tiny-YOLO|0.57|60.5 mb
-YOLOv2|0.76|193 mb
+Network|mAP|Weight size|Inference time (GPU)
+:---:|:---:|:---:|:---:
+MobileNet-YOLO-Lite|0.66|22.8 mb|N/A
+Tiny-YOLO|0.57|60.5 mb|N/A
+YOLOv2|0.76|193 mb|N/A
 
 ## Training 
 

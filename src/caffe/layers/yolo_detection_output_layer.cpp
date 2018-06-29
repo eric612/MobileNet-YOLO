@@ -195,7 +195,7 @@ template <typename Dtype>
 void YoloDetectionOutputLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
-  CHECK_EQ(bottom[0]->num(), 1);
+  //CHECK_EQ(bottom[0]->num(), 1);
   // num() and channels() are 1.
   vector<int> top_shape(2, 1);
   // Since the number of bboxes to be kept is unknown before nms, we manually
@@ -256,6 +256,47 @@ void YoloDetectionOutputLayer<Dtype>::Forward_cpu(
 			}
 		}
 	}
+	if (bottom.size() > 1) {
+		//LOG(INFO) << "detect two scaler layer";
+		const int num = bottom[1]->num();
+		side_ = bottom[1]->width();
+		Blob<Dtype> swap2;
+		swap2.Reshape(bottom[1]->num(), bottom[1]->height()*bottom[1]->width(), num_box_, bottom[1]->channels() / num_box_);
+		//std::cout<<"4"<<std::endl;  
+		Dtype* swap_data = swap2.mutable_cpu_data();
+		int index = 0;
+		for (int b = 0; b < bottom[1]->num(); ++b) {
+			for (int h = 0; h < bottom[1]->height(); ++h) {
+				for (int w = 0; w < bottom[1]->width(); ++w) {
+					for (int c = 0; c < bottom[1]->channels(); ++c)
+					{
+						swap_data[index++] = bottom[1]->data_at(b, c, h, w);
+					}
+				}
+			}
+		}
+		PredictionResult<Dtype> predict;
+		//predicts.clear();
+		for (int b = 0; b < swap2.num(); ++b) {
+			for (int j = 0; j < side_; ++j) {
+				for (int i = 0; i < side_; ++i) {
+					for (int n = 0; n < num_box_; ++n) {
+						int index = b * swap2.channels() * swap2.height() * swap2.width() + (j * side_ + i) * swap2.height() * swap.width() + n * swap2.width();
+						CHECK_EQ(swap_data[index], swap2.data_at(b, j * side_ + i, n, 0));
+						get_region_box(swap_data, predict, biases_, n, index, i, j, side_, side_);
+						predict.objScore = sigmoid(swap_data[index + 4]);
+						class_index_and_score(swap_data + index + 5, num_classes_, predict);
+						predict.confidence = predict.objScore *predict.classScore;
+						if (predict.confidence >= confidence_threshold_)
+						{
+							predicts.push_back(predict);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	std::sort(predicts.begin(), predicts.end(), BoxSortDecendScore<Dtype>);
     vector<int> idxes;
     int num_kept = 0;
