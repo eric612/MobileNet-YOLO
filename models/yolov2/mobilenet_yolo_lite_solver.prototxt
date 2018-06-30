@@ -1,10 +1,10 @@
-train_net: "models/yolov2/mobilenet_yolo_train.prototxt"
-test_net: "models/yolov2/mobilenet_yolo_test.prototxt"
+train_net: "models/yolov2/mobilenet_yolo_lite_train.prototxt"
+test_net: "models/yolov2/mobilenet_yolo_lite_test.prototxt"
 test_iter: 4952
 test_interval: 2500
 base_lr: 0.0005
 display: 10
-max_iter: 0
+max_iter: 120000
 lr_policy: "multistep"
 gamma: 0.5
 weight_decay: 0.00005
