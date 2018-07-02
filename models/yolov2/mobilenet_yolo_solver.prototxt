@@ -1,14 +1,14 @@
 train_net: "models/yolov2/mobilenet_yolo_train.prototxt"
 test_net: "models/yolov2/mobilenet_yolo_test.prototxt"
 test_iter: 4952
-test_interval: 5000
+test_interval: 1000
 base_lr: 0.0005
 display: 10
-max_iter: 120000
+max_iter: 0
 lr_policy: "multistep"
 gamma: 0.5
 weight_decay: 0.00005
-snapshot: 5000
+snapshot: 1000
 snapshot_prefix: "models/yolov2/mobilenet_yolo_deploy"
 solver_mode: GPU
 debug_info: false
