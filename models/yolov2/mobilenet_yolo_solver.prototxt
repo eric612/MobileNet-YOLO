@@ -4,7 +4,7 @@ test_iter: 4952
 test_interval: 1000
 base_lr: 0.0005
 display: 10
-max_iter: 0
+max_iter: 120000
 lr_policy: "multistep"
 gamma: 0.5
 weight_decay: 0.00005

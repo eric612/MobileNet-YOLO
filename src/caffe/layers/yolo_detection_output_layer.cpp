@@ -281,7 +281,7 @@ void YoloDetectionOutputLayer<Dtype>::Forward_cpu(
 			for (int j = 0; j < side_; ++j) {
 				for (int i = 0; i < side_; ++i) {
 					for (int n = 0; n < num_box_; ++n) {
-						int index = b * swap2.channels() * swap2.height() * swap2.width() + (j * side_ + i) * swap2.height() * swap.width() + n * swap2.width();
+						int index = b * swap2.channels() * swap2.height() * swap2.width() + (j * side_ + i) * swap2.height() * swap2.width() + n * swap2.width();
 						CHECK_EQ(swap_data[index], swap2.data_at(b, j * side_ + i, n, 0));
 						get_region_box(swap_data, predict, biases_, n, index, i, j, side_, side_);
 						predict.objScore = sigmoid(swap_data[index + 4]);
@@ -289,6 +289,7 @@ void YoloDetectionOutputLayer<Dtype>::Forward_cpu(
 						predict.confidence = predict.objScore *predict.classScore;
 						if (predict.confidence >= confidence_threshold_)
 						{
+							//LOG(INFO) << "detect two scaler layer";
 							predicts.push_back(predict);
 						}
 					}
