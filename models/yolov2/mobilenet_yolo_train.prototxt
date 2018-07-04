@@ -2102,18 +2102,24 @@ layer {
   top: "upsample"
   param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
-    num_output: 256
+    num_output: 512
     kernel_size: 4  stride: 2  pad: 1
     group: 256
     weight_filler: { type: "bilinear" }
     bias_term: false
   }
 }
-
+layer {
+  name: "conv_18/sum"
+  type: "Eltwise"
+  bottom: "conv11"
+  bottom: "upsample"
+  top: "conv_18/sum"
+}
 layer {
   name: "conv19"
   type: "Convolution"
-  bottom: "upsample"
+  bottom: "conv_18/sum"
   top: "conv19"
   param {
     lr_mult: 0.1
@@ -2177,138 +2183,7 @@ layer {
   bottom: "conv19"
   top: "conv19"
 }
-layer {
-  name: "conv20"
-  type: "Convolution"
-  bottom: "conv19"
-  top: "conv20"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.1
-  }
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "conv20/bn"
-  type: "BatchNorm"
-  bottom: "conv20"
-  top: "conv20"
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-}
-layer {
-  name: "conv20/scale"
-  type: "Scale"
-  bottom: "conv20"
-  top: "conv20"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.0
-  }
-  param {
-    lr_mult: 0.2
-    decay_mult: 0.0
-  }
-  scale_param {
-    filler {
-      value: 1
-    }
-    bias_term: true
-    bias_filler {
-      value: 0
-    }
-  }
-}
-layer {
-  name: "conv20/relu"
-  type: "ReLU"
-  bottom: "conv20"
-  top: "conv20"
-}
-layer {
-  name: "conv21"
-  type: "Convolution"
-  bottom: "conv20"
-  top: "conv21"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.1
-  }
-  convolution_param {
-    num_output: 1024
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "conv21/bn"
-  type: "BatchNorm"
-  bottom: "conv21"
-  top: "conv21"
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-}
-layer {
-  name: "conv21/scale"
-  type: "Scale"
-  bottom: "conv21"
-  top: "conv21"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.0
-  }
-  param {
-    lr_mult: 0.2
-    decay_mult: 0.0
-  }
-  scale_param {
-    filler {
-      value: 1
-    }
-    bias_term: true
-    bias_filler {
-      value: 0
-    }
-  }
-}
-layer {
-  name: "conv21/relu"
-  type: "ReLU"
-  bottom: "conv21"
-  top: "conv21"
-}
+
 layer {
   name: "conv22_indoor"
   type: "Convolution"
@@ -2338,7 +2213,7 @@ layer {
 layer {
   name: "conv23_indoor"
   type: "Convolution"
-  bottom: "conv21"
+  bottom: "conv19"
   top: "conv23"
     param {
     lr_mult: 1
