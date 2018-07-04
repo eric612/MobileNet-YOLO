@@ -12,12 +12,14 @@ MobileNet-YOLO|0.718|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[
 
 Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/)
 
-Network|mAP|Weight size|Inference time (GPU)
+Network|mAP|Weight size|Inference time (GTX 1080)
 :---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.66|22.8 mb|N/A
-MobileNet-YOLO|0.71|41.4 mb|N/A
+MobileNet-YOLO-Lite|0.66|22.8 mb|11 ms
+MobileNet-YOLO|0.71|41.4 mb|22 ms
 Tiny-YOLO|0.57|60.5 mb|N/A
 YOLOv2|0.76|193 mb|N/A
+
+Note :  the yolo_detection_output_layer not be optimization
 
 ## Training 
 
