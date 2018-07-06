@@ -1,1 +1,1 @@
-./examples/ssd/ssd_detect models/yolov2/mobilenet_yolo_deploy.prototxt models/yolov2/mobilenet_yolo_deploy_iter_81000.caffemodel -file_type image -wait_time 3000 -mean_value 0.5,0.5,0.5 -normalize_value 0.007843 -confidence_threshold 0.3 
+./examples/ssd/ssd_detect models/yolov2/mobilenet_yolo_deploy.prototxt models/yolov2/mobilenet_yolo_deploy_iter_80000.caffemodel -file_type image -wait_time 3000 -mean_value 0.5,0.5,0.5 -normalize_value 0.007843 -confidence_threshold 0.3 

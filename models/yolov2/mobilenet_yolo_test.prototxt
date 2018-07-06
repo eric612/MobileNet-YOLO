@@ -1859,28 +1859,31 @@ layer {
 #  top: "concat2"
 #}
 layer {
-  name: "conv16"
-  type: "Convolution"
+  name: "conv16/dw"
+  type: "DepthwiseConvolution"
   bottom: "conv13"
-  top: "conv16"
+  top: "conv16/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.1
   }
   convolution_param {
-    num_output: 256
+    num_output: 1024
     bias_term: false
-    kernel_size: 1
+    pad: 1
+    kernel_size: 3
+    group: 1024
+    engine: CAFFE
     weight_filler {
       type: "msra"
     }
   }
 }
 layer {
-  name: "conv16/bn"
+  name: "conv16/dw/bn"
   type: "BatchNorm"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -1895,10 +1898,10 @@ layer {
   }
 }
 layer {
-  name: "conv16/scale"
+  name: "conv16/dw/scale"
   type: "Scale"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.0
@@ -1918,15 +1921,15 @@ layer {
   }
 }
 layer {
-  name: "conv16/relu"
+  name: "conv16/dw/relu"
   type: "ReLU"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
 }
 layer {
   name: "conv17"
   type: "Convolution"
-  bottom: "conv16"
+  bottom: "conv16/dw"
   top: "conv17"
   param {
     lr_mult: 0.1
@@ -1935,9 +1938,7 @@ layer {
   convolution_param {
     num_output: 1024
     bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 1
+    kernel_size: 1
     weight_filler {
       type: "msra"
     }
@@ -1999,7 +2000,7 @@ layer {
   convolution_param {
     num_output: 512
     kernel_size: 4  stride: 2  pad: 1
-    group: 256
+    group: 512
     weight_filler: { type: "bilinear" }
     bias_term: false
   }
@@ -2012,30 +2013,31 @@ layer {
   top: "conv_18/sum"
 }
 layer {
-  name: "conv19"
-  type: "Convolution"
+  name: "conv19/dw"
+  type: "DepthwiseConvolution"
   bottom: "conv_18/sum"
-  top: "conv19"
+  top: "conv19/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.1
   }
   convolution_param {
-    num_output: 1024
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    stride: 1
+    group: 512
+    engine: CAFFE
     weight_filler {
       type: "msra"
     }
   }
 }
 layer {
-  name: "conv19/bn"
+  name: "conv19/dw/bn"
   type: "BatchNorm"
-  bottom: "conv19"
-  top: "conv19"
+  bottom: "conv19/dw"
+  top: "conv19/dw"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -2050,10 +2052,10 @@ layer {
   }
 }
 layer {
-  name: "conv19/scale"
+  name: "conv19/dw/scale"
   type: "Scale"
-  bottom: "conv19"
-  top: "conv19"
+  bottom: "conv19/dw"
+  top: "conv19/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.0
@@ -2073,10 +2075,75 @@ layer {
   }
 }
 layer {
-  name: "conv19/relu"
+  name: "conv19/dw/relu"
   type: "ReLU"
-  bottom: "conv19"
-  top: "conv19"
+  bottom: "conv19/dw"
+  top: "conv19/dw"
+}
+layer {
+  name: "conv20"
+  type: "Convolution"
+  bottom: "conv19/dw"
+  top: "conv20"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  convolution_param {
+    num_output: 1024
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "conv20/bn"
+  type: "BatchNorm"
+  bottom: "conv20"
+  top: "conv20"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "conv20/scale"
+  type: "Scale"
+  bottom: "conv20"
+  top: "conv20"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv20/relu"
+  type: "ReLU"
+  bottom: "conv20"
+  top: "conv20"
 }
 
 layer {
@@ -2108,7 +2175,7 @@ layer {
 layer {
   name: "conv23_indoor"
   type: "Convolution"
-  bottom: "conv19"
+  bottom: "conv20"
   top: "conv23"
     param {
     lr_mult: 1
@@ -2144,7 +2211,7 @@ layer {
   yolo_detection_output_param {
     num_classes: 20
     coords: 4
-    confidence_threshold: 0.20
+    confidence_threshold: 0.25
 	nms_threshold: 0.45
 
     biases: 1.08

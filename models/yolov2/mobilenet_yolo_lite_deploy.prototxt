@@ -71,7 +71,7 @@ layer {
 }
 layer {
   name: "conv0/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv0"
   top: "conv0"
 }
@@ -139,7 +139,7 @@ layer {
 }
 layer {
   name: "conv1/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv1/dw"
   top: "conv1/dw"
 }
@@ -204,7 +204,7 @@ layer {
 }
 layer {
   name: "conv1/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv1"
   top: "conv1"
 }
@@ -273,7 +273,7 @@ layer {
 }
 layer {
   name: "conv2/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv2/dw"
   top: "conv2/dw"
 }
@@ -338,7 +338,7 @@ layer {
 }
 layer {
   name: "conv2/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv2"
   top: "conv2"
 }
@@ -406,7 +406,7 @@ layer {
 }
 layer {
   name: "conv3/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv3/dw"
   top: "conv3/dw"
 }
@@ -471,7 +471,7 @@ layer {
 }
 layer {
   name: "conv3/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv3"
   top: "conv3"
 }
@@ -540,7 +540,7 @@ layer {
 }
 layer {
   name: "conv4/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv4/dw"
   top: "conv4/dw"
 }
@@ -605,7 +605,7 @@ layer {
 }
 layer {
   name: "conv4/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv4"
   top: "conv4"
 }
@@ -673,7 +673,7 @@ layer {
 }
 layer {
   name: "conv5/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv5/dw"
   top: "conv5/dw"
 }
@@ -738,7 +738,7 @@ layer {
 }
 layer {
   name: "conv5/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv5"
   top: "conv5"
 }
@@ -807,7 +807,7 @@ layer {
 }
 layer {
   name: "conv6/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv6/dw"
   top: "conv6/dw"
 }
@@ -872,7 +872,7 @@ layer {
 }
 layer {
   name: "conv6/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv6"
   top: "conv6"
 }
@@ -940,7 +940,7 @@ layer {
 }
 layer {
   name: "conv7/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv7/dw"
   top: "conv7/dw"
 }
@@ -1005,7 +1005,7 @@ layer {
 }
 layer {
   name: "conv7/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv7"
   top: "conv7"
 }
@@ -1073,7 +1073,7 @@ layer {
 }
 layer {
   name: "conv8/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv8/dw"
   top: "conv8/dw"
 }
@@ -1138,7 +1138,7 @@ layer {
 }
 layer {
   name: "conv8/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv8"
   top: "conv8"
 }
@@ -1206,7 +1206,7 @@ layer {
 }
 layer {
   name: "conv9/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv9/dw"
   top: "conv9/dw"
 }
@@ -1271,7 +1271,7 @@ layer {
 }
 layer {
   name: "conv9/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv9"
   top: "conv9"
 }
@@ -1339,7 +1339,7 @@ layer {
 }
 layer {
   name: "conv10/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv10/dw"
   top: "conv10/dw"
 }
@@ -1404,7 +1404,7 @@ layer {
 }
 layer {
   name: "conv10/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv10"
   top: "conv10"
 }
@@ -1472,7 +1472,7 @@ layer {
 }
 layer {
   name: "conv11/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv11/dw"
   top: "conv11/dw"
 }
@@ -1537,7 +1537,7 @@ layer {
 }
 layer {
   name: "conv11/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv11"
   top: "conv11"
 }
@@ -1606,7 +1606,7 @@ layer {
 }
 layer {
   name: "conv12/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv12/dw"
   top: "conv12/dw"
 }
@@ -1671,7 +1671,7 @@ layer {
 }
 layer {
   name: "conv12/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv12"
   top: "conv12"
 }
@@ -1739,7 +1739,7 @@ layer {
 }
 layer {
   name: "conv13/dw/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv13/dw"
   top: "conv13/dw"
 }
@@ -1804,7 +1804,7 @@ layer {
 }
 layer {
   name: "conv13/relu"
-  type: "ReLU6"
+  type: "ReLU"
   bottom: "conv13"
   top: "conv13"
 }
@@ -1834,75 +1834,10 @@ layer {
 #  top: "concat2"
 #}
 layer {
-  name: "conv20"
-  type: "Convolution"
+  name: "conv16/dw"
+  type: "DepthwiseConvolution"
   bottom: "conv13"
-  top: "conv20"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.1
-  }
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "conv20/bn"
-  type: "BatchNorm"
-  bottom: "conv20"
-  top: "conv20"
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 0
-    decay_mult: 0
-  }
-}
-layer {
-  name: "conv20/scale"
-  type: "Scale"
-  bottom: "conv20"
-  top: "conv20"
-  param {
-    lr_mult: 0.1
-    decay_mult: 0.0
-  }
-  param {
-    lr_mult: 0.2
-    decay_mult: 0.0
-  }
-  scale_param {
-    filler {
-      value: 1
-    }
-    bias_term: true
-    bias_filler {
-      value: 0
-    }
-  }
-}
-layer {
-  name: "conv20/relu"
-  type: "ReLU6"
-  bottom: "conv20"
-  top: "conv20"
-}
-layer {
-  name: "conv21"
-  type: "Convolution"
-  bottom: "conv20"
-  top: "conv21"
+  top: "conv16/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.1
@@ -1912,17 +1847,18 @@ layer {
     bias_term: false
     pad: 1
     kernel_size: 3
-    stride: 1
+    group: 1024
+    engine: CAFFE
     weight_filler {
       type: "msra"
     }
   }
 }
 layer {
-  name: "conv21/bn"
+  name: "conv16/dw/bn"
   type: "BatchNorm"
-  bottom: "conv21"
-  top: "conv21"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -1937,10 +1873,10 @@ layer {
   }
 }
 layer {
-  name: "conv21/scale"
+  name: "conv16/dw/scale"
   type: "Scale"
-  bottom: "conv21"
-  top: "conv21"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
   param {
     lr_mult: 0.1
     decay_mult: 0.0
@@ -1960,16 +1896,82 @@ layer {
   }
 }
 layer {
-  name: "conv21/relu"
-  type: "ReLU6"
-  bottom: "conv21"
-  top: "conv21"
+  name: "conv16/dw/relu"
+  type: "ReLU"
+  bottom: "conv16/dw"
+  top: "conv16/dw"
 }
+layer {
+  name: "conv17"
+  type: "Convolution"
+  bottom: "conv16/dw"
+  top: "conv17"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  convolution_param {
+    num_output: 1024
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "conv17/bn"
+  type: "BatchNorm"
+  bottom: "conv17"
+  top: "conv17"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "conv17/scale"
+  type: "Scale"
+  bottom: "conv17"
+  top: "conv17"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv17/relu"
+  type: "ReLU"
+  bottom: "conv17"
+  top: "conv17"
+}
+
 
 layer {
   name: "conv22_indoor"
   type: "Convolution"
-  bottom: "conv21"
+  bottom: "conv17"
   top: "conv22"
     param {
     lr_mult: 1
