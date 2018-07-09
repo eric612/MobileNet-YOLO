@@ -8,6 +8,11 @@ Network|mAP|Download|Download|NetScope
 :---:|:---:|:---:|:---:|:---:
 MobileNet-YOLO-Lite|0.675|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_lite_deploy_iter_62000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
 MobileNet-YOLO|0.709|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_deploy_iter_80000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/52f298d84f8fa4ebb2bb94767fa6ca88)
+
+## Windows Version
+
+[Caffe-YOLOv2-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)
+
 ## Performance
 
 Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/)
@@ -29,11 +34,19 @@ Unzip into $caffe_root/
 
 Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb" and "$caffe_root\examples\VOC0712\VOC0712_test_lmdb"
 
+Download [pre-trained weights](https://drive.google.com/file/d/141AVMm_h8nv3RpgylRyhUYb4w8rEguLM/view?usp=sharing) , and save at $caffe_root\model\convert
+
 ```
 > cd $caffe_root/
 > sh train_yolo.sh
 ```
 
+### Training Darknet YOLOv2 
+
+```
+> cd $caffe_root/
+> sh train_darknet.sh
+```
 ## Demo
 
 ```
@@ -43,6 +56,18 @@ Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb"
 If load success , you can see the image window like this 
 
 ![alt tag](00002.jpg)
+
+### Vehicle Dection 
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/oagXgyQHuNA/0.jpg)](https://www.youtube.com/watch?v=oagXgyQHuNA)
+
+#### CLASS NAME
+
+```
+char* CLASSES2[6] = { "__background__","bicycle", "car", "motorbike", "person","cones" };
+```
+
+[model](models/vehicle)
 
 ## Maintenance
 
