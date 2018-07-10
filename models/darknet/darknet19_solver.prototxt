@@ -19,7 +19,7 @@ average_loss: 10
 stepvalue: 40000
 stepvalue: 45000
 
-iter_size: 4
+iter_size: 2
 type: "SGD"
 eval_type: "detection"
 ap_version: "11point"
