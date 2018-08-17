@@ -451,6 +451,19 @@ message ParamSpec {
   // The multiplier on the global weight decay for this parameter.
   optional float decay_mult = 4 [default = 1.0];
 }
+message Yolov3Parameter{
+  //Yolov3
+  optional uint32 side = 1 [default = 13];
+  optional uint32 num_class = 2 [default = 20];
+  optional uint32 num = 3 [default = 5];
+  optional float object_scale = 4 [default = 1.0];
+  optional float class_scale = 5 [default = 1.0];
+  optional float noobject_scale = 6 [default = 0.5];
+  optional float coord_scale = 7 [default = 5.0];
+  optional float thresh = 8 [default = 0.2];
+  repeated float anchors = 9;
+  repeated uint32 mask = 10;
+}
 message RegionLossParameter{
   //Yolo 9000
   optional uint32 side = 1 [default = 13];
@@ -525,7 +538,7 @@ message LayerParameter {
 
   // Parameters shared by loss layers.
   optional LossParameter loss_param = 101;
-
+  optional Yolov3Parameter yolov3_param = 603;
   optional RegionLossParameter region_loss_param = 600;
   // Layer type-specific parameters.
   //

@@ -26,21 +26,47 @@ inline Dtype sigmoid(Dtype x)
 }
 
 template <typename Dtype>
-Dtype softmax_region(Dtype* input, int classes, int stride);
+Dtype softmax_region(Dtype* input, int classes, int stride)
+{
+	Dtype sum = 0;
+	Dtype large = input[0];
+	for (int i = 0; i < classes; ++i) {
+		if (input[i*stride] > large)
+			large = input[i*stride];
+	}
+	for (int i = 0; i < classes; ++i) {
+		Dtype e = exp(input[i*stride] - large);
+		sum += e;
+		input[i*stride] = e;
+	}
+	for (int i = 0; i < classes; ++i) {
+		input[i*stride] = input[i*stride] / sum;
+	}
+	return 0;
+}
 //template <typename Dtype>
 //Dtype softmax_region(Dtype* input, int n, float temp, Dtype* output);
 
 
 
 template <typename Dtype>
-vector<Dtype> get_region_box(Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h,int stride);
+void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h, int stride);
 
 template <typename Dtype>
 Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h, Dtype* delta, float scale, int stride);
 
 template <typename Dtype>
-void delta_region_class(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride);
-
+void delta_region_class(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride)
+{
+	for (int n = 0; n < classes; ++n) {
+		diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
+		//std::cout<<diff[index+n]<<",";
+		if (n == class_label) {
+			*avg_cat += input_data[index + n*stride];
+			//std::cout<<"avg_cat:"<<input_data[index+n]<<std::endl; 
+		}
+	}
+}
 template <typename Dtype>
 class PredictionResult {
 public:

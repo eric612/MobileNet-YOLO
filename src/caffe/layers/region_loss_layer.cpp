@@ -22,25 +22,8 @@
 
 int iter = 0;
 namespace caffe {
-template <typename Dtype>
-Dtype softmax_region(Dtype* input, int classes , int stride)
-{
-  Dtype sum = 0;
-  Dtype large = input[0];
-  for (int i = 0; i < classes; ++i){
-    if (input[i*stride] > large)
-      large = input[i*stride];
-  }
-  for (int i = 0; i < classes; ++i){
-    Dtype e = exp(input[i*stride] - large);
-    sum += e;
-    input[i*stride] = e;
-  }
-  for (int i = 0; i < classes; ++i){
-    input[i*stride] = input[i*stride] / sum;
-  }
-  return 0;
-}
+
+
 
 template <typename Dtype>
 Dtype overlap(Dtype x1, Dtype w1, Dtype x2, Dtype w2)
@@ -101,26 +84,14 @@ Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int 
 
 	delta[index + 0] =(-1) * scale * (tx - sigmoid(x[index + 0 * stride])) * sigmoid(x[index + 0 * stride]) * (1 - sigmoid(x[index+ 0*stride ]));
 	delta[index + 1 * stride] =(-1) * scale * (ty - sigmoid(x[index + 1 * stride])) * sigmoid(x[index + 1 * stride]) * (1 - sigmoid(x[index + 1*stride]));
-	//delta[index + 0] = (-1) * scale * (tx - x[index + 0]);
-	//delta[index + 1] = (-1) * scale * (ty - x[index + 1]);
+	//delta[index + 0] = (-1) * scale * (1 - (tx - x[index + 0])*(tx - x[index + 0]));
+	//delta[index + 1] = (-1) * scale * (1 - (ty - x[index + 1])*(ty - x[index + 1]));
 	delta[index + 2* stride] = (-1) * scale * (tw - x[index + 2 * stride]);
 	delta[index + 3* stride] = (-1) * scale * (th - x[index + 3 * stride]);
 
 	return iou;
 }
 
-template <typename Dtype>
-void delta_region_class(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat,int stride)
-{
-	for (int n = 0; n < classes; ++n) {
-		diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
-		//std::cout<<diff[index+n]<<",";
-		if (n == class_label) {
-			*avg_cat += input_data[index + n*stride];
-			//std::cout<<"avg_cat:"<<input_data[index+n]<<std::endl; 
-		}
-	}
-}
 
 
 
@@ -310,10 +281,9 @@ void RegionLossLayer<Dtype>::Forward_cpu(
 			float best_iou = 0;
 			int best_index = 0;
 			int best_n = 0;
-			int i = truth[0] * side_;
-			int j = truth[1] * side_;
+			int i = truth[0] * side_ ;
+			int j = truth[1] * side_ ;
 			int pos = j * side_ + i;
-
 			vector<Dtype> truth_shift;
 			truth_shift.clear();
 			truth_shift.push_back(0);
