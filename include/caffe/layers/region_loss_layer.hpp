@@ -26,20 +26,20 @@ inline Dtype sigmoid(Dtype x)
 }
 
 template <typename Dtype>
-Dtype softmax_region(Dtype* input, int classes);
+Dtype softmax_region(Dtype* input, int classes, int stride);
 //template <typename Dtype>
 //Dtype softmax_region(Dtype* input, int n, float temp, Dtype* output);
 
 
 
 template <typename Dtype>
-vector<Dtype> get_region_box(Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h);
+vector<Dtype> get_region_box(Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h,int stride);
 
 template <typename Dtype>
-Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h, Dtype* delta, float scale);
+Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h, Dtype* delta, float scale, int stride);
 
 template <typename Dtype>
-void delta_region_class(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat);
+void delta_region_class(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride);
 
 template <typename Dtype>
 class PredictionResult {
@@ -52,6 +52,17 @@ public:
 	Dtype classScore;
 	Dtype confidence;
 	int classType;
+};
+
+
+struct AvgRegionScore {
+public:
+	float avg_anyobj;
+	float avg_obj;
+	float avg_iou;
+	float avg_cat;
+	float recall;
+	float recall75,loss;
 };
 
 template <typename Dtype>
@@ -102,6 +113,7 @@ class RegionLossLayer : public LossLayer<Dtype> {
 
   string class_map_;
   map<int, int> cls_map_;
+  AvgRegionScore score_;
 };
 
 }  // namespace caffe
