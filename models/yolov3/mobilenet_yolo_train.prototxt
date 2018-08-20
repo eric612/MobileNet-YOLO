@@ -2321,19 +2321,20 @@ layer {
     class_scale: 1.0
     coord_scale: 1.0
     thresh: 0.7
+	anchors_scale : 32
 	#10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    anchors: 10
-    anchors: 14
-    anchors: 23
-    anchors: 27
-    anchors: 37
-    anchors: 58
-    anchors: 81
-    anchors: 82
-    anchors: 135
-    anchors: 169
-	anchors: 344
-    anchors: 319
+    biases: 10
+    biases: 14
+    biases: 23
+    biases: 27
+    biases: 37
+    biases: 58
+    biases: 81
+    biases: 82
+    biases: 135
+    biases: 169
+	biases: 344
+    biases: 319
 	
 	mask:3
 	mask:4
@@ -2356,19 +2357,20 @@ layer {
     class_scale: 1.0
     coord_scale: 1.0
     thresh: 0.7
+	anchors_scale : 16
 	#10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    anchors: 10
-    anchors: 14
-    anchors: 23
-    anchors: 27
-    anchors: 37
-    anchors: 58
-    anchors: 81
-    anchors: 82
-    anchors: 135
-    anchors: 169
-	anchors: 344
-    anchors: 319
+    biases: 10
+    biases: 14
+    biases: 23
+    biases: 27
+    biases: 37
+    biases: 58
+    biases: 81
+    biases: 82
+    biases: 135
+    biases: 169
+	biases: 344
+    biases: 319
 	
 	mask:0
 	mask:1

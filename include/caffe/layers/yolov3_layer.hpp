@@ -8,7 +8,7 @@
 #include <string>
 #include "caffe/layers/loss_layer.hpp"
 #include <map>
-#include "caffe/layers/region_loss_layer.hpp"
+
 namespace caffe {
 
 
@@ -23,8 +23,18 @@ public:
 		const vector<Blob<Dtype>*>& top);
 
 	virtual inline const char* type() const { return "Yolov3"; }
-
-
+	
+	class PredictionResult {
+	public:
+		Dtype x;
+		Dtype y;
+		Dtype w;
+		Dtype h;
+		Dtype objScore;
+		Dtype classScore;
+		Dtype confidence;
+		int classType;
+	};
 
 	protected:
 	virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
@@ -40,16 +50,17 @@ public:
 	int side_;
 	int num_class_;
 	int num_;
-
+	int anchors_scale_;
 	float object_scale_;
 	float class_scale_;
 	float noobject_scale_;
 	float coord_scale_;
 	float thresh_;
-	vector<Dtype> anchors_;
+	vector<Dtype> biases_;
 	vector<Dtype> mask_;
 	Blob<Dtype> diff_;
 	Blob<Dtype> real_diff_;
+	Blob<Dtype> swap_;
 	AvgRegionScore score_;
 };
 
