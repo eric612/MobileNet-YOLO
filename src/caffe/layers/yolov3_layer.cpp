@@ -127,13 +127,14 @@ namespace caffe {
 		class_scale_ = param.class_scale(); //1.0
 		coord_scale_ = param.coord_scale(); //1.0
 		thresh_ = param.thresh(); //0.6
-
+		use_logic_gradient_ = param.use_logic_gradient();
 		for (int c = 0; c < param.biases_size(); ++c) {
 			biases_.push_back(param.biases(c));
 		} 
 		for (int c = 0; c < param.mask_size(); ++c) {
 			mask_.push_back(param.mask(c));
 		}
+		biases_size_ = param.biases_size()/2;
 		int input_count = bottom[0]->count(1); //h*w*n*(classes+coords+1) = 13*13*5*(20+4+1)
 		int label_count = bottom[1]->count(1); //30*5-
 											   // outputs: classes, iou, coordinates
@@ -154,7 +155,15 @@ namespace caffe {
 		diff_.ReshapeLike(*bottom[0]);
 		real_diff_.ReshapeLike(*bottom[0]);
 	}
-
+	template <typename Dtype>
+	int int_index(vector<Dtype> a, int val, int n)
+	{
+		int i;
+		for (i = 0; i < n; ++i) {
+			if (a[i] == val) return i;
+		}
+		return -1;
+	}
 	template <typename Dtype>
 	void Yolov3Layer<Dtype>::Forward_cpu(
 		const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
@@ -258,7 +267,7 @@ namespace caffe {
 				truth.push_back(h);
 				float best_iou = 0;
 				int best_index = 0;
-				int best_n = 0;
+				int best_n = -1;
 				int i = truth[0] * side_;
 				int j = truth[1] * side_;
 				int pos = j * side_ + i;
@@ -269,40 +278,57 @@ namespace caffe {
 				truth_shift.push_back(w);
 				truth_shift.push_back(h);
 				//int size = coords_ + num_class_ + 1;
-
-				for (int n = 0; n < num_; ++n) {
-					int index2 = n*len*stride + pos + b * bottom[0]->count(1);
+				//LOG(INFO) << biases_size_;
+				for (int n = 0; n < biases_size_; ++n) {
+					
 					//LOG(INFO) << index2;
 					vector<Dtype> pred(4);
-					pred[2] = biases_[2 * mask_[n]] / (float)(side_*anchors_scale_);
-					pred[3] = biases_[2 * mask_[n] + 1] / (float)(side_*anchors_scale_);
+					pred[2] = biases_[2 * n] / (float)(side_*anchors_scale_);
+					pred[3] = biases_[2 * n + 1] / (float)(side_*anchors_scale_);
 
 					pred[0] = 0;
 					pred[1] = 0;
 					float iou = box_iou(pred, truth_shift);
 					if (iou > best_iou) {
-						best_index = index2;
-						best_iou = iou;
+						//best_index = index2;
 						best_n = n;
+						best_iou = iou;
 					}
 				}
-				float iou;
-				iou = delta_region_box(truth, swap_data, biases_, mask_[best_n], best_index, i, j, side_, side_, side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
+				//LOG(INFO) << best_n;
+				int mask_n = int_index(mask_, best_n, num_);
+				
+				//LOG(INFO) << mask_n;
+				
+				if (mask_n >= 0) {
+					float iou;
+					best_n = mask_n;
+					//LOG(INFO) << best_n;
+					best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
+					
+					iou = delta_region_box(truth, swap_data, biases_,best_n, best_index, i, j, side_, side_, side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
 
-				if (iou > 0.5)
-					recall += 1;
-				if (iou > 0.75)
-					recall75 += 1;
-				avg_iou += iou;
-				avg_obj += swap_data[best_index + 4 * stride];
+					if (iou > 0.5)
+						recall += 1;
+					if (iou > 0.75)
+						recall75 += 1;
+					avg_iou += iou;
+					avg_obj += swap_data[best_index + 4 * stride];
+					if (use_logic_gradient_) {
+						diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) * object_scale_;
+					}
+					else {
+						diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]);
+					}
 
-				//diff[best_index + 4 * stride] = (-1.0) * object_scale_ * (1 - swap_data[best_index + 4 * stride]) * logistic_gradient(swap_data[best_index + 4 * stride]);
-				diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]);
+					//diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-				delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride); //softmax_tree_
+					delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride); //softmax_tree_
 
-				++count;
-				++class_count;
+					++count;
+					++class_count;
+				}
+
 			}
 		}
 
@@ -315,18 +341,23 @@ namespace caffe {
 		//LOG(INFO) << "iter: " << iter <<" loss: " << loss;
 		if (!(iter_ % 10))
 		{
-			LOG(INFO) << "avg_noobj: " << score_.avg_anyobj / 10. << " avg_obj: " << score_.avg_obj / 10. <<
-				" avg_iou: " << score_.avg_iou / 10. << " avg_cat: " << score_.avg_cat / 10. << " recall: " << score_.recall / 10. << " recall75: " << score_.recall75 / 10.;
+			LOG(INFO) << "avg_noobj: " << score_.avg_anyobj / 10. << " avg_obj: " << score_.avg_obj / time_count_ <<
+				" avg_iou: " << score_.avg_iou / time_count_ << " avg_cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_;
 			//LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
 			score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
+			time_count_ = 0;
 		}
 		else {
 			score_.avg_anyobj += avg_anyobj / (side_*side_*num_*bottom[0]->num());
-			score_.avg_obj += avg_obj / count;
-			score_.avg_iou += avg_iou / count;
-			score_.avg_cat += avg_cat / class_count;
-			score_.recall += recall / count;
-			score_.recall75 += recall75 / count;
+			if (count > 0) {
+				score_.avg_obj += avg_obj / count;
+				score_.avg_iou += avg_iou / count;
+				score_.avg_cat += avg_cat / count;
+				score_.recall += recall / count;
+				score_.recall75 += recall75 / count;
+				time_count_++;
+			}
+
 		}
 	}
 
@@ -338,34 +369,42 @@ namespace caffe {
 			LOG(FATAL) << this->type() << " Layer cannot backpropagate to label inputs.";
 		}
 		if (propagate_down[0]) {
-			/*const Dtype* top_data = swap_.cpu_data();
-			Dtype* diff = diff_.mutable_cpu_data();
-			side_ = bottom[0]->width();
-			int len = 4 + num_class_ + 1;
-			int stride = side_*side_;
-			//LOG(INFO)<<swap.count(1);
-			for (int b = 0; b < bottom[0]->num(); b++) {
-				for (int s = 0; s < side_*side_; s++) {
-					for (int n = 0; n < num_; n++) {
-						int index = n*len*stride + s + b*bottom[0]->count(1);
-						//LOG(INFO)<<index;
-						vector<Dtype> pred;
-						float best_iou = 0;
-						int best_class = -1;
-						vector<Dtype> best_truth;
-						for (int c = 0; c < len; ++c) {
-							int index2 = c*stride + index;
-							//LOG(INFO)<<index2;
-							if (c == 2 || c == 3) {
-								diff[index2] = diff[index2 + 0];
-							}
-							else {
-								diff[index2] = diff[index2 + 0]* logistic_gradient(top_data[index2 + 0]);
+			if (use_logic_gradient_) {
+				const Dtype* top_data = swap_.cpu_data();
+				Dtype* diff = diff_.mutable_cpu_data();
+				side_ = bottom[0]->width();
+				int len = 4 + num_class_ + 1;
+				int stride = side_*side_;
+				//LOG(INFO)<<swap.count(1);
+				for (int b = 0; b < bottom[0]->num(); b++) {
+					for (int s = 0; s < side_*side_; s++) {
+						for (int n = 0; n < num_; n++) {
+							int index = n*len*stride + s + b*bottom[0]->count(1);
+							//LOG(INFO)<<index;
+							vector<Dtype> pred;
+							float best_iou = 0;
+							int best_class = -1;
+							vector<Dtype> best_truth;
+							for (int c = 0; c < len; ++c) {
+								int index2 = c*stride + index;
+								//LOG(INFO)<<index2;
+								if (c == 2 || c == 3) {
+									diff[index2] = diff[index2 + 0];
+								}
+								else {
+									diff[index2] = diff[index2 + 0] * logistic_gradient(top_data[index2 + 0]);
+								}
 							}
 						}
 					}
 				}
-			}*/
+			}
+			else {
+				// non-logic_gradient formula
+				// https://blog.csdn.net/yanzi6969/article/details/80505421
+				// https://xmfbit.github.io/2018/03/21/cs229-supervised-learning/
+				// https://zlatankr.github.io/posts/2017/03/06/mle-gradient-descent
+			}
 			const Dtype sign(1.);
 			const Dtype alpha = sign * top[0]->cpu_diff()[0] / bottom[0]->num();
 			//const Dtype alpha(1.0);

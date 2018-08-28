@@ -50,12 +50,15 @@ public:
 	int side_;
 	int num_class_;
 	int num_;
+	int biases_size_;
 	int anchors_scale_;
+	int time_count_;
 	float object_scale_;
 	float class_scale_;
 	float noobject_scale_;
 	float coord_scale_;
 	float thresh_;
+	bool use_logic_gradient_;
 	vector<Dtype> biases_;
 	vector<Dtype> mask_;
 	Blob<Dtype> diff_;

@@ -8,6 +8,7 @@ Network|mAP|Download|Download|NetScope
 :---:|:---:|:---:|:---:|:---:
 MobileNet-YOLO-Lite|0.675|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_lite_deploy_iter_62000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
 MobileNet-YOLO|0.709|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_deploy_iter_80000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/52f298d84f8fa4ebb2bb94767fa6ca88)
+MobileNet-YOLOv3-Lite|0.726|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)
 
 ## Windows Version
 

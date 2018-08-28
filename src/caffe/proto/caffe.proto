@@ -465,6 +465,7 @@ message Yolov3Parameter{
   optional uint32 anchors_scale = 10 [default = 32];
   repeated float biases = 11;
   repeated uint32 mask = 12;
+  optional bool use_logic_gradient = 13 [default = false];
 }
 message RegionLossParameter{
   //Yolo 9000
@@ -1119,6 +1120,7 @@ message YoloDetectionOutputParameter {
   optional float nms_threshold = 6 [default = 0.45];
   repeated float biases = 7;
   optional string label_map_file = 8;
+  
 }
 message Yolov3DetectionOutputParameter {
   // Yolo detection output layer
@@ -1130,6 +1132,7 @@ message Yolov3DetectionOutputParameter {
   repeated uint32 anchors_scale = 6 ;
   optional uint32 mask_group_num = 7 [default = 2];
   repeated uint32 mask = 8;
+  
 }
 message DropoutParameter {
   optional float dropout_ratio = 1 [default = 0.5]; // dropout ratio
