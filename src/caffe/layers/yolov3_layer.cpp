@@ -306,7 +306,7 @@ namespace caffe {
 					//LOG(INFO) << best_n;
 					best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
 					
-					iou = delta_region_box(truth, swap_data, biases_,best_n, best_index, i, j, side_, side_, side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
+					iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_, side_, side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
 
 					if (iou > 0.5)
 						recall += 1;
