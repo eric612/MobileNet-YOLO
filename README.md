@@ -27,6 +27,18 @@ YOLOv2|0.76|193 mb|N/A
 
 Note :  the yolo_detection_output_layer not be optimization , and [batch norm and scale layer can merge into conv layer](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
 
+## CMake Build
+
+[Caffe page](http://caffe.berkeleyvision.org/installation.html#compilation)
+
+```
+> cd $caffe_root/
+> mkdir build
+> cd build
+> cmake ..
+> make -j4
+```
+
 ## Training 
 
 Download [lmdb](https://drive.google.com/open?id=19pBP1NwomDvm43xxgDaRuj_X4KubwuCZ)
