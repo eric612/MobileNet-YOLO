@@ -217,8 +217,8 @@ namespace caffe {
 		int class_count = 0;
 		const Dtype* input_data = bottom[0]->cpu_data();
 		//const Dtype* label_data = bottom[1]->cpu_data();
-		Blob<Dtype> swap;
-		swap.ReshapeLike(*bottom[0]);
+		//Blob<Dtype> swap;
+		swap_.ReshapeLike(*bottom[0]);
 		Dtype* swap_data = swap_.mutable_cpu_data();
 		//LOG(INFO) << diff_.channels() << "," << diff_.height();
 		//LOG(INFO)<<bottom[0]->count(1)*bottom[0]->num();
