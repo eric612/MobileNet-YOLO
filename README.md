@@ -4,11 +4,13 @@
 
 A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.718
 
-Network|mAP|Download|Download|NetScope
+Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.675|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_lite_deploy_iter_62000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
-MobileNet-YOLO|0.709|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov2/mobilenet_yolo_deploy_iter_80000.caffemodel)|[graph](http://ethereon.github.io/netscope/#/gist/52f298d84f8fa4ebb2bb94767fa6ca88)
-MobileNet-YOLOv3-Lite|0.726|[train](models/MobileNet/mobilenet_iter_73000.caffemodel)|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)
+MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
+MobileNet-YOLOv3-Lite|0.726|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
+MobileNet-YOLOv3-Lite|0.708|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
+
+Note : training from imagenet [model](https://drive.google.com/open?id=0B3gersZ2cHIxZi13UWF0OXBsZzA) , mAP can get to 
 
 ## Windows Version
 
@@ -16,23 +18,32 @@ MobileNet-YOLOv3-Lite|0.726|[train](models/MobileNet/mobilenet_iter_73000.caffem
 
 ## Performance
 
-Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/)
+Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/) , I can't find yolov3 score on voc2007 currently 
 
 Network|mAP|Weight size|Inference time (GTX 1080)
 :---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.675|16.8 mb|10 ms
-MobileNet-YOLO|0.709|19.4 mb|24 ms
+MobileNet-YOLOv3-Lite|0.726|20.3 mb|N/A
 Tiny-YOLO|0.57|60.5 mb|N/A
 YOLOv2|0.76|193 mb|N/A
 
 Note :  the yolo_detection_output_layer not be optimization , and [batch norm and scale layer can merge into conv layer](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
 
-## CMake Build
+## Other models
+
+You can find non-depthwise convolution network here , [Yolo-Model-Zoo](https://github.com/eric612/Yolo-Model-Zoo.git)
+
+network|mAP|resolution|macc|param|
+:---:|:---:|:---:|:---:|:---:|
+PVA-YOLOv3|0.703|416|2.55G|4.72M|
+Pelee-YOLOv3|0.703|416|4.25G|3.85M|
+
+### CMake Build
 
 [Caffe page](http://caffe.berkeleyvision.org/installation.html#compilation)
 
 ```
-> cd $caffe_root/
+>git clone https://github.com/eric612/MobileNet-YOLO.git 
+> cd $MobileNet-YOLO_root/
 > mkdir build
 > cd build
 > cmake ..
