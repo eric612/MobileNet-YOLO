@@ -380,7 +380,7 @@ int main(int argc, char** argv) {
 		  if (img.empty()) continue; //only proceed if sucsessful
 									// you probably want to do some preprocessing
 		  CHECK(!img.empty()) << "Unable to decode image " << file;
-		  CPUTimer batch_timer;
+		  Timer batch_timer;
 		  batch_timer.Start();
 		  std::vector<vector<float> > detections = detector.Detect(img);
 		  LOG(INFO) << "Computing time: " << batch_timer.MilliSeconds() << " ms.";

@@ -10,7 +10,7 @@ MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.g
 MobileNet-YOLOv3-Lite|0.726|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
 MobileNet-YOLOv3-Lite|0.708|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
 
-Note : training from imagenet [model](https://drive.google.com/open?id=0B3gersZ2cHIxZi13UWF0OXBsZzA) , mAP can get to 
+Note : training from imagenet [model](https://drive.google.com/open?id=0B3gersZ2cHIxZi13UWF0OXBsZzA) , mAP  of MobileNet-YOLOv3-Lite was 0.68
 
 ## Windows Version
 
@@ -22,7 +22,8 @@ Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/) , I can't find yolov
 
 Network|mAP|Weight size|Inference time (GTX 1080)
 :---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|0.726|20.3 mb|N/A
+MobileNet-YOLOv3-Lite|0.708|20.3 mb|8 ms (320x320)
+MobileNet-YOLOv3-Lite|0.726|20.3 mb|14 ms (416x416)
 Tiny-YOLO|0.57|60.5 mb|N/A
 YOLOv2|0.76|193 mb|N/A
 
@@ -42,7 +43,7 @@ Pelee-YOLOv3|0.703|416|4.25G|3.85M|
 [Caffe page](http://caffe.berkeleyvision.org/installation.html#compilation)
 
 ```
->git clone https://github.com/eric612/MobileNet-YOLO.git 
+> git clone https://github.com/eric612/MobileNet-YOLO.git 
 > cd $MobileNet-YOLO_root/
 > mkdir build
 > cd build
@@ -75,7 +76,7 @@ Download [pre-trained weights](https://drive.google.com/file/d/141AVMm_h8nv3Rpgy
 
 ```
 > cd $caffe_root/
-> sh demo_yolo.sh
+> sh demo_yolo_lite.sh
 ```
 If load success , you can see the image window like this 
 
