@@ -22,12 +22,12 @@ Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/) , I can't find yolov
 
 Network|mAP|Weight size|Inference time (GTX 1080)
 :---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|0.708|20.3 mb|8 ms (320x320)
-MobileNet-YOLOv3-Lite|0.726|20.3 mb|14 ms (416x416)
+MobileNet-YOLOv3-Lite|0.708|20.3 mb|6 ms (320x320)
+MobileNet-YOLOv3-Lite|0.726|20.3 mb|11 ms (416x416)
 Tiny-YOLO|0.57|60.5 mb|N/A
 YOLOv2|0.76|193 mb|N/A
 
-Note :  the yolo_detection_output_layer not be optimization , and [batch norm and scale layer can merge into conv layer](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
+Note :  the yolo_detection_output_layer not be optimization , and the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
 
 ## Other models
 
