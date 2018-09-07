@@ -7,10 +7,8 @@ A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with p
 Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
 MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
-MobileNet-YOLOv3-Lite|0.726|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
-MobileNet-YOLOv3-Lite|0.708|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
-
-Note : training from imagenet [model](https://drive.google.com/open?id=0B3gersZ2cHIxZi13UWF0OXBsZzA) , mAP  of MobileNet-YOLOv3-Lite was 0.68
+MobileNet-YOLOv3-Lite|0.737|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
+MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
 
 ## Windows Version
 
@@ -20,12 +18,12 @@ Note : training from imagenet [model](https://drive.google.com/open?id=0B3gersZ2
 
 Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/) , I can't find yolov3 score on voc2007 currently 
 
-Network|mAP|Weight size|Inference time (GTX 1080)
-:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|0.708|20.3 mb|6 ms (320x320)
-MobileNet-YOLOv3-Lite|0.726|20.3 mb|11 ms (416x416)
-Tiny-YOLO|0.57|60.5 mb|N/A
-YOLOv2|0.76|193 mb|N/A
+Network|mAP|Weight size|Inference time (GTX 1080)|Inference time (i5-4440)
+:---:|:---:|:---:|:---:|:---:
+MobileNet-YOLOv3-Lite|0.717|20.3 mb|6 ms (320x320)|150 ms
+MobileNet-YOLOv3-Lite|0.737|20.3 mb|11 ms (416x416)|280 ms
+Tiny-YOLO|0.57|60.5 mb|N/A|N/A
+YOLOv2|0.76|193 mb|N/A|N/A
 
 Note :  the yolo_detection_output_layer not be optimization , and the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
 

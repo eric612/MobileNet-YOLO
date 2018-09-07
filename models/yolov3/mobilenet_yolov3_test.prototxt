@@ -2256,37 +2256,24 @@ layer {
   top: "conv18"
 }
 
-layer {
-  name: "upsample_conv18"
-  type: "Deconvolution"
-  bottom: "conv18"
-  top: "upsample_conv18"
-  param { lr_mult: 0  decay_mult: 0 }
-  convolution_param {
-    num_output: 512
-    kernel_size: 4  stride: 2  pad: 1
-    group: 512
-    weight_filler: { type: "bilinear" }
-    bias_term: false
-  }
-}
+
 
 
 layer {
   name: "conv19/dw"
   type: "DepthwiseConvolution"
-  bottom: "conv5"
+  bottom: "conv10"
   top: "conv19/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2350,7 +2337,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2415,11 +2402,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2483,7 +2470,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2548,11 +2535,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2616,7 +2603,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2672,27 +2659,27 @@ layer {
   top: "conv21"
 }
 layer {
-  name: "conv21/cat"
-  type: "Concat"
+  name: "conv21/sum"
+  type: "Eltwise"
   bottom: "conv21"
-  bottom: "upsample_conv18"
-  top: "conv21/cat"
+  bottom: "conv18/dw"
+  top: "conv21/sum"
 }
 layer {
   name: "conv22/dw"
   type: "DepthwiseConvolution"
-  bottom: "conv21/cat"
+  bottom: "conv21/sum"
   top: "conv22/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 768
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 768
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2899,9 +2886,7 @@ layer {
   bottom: "conv24"
   bottom: "conv25"
   top: "detection_out"
-  include {
-	phase: TEST
-  }
+ 
   yolov3_detection_output_param {
     confidence_threshold: 0.01
 	nms_threshold: 0.45
@@ -2939,7 +2924,7 @@ layer {
     mask:2
     anchors_scale:32
     anchors_scale:16
-	anchors_scale:8
+	anchors_scale:16
     mask_group_num:3
   }
 }
@@ -2949,9 +2934,7 @@ layer {
   bottom: "detection_out"
   bottom: "label"
   top: "detection_eval"
-  include {
-    phase: TEST
-  }
+
   detection_evaluate_param {
     num_classes: 21
     background_label_id: 0

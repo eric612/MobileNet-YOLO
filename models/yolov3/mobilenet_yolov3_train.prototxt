@@ -124,13 +124,13 @@ layer {
       random_order_prob: 0.0
     }
 	expand_param {
-      prob: 0.5
-      max_expand_ratio: 4.0
+      prob: 0.66
+      max_expand_ratio: 2.0
     }
   }
   data_param {
     source: "examples/VOC0712/VOC0712_trainval_lmdb"
-    batch_size: 4
+    batch_size: 6
     backend: LMDB
   }
   annotated_data_param {
@@ -2363,37 +2363,24 @@ layer {
   top: "conv18"
 }
 
-layer {
-  name: "upsample_conv18"
-  type: "Deconvolution"
-  bottom: "conv18"
-  top: "upsample_conv18"
-  param { lr_mult: 0  decay_mult: 0 }
-  convolution_param {
-    num_output: 512
-    kernel_size: 4  stride: 2  pad: 1
-    group: 512
-    weight_filler: { type: "bilinear" }
-    bias_term: false
-  }
-}
+
 
 
 layer {
   name: "conv19/dw"
   type: "DepthwiseConvolution"
-  bottom: "conv5"
+  bottom: "conv10"
   top: "conv19/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2457,7 +2444,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2522,11 +2509,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2590,7 +2577,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2655,11 +2642,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 256
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2723,7 +2710,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 256
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2779,27 +2766,27 @@ layer {
   top: "conv21"
 }
 layer {
-  name: "conv21/cat"
-  type: "Concat"
+  name: "conv21/sum"
+  type: "Eltwise"
   bottom: "conv21"
-  bottom: "upsample_conv18"
-  top: "conv21/cat"
+  bottom: "conv18/dw"
+  top: "conv21/sum"
 }
 layer {
   name: "conv22/dw"
   type: "DepthwiseConvolution"
-  bottom: "conv21/cat"
+  bottom: "conv21/sum"
   top: "conv22/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 768
+    num_output: 512
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 768
+    group: 512
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -3017,7 +3004,7 @@ layer {
     coord_scale: 1.0
     thresh: 0.6
 	anchors_scale : 32
-	use_logic_gradient : false
+	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 10
@@ -3061,7 +3048,7 @@ layer {
     coord_scale: 1.0
     thresh: 0.6
 	anchors_scale : 16
-	use_logic_gradient : false
+	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 10
@@ -3097,7 +3084,7 @@ layer {
   top: "det_loss3"
   loss_weight: 1
   yolov3_param {
-    side: 52
+    side: 26
     num_class: 20
     num: 3  
     object_scale: 5.0
@@ -3105,8 +3092,8 @@ layer {
     class_scale: 1.0
     coord_scale: 1.0
     thresh: 0.6
-	anchors_scale : 8
-	use_logic_gradient : false
+	anchors_scale : 16
+	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 10

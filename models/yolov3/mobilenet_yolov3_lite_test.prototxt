@@ -2322,7 +2322,7 @@ layer {
   }
   yolov3_detection_output_param {
     confidence_threshold: 0.01
-	nms_threshold: 0.45
+	nms_threshold: 0.55
     num_classes: 20
 	
 	
