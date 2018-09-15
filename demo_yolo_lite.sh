@@ -1,1 +1,1 @@
-./examples/ssd/ssd_detect models/yolov3/mobilenet_yolov3_lite_deploy.prototxt models/yolov3/mobilenet_yolov3_lite_deploy.caffemodel -file_type image -wait_time 3000 -mean_value 0.5,0.5,0.5 -normalize_value 0.007843 -confidence_threshold 0.3 
+./build/examples/ssd/ssd_detect models/yolov3/mobilenet_yolov3_lite_deploy.prototxt models/yolov3/mobilenet_yolov3_lite_deploy.caffemodel -file_type image -wait_time 3000 -mean_value 0.5,0.5,0.5 -normalize_value 0.007843 -confidence_threshold 0.3 
