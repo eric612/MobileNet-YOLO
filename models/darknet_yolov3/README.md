@@ -23,7 +23,4 @@ Modify from [pytorch-caffe-darknet-convert](https://github.com/marvis/pytorch-ca
 
 ## To do list :
 
-1. verify accuracy and compare result
-2. retrain
-
-I'm not sure the result was same as darknet now , contribution is welcome
+1. retrain

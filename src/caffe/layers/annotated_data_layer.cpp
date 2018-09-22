@@ -100,7 +100,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
         label_shape[2] = std::max(num_bboxes, 1);
         label_shape[3] = 8;
 		if (yolo_data_type_ == 1) {
-			label_shape[2] = 30;
+			label_shape[2] = 300;
 			label_shape[0] = batch_size;
 			label_shape[3] = 5;
 		}
@@ -314,7 +314,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       if (num_bboxes == 0) {
         // Store all -1 in the label.
 		if (yolo_data_type_ == 1) {
-			label_shape[2] = 30;
+			label_shape[2] = 300;
 			batch->label_.Reshape(label_shape);
 			caffe_set<Dtype>(8, 0, batch->label_.mutable_cpu_data());
 		}
@@ -325,9 +325,12 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 		}
 
       } else {
+		if (num_bboxes > 300) {
+			LOG(INFO) << num_bboxes;
+		}
         // Reshape the label and store the annotation.
 		if (yolo_data_type_ == 1) {
-			label_shape[2] = 30;
+			label_shape[2] = 300;
 			//LOG(INFO) << "num_bboxes: " << num_bboxes;
 			batch->label_.Reshape(label_shape);
 			
@@ -344,7 +347,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 		  if (yolo_data_type_ == 1) {
 			  int label_offset = batch->label_.offset(item_id);
 			  idx = label_offset;
-			  caffe_set(30 * 5, Dtype(0), &top_label[idx]);
+			  caffe_set(300 * 5, Dtype(0), &top_label[idx]);
 		  }
 
           for (int g = 0; g < anno_vec.size(); ++g) {

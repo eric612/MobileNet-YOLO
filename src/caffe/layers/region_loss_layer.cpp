@@ -252,12 +252,12 @@ namespace caffe {
 					int x2 = s % side_;
 					//LOG(INFO) << side_;
 					get_region_box(pred, swap_data, biases_, n, index, x2, y2, side_, side_, stride);
-					for (int t = 0; t < 30; ++t) {
+					for (int t = 0; t < 300; ++t) {
 						vector<Dtype> truth;
-						Dtype x = label_data[b * 30 * 5 + t * 5 + 1];
-						Dtype y = label_data[b * 30 * 5 + t * 5 + 2];
-						Dtype w = label_data[b * 30 * 5 + t * 5 + 3];
-						Dtype h = label_data[b * 30 * 5 + t * 5 + 4];
+						Dtype x = label_data[b * 300 * 5 + t * 5 + 1];
+						Dtype y = label_data[b * 300 * 5 + t * 5 + 2];
+						Dtype w = label_data[b * 300 * 5 + t * 5 + 3];
+						Dtype h = label_data[b * 300 * 5 + t * 5 + 4];
 
 						if (!x)
 							break;
@@ -268,7 +268,7 @@ namespace caffe {
 						truth.push_back(h);
 						Dtype iou = box_iou(pred, truth);
 						if (iou > best_iou) {
-							best_class = label_data[b * 30 * 5 + t * 5];
+							best_class = label_data[b * 300 * 5 + t * 5];
 							best_iou = iou;
 							best_truth = truth;
 						}
@@ -293,14 +293,14 @@ namespace caffe {
 					}
 				}
 			}
-			for (int t = 0; t < 30; ++t) {
+			for (int t = 0; t < 300; ++t) {
 				vector<Dtype> truth;
 				truth.clear();
-				int class_label = label_data[t * 5 + b * 30 * 5 + 0];
-				float x = label_data[t * 5 + b * 30 * 5 + 1];
-				float y = label_data[t * 5 + b * 30 * 5 + 2];
-				float w = label_data[t * 5 + b * 30 * 5 + 3];
-				float h = label_data[t * 5 + b * 30 * 5 + 4];
+				int class_label = label_data[t * 5 + b * 300 * 5 + 0];
+				float x = label_data[t * 5 + b * 300 * 5 + 1];
+				float y = label_data[t * 5 + b * 300 * 5 + 2];
+				float w = label_data[t * 5 + b * 300 * 5 + 3];
+				float h = label_data[t * 5 + b * 300 * 5 + 4];
 
 				if (!w)
 					break;

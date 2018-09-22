@@ -139,7 +139,7 @@ namespace caffe {
 		int label_count = bottom[1]->count(1); //30*5-
 											   // outputs: classes, iou, coordinates
 		int tmp_input_count = side_ * side_ * num_ * (4 + num_class_ + 1); //13*13*5*(20+4+1) label: isobj, class_label, coordinates
-		int tmp_label_count = 30 * num_;
+		int tmp_label_count = 300 * num_;
 		CHECK_EQ(input_count, tmp_input_count);
 		//CHECK_EQ(label_count, tmp_label_count);
 	}
@@ -175,7 +175,7 @@ namespace caffe {
 
 		Dtype avg_anyobj(0.0), avg_obj(0.0), avg_iou(0.0), avg_cat(0.0), recall(0.0), recall75(0.0), loss(0.0);
 		int count = 0;
-		int class_count = 0;
+		
 		const Dtype* input_data = bottom[0]->cpu_data();
 		//const Dtype* label_data = bottom[1]->cpu_data();
 		
@@ -213,12 +213,12 @@ namespace caffe {
 					int x2 = s % side_;
 					//LOG(INFO) << side_;
 					get_region_box(pred, swap_data, biases_, mask_[n], index, x2, y2, side_, side_, side_*anchors_scale_, side_*anchors_scale_, stride);
-					for (int t = 0; t < 30; ++t) {
+					for (int t = 0; t < 300; ++t) {
 						vector<Dtype> truth;
-						Dtype x = label_data[b * 30 * 5 + t * 5 + 1];
-						Dtype y = label_data[b * 30 * 5 + t * 5 + 2];
-						Dtype w = label_data[b * 30 * 5 + t * 5 + 3];
-						Dtype h = label_data[b * 30 * 5 + t * 5 + 4];
+						Dtype x = label_data[b * 300 * 5 + t * 5 + 1];
+						Dtype y = label_data[b * 300 * 5 + t * 5 + 2];
+						Dtype w = label_data[b * 300 * 5 + t * 5 + 3];
+						Dtype h = label_data[b * 300 * 5 + t * 5 + 4];
 
 						if (!x)
 							break;
@@ -229,7 +229,7 @@ namespace caffe {
 						truth.push_back(h);
 						Dtype iou = box_iou(pred, truth);
 						if (iou > best_iou) {
-							best_class = label_data[b * 30 * 5 + t * 5];
+							best_class = label_data[b * 300 * 5 + t * 5];
 							best_iou = iou;
 							best_truth = truth;
 						}
@@ -250,14 +250,14 @@ namespace caffe {
 					}
 				}
 			}
-			for (int t = 0; t < 30; ++t) {
+			for (int t = 0; t < 300; ++t) {
 				vector<Dtype> truth;
 				truth.clear();
-				int class_label = label_data[t * 5 + b * 30 * 5 + 0];
-				float x = label_data[t * 5 + b * 30 * 5 + 1];
-				float y = label_data[t * 5 + b * 30 * 5 + 2];
-				float w = label_data[t * 5 + b * 30 * 5 + 3];
-				float h = label_data[t * 5 + b * 30 * 5 + 4];
+				int class_label = label_data[t * 5 + b * 300 * 5 + 0];
+				float x = label_data[t * 5 + b * 300 * 5 + 1];
+				float y = label_data[t * 5 + b * 300 * 5 + 2];
+				float w = label_data[t * 5 + b * 300 * 5 + 3];
+				float h = label_data[t * 5 + b * 300 * 5 + 4];
 
 				if (!w)
 					break;
@@ -326,7 +326,7 @@ namespace caffe {
 					delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride); //softmax_tree_
 
 					++count;
-					++class_count;
+					++class_count_;
 				}
 
 			}
@@ -342,9 +342,10 @@ namespace caffe {
 		if (!(iter_ % 10))
 		{
 			LOG(INFO) << "avg_noobj: " << score_.avg_anyobj / 10. << " avg_obj: " << score_.avg_obj / time_count_ <<
-				" avg_iou: " << score_.avg_iou / time_count_ << " avg_cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_;
+				" avg_iou: " << score_.avg_iou / time_count_ << " avg_cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
 			//LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
 			score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
+			class_count_ = 0;
 			time_count_ = 0;
 		}
 		else {

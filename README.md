@@ -2,7 +2,7 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 and mAP=0.718
+A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 
 
 Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
@@ -13,6 +13,16 @@ MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon
 ## Windows Version
 
 [Caffe-YOLOv2-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)
+
+### Oringinal darknet-yolov3
+
+[Converter](models/darknet_yolov3)
+
+test on coco_minival_lmdb (IOU 0.5)
+
+mAP|resolution
+:---:|:---:
+53.9|416
 
 ## Performance
 
@@ -64,12 +74,8 @@ Download [pre-trained weights](https://drive.google.com/file/d/141AVMm_h8nv3Rpgy
 > sh train_yolo.sh
 ```
 
-### Training Darknet YOLOv2 
 
-```
-> cd $caffe_root/
-> sh train_darknet.sh
-```
+
 ## Demo
 
 ```
