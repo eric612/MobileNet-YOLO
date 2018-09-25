@@ -1,1 +1,1 @@
-./examples/ssd/ssd_detect models/darknet_yolov3/yolov3.prototxt models/darknet_yolov3/yolov3.caffemodel -file_type image -wait_time 1500 -mean_value 0.0,0.0,0.0 -normalize_value 0.0039215 -confidence_threshold 0.2
+./build/examples/ssd/ssd_detect models/darknet_yolov3/yolov3.prototxt models/darknet_yolov3/yolov3.caffemodel -file_type image -wait_time 1500 -mean_value 0.0,0.0,0.0 -normalize_value 0.0039215 -confidence_threshold 0.2

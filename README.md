@@ -16,13 +16,13 @@ MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon
 
 ### Oringinal darknet-yolov3
 
-[Converter](models/darknet_yolov3)
+[Converter](models/darknet_yolov3) 
 
 test on coco_minival_lmdb (IOU 0.5)
 
-mAP|resolution
-:---:|:---:
-53.9|416
+mAP|Resolution|Download|NetScope|
+:---:|:---:|:---:|:---:
+53.9|416|[caffemodel](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
 
 ## Performance
 
