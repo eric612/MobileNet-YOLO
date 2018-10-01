@@ -2,13 +2,15 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO (YOLOv2 base) detection network, with pretrained weights on VOC0712 
+A caffe implementation of MobileNet-YOLO detection network
 
-Network|mAP|Resolution|Download|NetScope|
-:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)
-MobileNet-YOLOv3-Lite|0.737|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
-MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|
+Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
+:---:|:---:|:---:|:---:|:---:|:---:|:---:
+MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)|N/A|N/A
+MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|6 ms|150 ms
+MobileNet-YOLOv3-Lite|0.737|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|11 ms|280 ms
+
+Note :  the yolo_detection_output_layer not be optimization , and the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
 
 ## Windows Version
 
@@ -26,16 +28,15 @@ mAP|Resolution|Download|NetScope|
 
 ## Performance
 
-Compare with [YOLOv2](https://pjreddie.com/darknet/yolov2/) , I can't find yolov3 score on voc2007 currently 
+Compare with [YOLO](https://pjreddie.com/darknet/yolo/) 
 
-Network|mAP|Weight size|Inference time (GTX 1080)|Inference time (i5-4440)
-:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|0.717|20.3 mb|6 ms (320x320)|150 ms
-MobileNet-YOLOv3-Lite|0.737|20.3 mb|11 ms (416x416)|280 ms
-Tiny-YOLO|0.57|60.5 mb|N/A|N/A
-YOLOv2|0.76|193 mb|N/A|N/A
+Network|mAP|Weight size|Resolution
+:---:|:---:|:---:|:---:
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|33.5*|[21.5 mb](https://drive.google.com/file/d/1Xd_Baq1fbjNne_1DAJnR3-RoZ73x4QX_/view?usp=sharing])|320
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|36.7*|[21.5 mb](https://drive.google.com/file/d/1Xd_Baq1fbjNne_1DAJnR3-RoZ73x4QX_/view?usp=sharing])|416
+YOLOv3-Tiny|33.1|33.8 mb|416
 
-Note :  the yolo_detection_output_layer not be optimization , and the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
+* (*) testdev-2015 server was closed , here use coco 2014 minival
 
 ## Other models
 
