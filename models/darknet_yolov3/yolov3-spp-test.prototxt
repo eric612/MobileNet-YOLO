@@ -16,13 +16,13 @@ layer {
     resize_param {
       prob: 1.0
       resize_mode: WARP
-      height: 416
-      width: 416
+      height: 608
+      width: 608
       interp_mode: LINEAR
     }
   }
   data_param {
-    source: "examples/coco/coco_test_lmdb"
+    source: "examples/coco/coco_minival_lmdb"
     batch_size: 1
     backend: LMDB
   }
@@ -4253,8 +4253,9 @@ layer {
     top: "layer114-yolo"
     name: "layer114-yolo"
     yolov3_detection_output_param {
-        nms_threshold: 0.45
+        nms_threshold: 0.55
         num_classes: 80
+		confidence_threshold: 0.001
         biases: 10
         biases: 13
         biases:   16
