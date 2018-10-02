@@ -22,9 +22,10 @@ Note :  the yolo_detection_output_layer not be optimization , and the deploy mod
 
 test on coco_minival_lmdb (IOU 0.5)
 
-mAP|Resolution|Download|NetScope|
-:---:|:---:|:---:|:---:
-53.9|416|[caffemodel](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
+Network|mAP|Resolution|Download|NetScope|
+:---:|:---:|:---:|:---:|:---:
+yolov3|54.4|416|[caffemodel](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
+yolov3-spp|57.7|608|[caffemodel](https://drive.google.com/file/d/1I6sGFgnLkQ81HlbV3e0CJb85PwuLo7Ox/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
 
 ## Performance
 

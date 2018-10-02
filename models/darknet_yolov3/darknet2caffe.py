@@ -139,10 +139,22 @@ def cfg2prototxt(cfgfile):
             else:
                 conv_layer['top'] = 'layer%d-conv' % layer_id
                 conv_layer['name'] = 'layer%d-conv' % layer_id
-            conv_layer['type'] = 'Convolution'
             convolution_param = OrderedDict()
+            #if layer_id>2 and int(block['size']) == 3 :
+            #    convolution_param['group'] = num_out
+            #    conv_layer['type'] = 'DepthwiseConvolution'
+            #    convolution_param['engine'] = 1
+            #else :
+            #    conv_layer['type'] = 'Convolution'
+            conv_layer['type'] = 'Convolution'
             convolution_param['num_output'] = block['filters']
             convolution_param['kernel_size'] = block['size']
+            weight_filler_param = OrderedDict()
+            weight_filler_param['type'] = 'xavier'       
+            convolution_param['weight_filler'] = weight_filler_param
+            bias_filler_param = OrderedDict()
+            bias_filler_param['type'] = 'constant'       
+            convolution_param['bias_filler'] = bias_filler_param
             if block['pad'] == '1':
                 convolution_param['pad'] = str(int(convolution_param['kernel_size'])/2)
                 convolution_param['pad'] = str(int(1))
@@ -169,7 +181,8 @@ def cfg2prototxt(cfgfile):
                     bn_layer['name'] = 'layer%d-bn' % layer_id
                 bn_layer['type'] = 'BatchNorm'
                 batch_norm_param = OrderedDict()
-                batch_norm_param['use_global_stats'] = 'true'
+                #batch_norm_param['use_global_stats'] = 'true'
+                batch_norm_param['eps'] = 0.0001
                 bn_layer['batch_norm_param'] = batch_norm_param
                 layers.append(bn_layer)
 
@@ -183,6 +196,12 @@ def cfg2prototxt(cfgfile):
                 scale_layer['type'] = 'Scale'
                 scale_param = OrderedDict()
                 scale_param['bias_term'] = 'true'
+                filler_param = OrderedDict()
+                filler_param['value'] = 1.0
+                bias_filler_param = OrderedDict()
+                bias_filler_param['value'] = 0.0
+                scale_param['filler'] = filler_param
+                scale_param['bias_filler'] = bias_filler_param
                 scale_layer['scale_param'] = scale_param
                 layers.append(scale_layer)
 
@@ -217,6 +236,7 @@ def cfg2prototxt(cfgfile):
             pooling_param['stride'] = block['stride']
 
             pooling_param['pool'] = 'MAX'
+            pooling_param['pad'] = str((int(block['size'])-1)/2)
             if block.has_key('pad') and int(block['pad']) == 1:
                 pooling_param['pad'] = str((int(block['size'])-1)/2)
             #if int(block['stride']) == 1 :
@@ -283,6 +303,20 @@ def cfg2prototxt(cfgfile):
                 bottom1 = topnames[prev_layer_id1]
                 bottom2 = topnames[prev_layer_id2]
                 route_layer['bottom'] = [bottom1, bottom2]
+            if (bottom_layer_dim == 4):
+                layer_name = [layer_id + int(idx) if int(idx) < 0 else int(idx) + 1 for idx in layer_name ]
+                prev_layer_id1 = int(layer_name[0])
+                prev_layer_id2 = int(layer_name[1])
+                prev_layer_id3 = int(layer_name[2])
+                prev_layer_id4 = int(layer_name[3])
+                bottom1 = topnames[prev_layer_id1]
+                bottom2 = topnames[prev_layer_id2]
+                bottom3 = topnames[prev_layer_id3]
+                bottom4 = topnames[prev_layer_id4]
+                route_layer['bottom'] = [bottom1, bottom2, bottom3, bottom4]
+                #concat_param = OrderedDict()
+                #concat_param['axis'] = '0'
+                #route_layer['concat_param'] = concat_param
             if 'name' in block.keys():
                 route_layer['top'] = block['name']
                 route_layer['name'] = block['name']

@@ -274,39 +274,22 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
 					}
 					int y2 = s / side_;
 					int x2 = s % side_;
-					//LOG(INFO) << x2 << "," << y2;
 					Dtype obj_score = swap_data[index + 4 * stride];
-					//LOG(INFO) << obj_score;
 					get_region_box2(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
-					//LOG(INFO)<<anchors_scale_[t];
-					//LOG(INFO) << pred[0] << "," << pred[1];
-					//float maxmima_score = 0;
 					PredictionResult<Dtype> predict;
 					for (int c = 0; c < num_class_; ++c) {
 						class_score[c] *= obj_score;
-						//LOG(INFO) << class_score[c];
 						if (class_score[c] > confidence_threshold_)
 						{						
-							//if(class_score[c]>maxmima_score)
-							{
-								//maxmima_score = class_score[c];
-								predict.x = pred[0];
-								predict.y = pred[1];
-								predict.w = pred[2];
-								predict.h = pred[3];
-								predict.classType = c ;
-								predict.confidence = class_score[c];
-								predicts.push_back(predict);							
-							}
-
-							//LOG(INFO) << predict.x << "," << predict.y << "," << predict.w << "," << predict.h;
-							//LOG(INFO) << predict.confidence;
+							predict.x = pred[0];
+							predict.y = pred[1];
+							predict.w = pred[2];
+							predict.h = pred[3];
+							predict.classType = c ;
+							predict.confidence = class_score[c];
+							predicts.push_back(predict);							
 						}
-					}
-					//if(maxmima_score> confidence_threshold_)
-					//{
-					//	predicts.push_back(predict);
-					//}
+					}				
 				}
 			}
 		}
