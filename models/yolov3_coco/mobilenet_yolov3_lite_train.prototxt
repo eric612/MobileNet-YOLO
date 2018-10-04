@@ -124,8 +124,8 @@ layer {
       random_order_prob: 0.0
     }
 	expand_param {
-      prob: 0.75
-      max_expand_ratio: 2.0
+      prob: 0.5
+      max_expand_ratio: 1.5
     }
   }
   
@@ -136,7 +136,7 @@ layer {
   }
   annotated_data_param {
 	yolo_data_type : 1
-	yolo_data_jitter : 0.3
+	yolo_data_jitter : 0.2
     label_map_file:  "data/coco/labelmap_coco.prototxt"
   }
 }

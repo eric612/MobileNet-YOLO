@@ -168,6 +168,7 @@ namespace caffe {
 	void Yolov3Layer<Dtype>::Forward_cpu(
 		const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
 		side_ = bottom[0]->width();
+		//LOG(INFO) << side_*anchors_scale_;
 		const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
 		diff_.ReshapeLike(*bottom[0]);
 		Dtype* diff = diff_.mutable_cpu_data();
@@ -177,17 +178,11 @@ namespace caffe {
 		int count = 0;
 		
 		const Dtype* input_data = bottom[0]->cpu_data();
-		//const Dtype* label_data = bottom[1]->cpu_data();
-		
+		//const Dtype* label_data = bottom[1]->cpu_data();		
 		swap_.ReshapeLike(*bottom[0]);
 		Dtype* swap_data = swap_.mutable_cpu_data();
-		//LOG(INFO) << diff_.channels() << "," << diff_.height();
-		//LOG(INFO)<<bottom[0]->count(1)*bottom[0]->num();
-		//LOG(INFO) << bottom[0]->num()<<","<< bottom[0]->channels() << "," << bottom[0]->height() << "," << bottom[0]->width();
-		//int index = 0;
 		int len = 4 + num_class_ + 1;
 		int stride = side_*side_;
-		//LOG(INFO)<<swap.count(1);
 		for (int b = 0; b < bottom[0]->num(); b++) {
 			for (int s = 0; s < side_*side_; s++) {
 				for (int n = 0; n < num_; n++) {
@@ -207,11 +202,8 @@ namespace caffe {
 							swap_data[index2] = logistic_activate(input_data[index2 + 0]);
 						}
 					}
-					//softmax_region(swap_data + index + 5 * stride, num_class_, stride);
-					//LOG(INFO) << index + 5;
 					int y2 = s / side_;
 					int x2 = s % side_;
-					//LOG(INFO) << side_;
 					get_region_box(pred, swap_data, biases_, mask_[n], index, x2, y2, side_, side_, side_*anchors_scale_, side_*anchors_scale_, stride);
 					for (int t = 0; t < 300; ++t) {
 						vector<Dtype> truth;
@@ -236,6 +228,7 @@ namespace caffe {
 					}
 					avg_anyobj += swap_data[index + 4 * stride];
 					diff[index + 4 * stride] = (-1) * (0 - swap_data[index + 4 * stride]);
+					//diff[index + 4 * stride] = (-1) * (0 - exp(input_data[index + 4 * stride]-exp(input_data[index + 4 * stride])));
 					//diff[index + 4 * stride] = (-1) * noobject_scale_ * (0 - swap_data[index + 4 * stride]) *logistic_gradient(swap_data[index + 4 * stride]);
 					if (best_iou > thresh_) {
 						diff[index + 4 * stride] = 0;
@@ -250,6 +243,8 @@ namespace caffe {
 					}
 				}
 			}
+			vector<Dtype> used;
+			used.clear();
 			for (int t = 0; t < 300; ++t) {
 				vector<Dtype> truth;
 				truth.clear();
@@ -268,6 +263,8 @@ namespace caffe {
 				float best_iou = 0;
 				int best_index = 0;
 				int best_n = -1;
+				int best_n_second = -1;
+				int best_iou_second = 0;
 				int i = truth[0] * side_;
 				int j = truth[1] * side_;
 				int pos = j * side_ + i;
@@ -277,11 +274,10 @@ namespace caffe {
 				truth_shift.push_back(0);
 				truth_shift.push_back(w);
 				truth_shift.push_back(h);
-				//int size = coords_ + num_class_ + 1;
-				//LOG(INFO) << biases_size_;
+
+				//LOG(INFO) << j << "," << i << "," << anchors_scale_;
+
 				for (int n = 0; n < biases_size_; ++n) {
-					
-					//LOG(INFO) << index2;
 					vector<Dtype> pred(4);
 					pred[2] = biases_[2 * n] / (float)(side_*anchors_scale_);
 					pred[3] = biases_[2 * n + 1] / (float)(side_*anchors_scale_);
@@ -290,17 +286,34 @@ namespace caffe {
 					pred[1] = 0;
 					float iou = box_iou(pred, truth_shift);
 					if (iou > best_iou) {
-						//best_index = index2;
+						best_n_second = best_n;
+						best_iou_second = best_iou;
 						best_n = n;
 						best_iou = iou;
 					}
+					else if (iou > best_iou_second) {
+						best_n_second = n;
+						best_iou_second = iou;
+					}
 				}
-				//LOG(INFO) << best_n;
-				int mask_n = int_index(mask_, best_n, num_);
-				
-				//LOG(INFO) << mask_n;
-				
+				int mask_n = int_index(mask_, best_n, num_);			
 				if (mask_n >= 0) {
+					bool overlap = false;
+					for (int n = 0; n < used.size(); n += 3) {
+						if (used[n * 3] == j && used[n * 23 + 1] == i && used[n * 23 + 1] == mask_n) {
+							DLOG(INFO) << "overlap";
+							overlap = true;
+						}
+					}
+					if (overlap) {
+						int mask_n_sec = int_index(mask_, best_n_second, num_);
+						if (mask_n_sec >= 0) {
+							mask_n = mask_n_sec
+						}
+					}
+					used.push_back(j);
+					used.push_back(i);
+					used.push_back(mask_n);
 					float iou;
 					best_n = mask_n;
 					//LOG(INFO) << best_n;
@@ -319,6 +332,7 @@ namespace caffe {
 					}
 					else {
 						diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]);
+						//diff[best_index + 4 * stride] = (-1) * (1 - exp(input_data[best_index + 4 * stride] - exp(input_data[best_index + 4 * stride])));
 					}
 
 					//diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
@@ -331,7 +345,7 @@ namespace caffe {
 
 			}
 		}
-
+		//LOG(INFO) << " ===================================================== " ;
 		for (int i = 0; i < diff_.count(); ++i) {
 			loss += diff[i] * diff[i];
 		}
@@ -341,12 +355,14 @@ namespace caffe {
 		//LOG(INFO) << "iter: " << iter <<" loss: " << loss;
 		if (!(iter_ % 10))
 		{
-			LOG(INFO) << "avg_noobj: " << score_.avg_anyobj / 10. << " avg_obj: " << score_.avg_obj / time_count_ <<
-				" avg_iou: " << score_.avg_iou / time_count_ << " avg_cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
-			//LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
-			score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
-			class_count_ = 0;
-			time_count_ = 0;
+			if(time_count_>0 ) {
+				LOG(INFO) << "avg_noobj: " << score_.avg_anyobj / 10. << " avg_obj: " << score_.avg_obj / time_count_ <<
+					" avg_iou: " << score_.avg_iou / time_count_ << " avg_cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
+				//LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
+				score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
+				class_count_ = 0;
+				time_count_ = 0;
+			}
 		}
 		else {
 			score_.avg_anyobj += avg_anyobj / (side_*side_*num_*bottom[0]->num());

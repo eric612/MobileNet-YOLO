@@ -33,8 +33,8 @@ Compare with [YOLO](https://pjreddie.com/darknet/yolo/)
 
 Network|mAP|Weight size|Resolution
 :---:|:---:|:---:|:---:
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|33.5*|[21.5 mb](https://drive.google.com/file/d/1Xd_Baq1fbjNne_1DAJnR3-RoZ73x4QX_/view?usp=sharing])|320
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|36.7*|[21.5 mb](https://drive.google.com/file/d/1Xd_Baq1fbjNne_1DAJnR3-RoZ73x4QX_/view?usp=sharing])|416
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|34.0*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|320
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|37.3*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|416
 YOLOv3-Tiny|33.1|33.8 mb|416
 
 * (*) testdev-2015 server was closed , here use coco 2014 minival
@@ -88,6 +88,10 @@ If load success , you can see the image window like this
 
 ![alt tag](00002.jpg)
 
+### Future work 
+
+* Distillation training 
+* Openimages training and testing
 
 ## License and Citation
 

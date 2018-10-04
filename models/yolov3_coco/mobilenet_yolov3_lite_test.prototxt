@@ -2322,7 +2322,7 @@ layer {
 	phase: TEST
   }
   yolov3_detection_output_param {
-    confidence_threshold: 0.01
+    confidence_threshold: 0.001
 	nms_threshold: 0.55
     num_classes: 80
 	
