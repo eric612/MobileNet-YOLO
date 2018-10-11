@@ -243,8 +243,8 @@ namespace caffe {
 					}
 				}
 			}
-			vector<Dtype> used;
-			used.clear();
+			//vector<Dtype> used;
+			//used.clear();
 			for (int t = 0; t < 300; ++t) {
 				vector<Dtype> truth;
 				truth.clear();
@@ -286,21 +286,21 @@ namespace caffe {
 					pred[1] = 0;
 					float iou = box_iou(pred, truth_shift);
 					if (iou > best_iou) {
-						best_n_second = best_n;
-						best_iou_second = best_iou;
+						//best_n_second = best_n;
+						//best_iou_second = best_iou;
 						best_n = n;
 						best_iou = iou;
 					}
-					else if (iou > best_iou_second) {
+					/*else if (iou > best_iou_second) {
 						best_n_second = n;
 						best_iou_second = iou;
-					}
+					}*/
 				}
 				int mask_n = int_index(mask_, best_n, num_);			
 				if (mask_n >= 0) {
 					bool overlap = false;
-					for (int n = 0; n < used.size(); n += 3) {
-						if (used[n * 3] == j && used[n * 23 + 1] == i && used[n * 23 + 1] == mask_n) {
+					/*for (int n = 0; n < used.size(); n += 3) {
+						if (used[n * 3] == j && used[n * 23 + 1] == i && used[n * 23 + 2] == mask_n) {
 							DLOG(INFO) << "overlap";
 							overlap = true;
 						}
@@ -313,7 +313,7 @@ namespace caffe {
 					}
 					used.push_back(j);
 					used.push_back(i);
-					used.push_back(mask_n);
+					used.push_back(mask_n);*/
 					float iou;
 					best_n = mask_n;
 					//LOG(INFO) << best_n;

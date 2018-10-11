@@ -2,7 +2,7 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network
+A caffe implementation of MobileNet-YOLO detection network , test on VOC2007
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
