@@ -13,6 +13,12 @@ layer {
     convolution_param {
         num_output: 16
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -24,7 +30,7 @@ layer {
     name: "layer1-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -34,6 +40,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -54,6 +66,7 @@ layer {
         kernel_size: 2
         stride: 2
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -64,6 +77,12 @@ layer {
     convolution_param {
         num_output: 32
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -75,7 +94,7 @@ layer {
     name: "layer3-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -85,6 +104,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -105,6 +130,7 @@ layer {
         kernel_size: 2
         stride: 2
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -115,6 +141,12 @@ layer {
     convolution_param {
         num_output: 64
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -126,7 +158,7 @@ layer {
     name: "layer5-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -136,6 +168,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -156,6 +194,7 @@ layer {
         kernel_size: 2
         stride: 2
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -166,6 +205,12 @@ layer {
     convolution_param {
         num_output: 128
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -177,7 +222,7 @@ layer {
     name: "layer7-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -187,6 +232,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -207,6 +258,7 @@ layer {
         kernel_size: 2
         stride: 2
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -217,6 +269,12 @@ layer {
     convolution_param {
         num_output: 256
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -228,7 +286,7 @@ layer {
     name: "layer9-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -238,6 +296,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -258,6 +322,7 @@ layer {
         kernel_size: 2
         stride: 2
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -268,6 +333,12 @@ layer {
     convolution_param {
         num_output: 512
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -279,7 +350,7 @@ layer {
     name: "layer11-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -289,6 +360,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -309,6 +386,7 @@ layer {
         kernel_size: 1
         stride: 1
         pool: MAX
+        pad: 0
     }
 }
 layer {
@@ -319,6 +397,12 @@ layer {
     convolution_param {
         num_output: 1024
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -330,7 +414,7 @@ layer {
     name: "layer13-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -340,6 +424,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -359,6 +449,12 @@ layer {
     convolution_param {
         num_output: 256
         kernel_size: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 0
         stride: 1
         bias_term: false
@@ -370,7 +466,7 @@ layer {
     name: "layer14-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -380,6 +476,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -399,6 +501,12 @@ layer {
     convolution_param {
         num_output: 512
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -410,7 +518,7 @@ layer {
     name: "layer15-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -420,6 +528,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -439,6 +553,12 @@ layer {
     convolution_param {
         num_output: 255
         kernel_size: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 0
         stride: 1
         bias_term: true
@@ -464,6 +584,12 @@ layer {
     convolution_param {
         num_output: 128
         kernel_size: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 0
         stride: 1
         bias_term: false
@@ -475,7 +601,7 @@ layer {
     name: "layer19-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -485,6 +611,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -528,6 +660,12 @@ layer {
     convolution_param {
         num_output: 256
         kernel_size: 3
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 1
         stride: 1
         bias_term: false
@@ -539,7 +677,7 @@ layer {
     name: "layer22-bn"
     type: "BatchNorm"
     batch_norm_param {
-        use_global_stats: true
+        eps: 0.0001
     }
 }
 layer {
@@ -549,6 +687,12 @@ layer {
     type: "Scale"
     scale_param {
         bias_term: true
+        filler {
+            value: 1.0
+        }
+        bias_filler {
+            value: 0.0
+        }
     }
 }
 layer {
@@ -568,6 +712,12 @@ layer {
     convolution_param {
         num_output: 255
         kernel_size: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+        }
         pad: 0
         stride: 1
         bias_term: true

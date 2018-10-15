@@ -29,12 +29,13 @@ yolov3-spp|59.3|608|[caffemodel](https://drive.google.com/file/d/17b5wsR9tzbdrRn
 
 ## Performance
 
-Compare with [YOLO](https://pjreddie.com/darknet/yolo/) 
+Compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
 
-Network|mAP|Weight size|Resolution
-:---:|:---:|:---:|:---:
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|34.0*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|320
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|37.3*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|416
+Network|mAP|Weight size|Resolution|NetScope
+:---:|:---:|:---:|:---:|:---:
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|34.0*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|320|[graph](http://ethereon.github.io/netscope/#/gist/b65f6b955e99c7d4c29a4b8008669f90)|
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|37.3*|[21.5 mb](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/b65f6b955e99c7d4c29a4b8008669f90)|
+[MobileNet-YOLOv3](models/yolov3_coco/)|40.3*|[22.5 mb](https://drive.google.com/file/d/1G0FeQ7_ETc3zPn5HayhKi8Dz1-I5hU--/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/0ec45a4ca896553a20f9f9c16e80149f)|
 YOLOv3-Tiny|33.1|33.8 mb|416
 
 * (*) testdev-2015 server was closed , here use coco 2014 minival

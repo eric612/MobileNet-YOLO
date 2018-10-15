@@ -1,5 +1,5 @@
 import sys
-#sys.path.append('~/MobileNet-YOLO/caffe/python')
+sys.path.append('../../python/')
 import caffe
 import numpy as np
 from collections import OrderedDict

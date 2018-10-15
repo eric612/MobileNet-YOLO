@@ -18,7 +18,7 @@ average_loss: 10
 stepvalue: 25000
 stepvalue: 50000
 stepvalue: 75000
-iter_size: 10
+iter_size: 16
 type: "RMSProp"
 eval_type: "detection"
 ap_version: "11point"
