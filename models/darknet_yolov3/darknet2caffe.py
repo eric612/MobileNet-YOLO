@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../python/')
+sys.path.append('../../build/python/')
 import caffe
 import numpy as np
 from collections import OrderedDict

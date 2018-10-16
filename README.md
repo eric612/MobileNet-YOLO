@@ -60,6 +60,7 @@ Pelee-YOLOv3|0.703|416|4.25G|3.85M|
 > cd build
 > cmake ..
 > make -j4
+> make pycaffe
 ```
 
 ## Training 
