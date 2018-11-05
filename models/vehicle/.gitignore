@@ -1,0 +1,7 @@
+## General
+
+# Model and weighting
+
+*.caffemodel
+*.solverstate
+*.py
