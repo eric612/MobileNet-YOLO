@@ -1,9 +1,10 @@
 name: "Darkent2Caffe"
-input: "data"
-input_dim: 1
-input_dim: 3
-input_dim: 608
-input_dim: 608
+layer {
+  name: "data"
+  type: "Input"
+  top: "data"
+  input_param { shape: { dim: 1 dim: 3 dim: 416 dim: 416 } }
+}
 
 layer {
     bottom: "data"
@@ -3231,8 +3232,8 @@ layer {
     bottom: "layer95-yolo"
     bottom: "layer106-conv"
     type: "Yolov3DetectionOutput"
-    top: "layer107-yolo"
-    name: "layer107-yolo"
+    top: "detection_out"
+    name: "detection_out"
     yolov3_detection_output_param {
         nms_threshold: 0.45
         num_classes: 80
