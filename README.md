@@ -2,19 +2,20 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network , test on VOC2007
+A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainval35k then fine-tune on 07+12 , test on VOC2007
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLO-Lite|0.675|416|[deploy](models/yolov2/)|[graph](http://ethereon.github.io/netscope/#/gist/11229dc092ef68d3b37f37ce4d9cdec8)|N/A|N/A
-MobileNet-YOLOv3-Lite|0.717|320|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|6 ms|150 ms
-MobileNet-YOLOv3-Lite|0.737|416|[deploy](models/yolov3/)|[graph](http://ethereon.github.io/netscope/#/gist/f308433ad8ba69e5a4e36d02482f8829)|11 ms|280 ms
+MobileNet-YOLOv3-Lite|0.747|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|6 ms|150 ms
+MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|11 ms|280 ms
 
-Note :  the yolo_detection_output_layer not be optimization , and the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py)
-
+Note : 
+* the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
+* the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
+* bn_model download [here](https://drive.google.com/file/d/1jB-JvuoMlLHvAhefGCwLGh_oBldcsfW3/view?usp=sharing) 
 ## Windows Version
 
-[Caffe-YOLOv2-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)
+[Caffe-YOLOv3-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)
 
 ### Oringinal darknet-yolov3
 
@@ -71,11 +72,11 @@ Unzip into $caffe_root/
 
 Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb" and "$caffe_root\examples\VOC0712\VOC0712_test_lmdb"
 
-Download [pre-trained weights](https://drive.google.com/file/d/141AVMm_h8nv3RpgylRyhUYb4w8rEguLM/view?usp=sharing) , and save at $caffe_root\model\convert
+Download [pre-trained weights](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing), and save at $caffe_root\models\MobileNet
 
 ```
 > cd $caffe_root/
-> sh train_yolo.sh
+> sh train_yolov3_lite.sh
 ```
 
 
@@ -90,10 +91,6 @@ If load success , you can see the image window like this
 
 ![alt tag](00002.jpg)
 
-### Future work 
-
-* Distillation training 
-* Openimages training and testing
 
 ## License and Citation
 

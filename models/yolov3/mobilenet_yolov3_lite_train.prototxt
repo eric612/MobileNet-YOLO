@@ -125,7 +125,7 @@ layer {
     }
 	expand_param {
       prob: 0.5
-      max_expand_ratio: 3.0
+      max_expand_ratio: 4.0
     }
   }
   data_param {
@@ -2075,18 +2075,33 @@ layer {
   top: "conv16"
 }
 layer {
-  name: "upsample"
+  name: "upsample_new"
   type: "Deconvolution"
   bottom: "conv16"
-  top: "upsample"
+  top: "upsample_new"
   param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
     num_output: 512
-    kernel_size: 4  stride: 2  pad: 1
+    kernel_size: 1  stride: 2  pad: 0
     group: 512
-    weight_filler: { type: "bilinear" }
+    weight_filler: { 
+    	type: "constant"
+	value : 1
+    }
     bias_term: false
   }
+}
+layer {
+    bottom: "upsample_new"
+    top: "maxpool"
+    name: "maxpool"
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 2
+        stride: 1
+        pool: MAX
+        pad: 1
+    }
 }
 layer {
   name: "conv17/dw"
@@ -2225,7 +2240,7 @@ layer {
   name: "conv17/sum"
   type: "Eltwise"
   bottom: "conv17"
-  bottom: "upsample"
+  bottom: "maxpool"
   top: "conv17/sum"
 }
 layer {
