@@ -41,7 +41,7 @@ YOLOv3-Tiny|33.1|33.8 mb|416
 
 * (*) testdev-2015 server was closed , here use coco 2014 minival
 
-## Other models
+## Other Models
 
 You can find non-depthwise convolution network here , [Yolo-Model-Zoo](https://github.com/eric612/Yolo-Model-Zoo.git)
 
@@ -50,58 +50,17 @@ network|mAP|resolution|macc|param|
 PVA-YOLOv3|0.703|416|2.55G|4.72M|
 Pelee-YOLOv3|0.703|416|4.25G|3.85M|
 
-### CMake Build
+### Build , Run and Training
 
-[Caffe page](http://caffe.berkeleyvision.org/installation.html#compilation) , [dependency](https://docs.google.com/document/d/1n-WVIOrqadoIiRD-PW7RGb5LKOKP0y0Pms7svbZ3Zqw/edit?usp=sharing)
-
-```
-> git clone https://github.com/eric612/MobileNet-YOLO.git 
-> cd $MobileNet-YOLO_root/
-> mkdir build
-> cd build
-> cmake ..
-> make -j4
-> make pycaffe
-```
-
-## Training 
-
-Download [lmdb](https://drive.google.com/open?id=19pBP1NwomDvm43xxgDaRuj_X4KubwuCZ)
-
-Unzip into $caffe_root/ 
-
-Please check the path exist "$caffe_root\examples\VOC0712\VOC0712_trainval_lmdb" and "$caffe_root\examples\VOC0712\VOC0712_test_lmdb"
-
-Download [pre-trained weights](https://drive.google.com/file/d/1bXZtB_wZBu1kOeagYtZgsjLq2CX0BGFD/view?usp=sharing), and save at $caffe_root\models\MobileNet
-
-```
-> cd $caffe_root/
-> sh train_yolov3_lite.sh
-```
-
-
-
-## Demo
-
-```
-> cd $caffe_root/
-> sh demo_yolo_lite.sh
-```
-If load success , you can see the image window like this 
-
-![alt tag](00002.jpg)
+See [wiki](https://github.com/eric612/MobileNet-YOLO/wiki)
 
 
 ## License and Citation
 
-Caffe is released under the [BSD 2-Clause license](https://github.com/BVLC/caffe/blob/master/LICENSE).
-The BAIR/BVLC reference models are released for unrestricted use.
 
-Please cite Caffe in your publications if it helps your research:
+Please cite MobileNet-YOLO in your publications if it helps your research:
 
-    @article{jia2014caffe,
-      Author = {Jia, Yangqing and Shelhamer, Evan and Donahue, Jeff and Karayev, Sergey and Long, Jonathan and Girshick, Ross and Guadarrama, Sergio and Darrell, Trevor},
-      Journal = {arXiv preprint arXiv:1408.5093},
-      Title = {Caffe: Convolutional Architecture for Fast Feature Embedding},
-      Year = {2014}
+    @article{MobileNet-YOLO,
+      Author = {eric612,avisonic},
+      Year = {2018}
     }
