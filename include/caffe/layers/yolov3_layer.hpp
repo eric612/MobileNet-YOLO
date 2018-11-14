@@ -7,6 +7,7 @@
 #include "caffe/proto/caffe.pb.h"
 #include <string>
 #include "caffe/layers/loss_layer.hpp"
+#include "caffe/layers/region_loss_layer.hpp"
 #include <map>
 
 namespace caffe {
@@ -39,13 +40,13 @@ public:
 	protected:
 	virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 		const vector<Blob<Dtype>*>& top);
-	// virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
-	//     const vector<Blob<Dtype>*>& top);
+	virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+	     const vector<Blob<Dtype>*>& top);
 
 	virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
 		const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-	// virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
-	//     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+	virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
+	     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 	int iter_;
 	int side_;
 	int num_class_;

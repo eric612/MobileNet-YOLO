@@ -12,6 +12,15 @@
 
 namespace caffe {
 
+static inline float logistic_activate(float x) { return 1. / (1. + exp(-x)); }
+static inline float logistic_gradient(float x) { return (1 - x)*x; }
+
+template <typename Dtype>
+void caffe_cpu_logistic_activate(Dtype *x, const int n);
+
+template <typename Dtype>
+void caffe_gpu_logistic_activate(const int N, const Dtype* a, Dtype* y);
+
 // Caffe gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.
 template <typename Dtype>

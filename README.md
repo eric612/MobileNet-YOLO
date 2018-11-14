@@ -9,7 +9,6 @@ Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference tim
 MobileNet-YOLOv3-Lite|0.747|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|6 ms|150 ms
 MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|11 ms|280 ms
 
-Note : 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/file/d/1jB-JvuoMlLHvAhefGCwLGh_oBldcsfW3/view?usp=sharing) 

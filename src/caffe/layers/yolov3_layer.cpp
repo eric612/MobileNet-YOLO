@@ -29,8 +29,7 @@
 
 namespace caffe {
 	
-	static inline float logistic_activate(float x) { return 1. / (1. + exp(-x)); }
-	static inline float logistic_gradient(float x) { return (1 - x)*x; }
+
 
 	template <typename Dtype>
 	Dtype overlap(Dtype x1, Dtype w1, Dtype x2, Dtype w2)
@@ -170,7 +169,9 @@ namespace caffe {
 		side_ = bottom[0]->width();
 		//LOG(INFO) << side_*anchors_scale_;
 		const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
-		diff_.ReshapeLike(*bottom[0]);
+		if (diff_.width() != bottom[0]->width()) {
+			diff_.ReshapeLike(*bottom[0]);
+		}
 		Dtype* diff = diff_.mutable_cpu_data();
 		caffe_set(diff_.count(), Dtype(0.0), diff);
 
@@ -179,7 +180,9 @@ namespace caffe {
 		
 		const Dtype* input_data = bottom[0]->cpu_data();
 		//const Dtype* label_data = bottom[1]->cpu_data();		
-		swap_.ReshapeLike(*bottom[0]);
+		if (swap_.width() != bottom[0]->width()) {
+			swap_.ReshapeLike(*bottom[0]);
+		}
 		Dtype* swap_data = swap_.mutable_cpu_data();
 		int len = 4 + num_class_ + 1;
 		int stride = side_*side_;
@@ -192,6 +195,7 @@ namespace caffe {
 					float best_iou = 0;
 					int best_class = -1;
 					vector<Dtype> best_truth;
+#ifdef CPU_ONLY
 					for (int c = 0; c < len; ++c) {
 						int index2 = c*stride + index;
 						//LOG(INFO)<<index2;
@@ -202,6 +206,7 @@ namespace caffe {
 							swap_data[index2] = logistic_activate(input_data[index2 + 0]);
 						}
 					}
+#endif
 					int y2 = s / side_;
 					int x2 = s % side_;
 					get_region_box(pred, swap_data, biases_, mask_[n], index, x2, y2, side_, side_, side_*anchors_scale_, side_*anchors_scale_, stride);
