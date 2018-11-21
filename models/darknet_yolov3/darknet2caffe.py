@@ -259,9 +259,10 @@ def cfg2prototxt(cfgfile):
                 avg_layer['name'] = 'layer%d-avgpool' % layer_id
             avg_layer['type'] = 'Pooling'
             pooling_param = OrderedDict()
-            pooling_param['kernel_size'] = 7
-            pooling_param['stride'] = 1
+            #pooling_param['kernel_size'] = 7
+            #pooling_param['stride'] = 1
             pooling_param['pool'] = 'AVE'
+            pooling_param['global_pooling'] = 'true'
             avg_layer['pooling_param'] = pooling_param
             layers.append(avg_layer)
             bottom = avg_layer['top']
@@ -330,31 +331,24 @@ def cfg2prototxt(cfgfile):
             layer_id = layer_id + 1
         elif block['type'] == 'upsample':
             upsample_layer = OrderedDict()
+            print(block['stride'])
             upsample_layer['bottom'] = bottom
-            if 'name' in block.keys():
+            if block.has_key('name'):
                 upsample_layer['top'] = block['name']
                 upsample_layer['name'] = block['name']
             else:
                 upsample_layer['top'] = 'layer%d-upsample' % layer_id
                 upsample_layer['name'] = 'layer%d-upsample' % layer_id
-            upsample_layer['type'] = 'Deconvolution'
-            convolution_param = OrderedDict()
-            convolution_param['stride'] = block['stride']
-            convolution_param['kernel_size'] = 4
-            prev_layer_id = layer_id - 4 
-            convolution_param['num_output'] = num_out
-            convolution_param['group'] = num_out
-            convolution_param['pad'] = 1
-            weight_filler = OrderedDict()
-            weight_filler['type'] = 'bilinear'
-            convolution_param['bias_term'] = 'false'
-            convolution_param['weight_filler'] = weight_filler
-            upsample_layer['convolution_param'] = convolution_param
+            upsample_layer['type'] = 'Upsample'
+            upsample_param = OrderedDict()
+            upsample_param['scale'] = block['stride']
+            upsample_layer['upsample_param'] = upsample_param
+            print(upsample_layer)
             layers.append(upsample_layer)
             bottom = upsample_layer['top']
+            print('upsample:',layer_id)
             topnames[layer_id] = bottom
-            scale = scale /2
-            layer_id = layer_id + 1         
+            layer_id = layer_id + 1          
         elif block['type'] == 'yolo':
             
             anchor_len = len(block['anchors'].split(','))/2
