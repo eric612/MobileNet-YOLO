@@ -167,7 +167,6 @@ namespace caffe {
 	void Yolov3Layer<Dtype>::Forward_cpu(
 		const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
 		side_ = bottom[0]->width();
-		//LOG(INFO) << side_*anchors_scale_;
 		const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
 		if (diff_.width() != bottom[0]->width()) {
 			diff_.ReshapeLike(*bottom[0]);
@@ -248,8 +247,6 @@ namespace caffe {
 					}
 				}
 			}
-			//vector<Dtype> used;
-			//used.clear();
 			for (int t = 0; t < 300; ++t) {
 				vector<Dtype> truth;
 				truth.clear();
@@ -268,8 +265,6 @@ namespace caffe {
 				float best_iou = 0;
 				int best_index = 0;
 				int best_n = -1;
-				int best_n_second = -1;
-				int best_iou_second = 0;
 				int i = truth[0] * side_;
 				int j = truth[1] * side_;
 				int pos = j * side_ + i;
@@ -279,10 +274,11 @@ namespace caffe {
 				truth_shift.push_back(0);
 				truth_shift.push_back(w);
 				truth_shift.push_back(h);
-
-				//LOG(INFO) << j << "," << i << "," << anchors_scale_;
-
+				//int size = coords_ + num_class_ + 1;
+				//LOG(INFO) << biases_size_;
 				for (int n = 0; n < biases_size_; ++n) {
+					
+					//LOG(INFO) << index2;
 					vector<Dtype> pred(4);
 					pred[2] = biases_[2 * n] / (float)(side_*anchors_scale_);
 					pred[3] = biases_[2 * n + 1] / (float)(side_*anchors_scale_);
@@ -291,34 +287,17 @@ namespace caffe {
 					pred[1] = 0;
 					float iou = box_iou(pred, truth_shift);
 					if (iou > best_iou) {
-						//best_n_second = best_n;
-						//best_iou_second = best_iou;
+						//best_index = index2;
 						best_n = n;
 						best_iou = iou;
 					}
-					/*else if (iou > best_iou_second) {
-						best_n_second = n;
-						best_iou_second = iou;
-					}*/
 				}
-				int mask_n = int_index(mask_, best_n, num_);			
+				//LOG(INFO) << best_n;
+				int mask_n = int_index(mask_, best_n, num_);
+				
+				//LOG(INFO) << mask_n;
+				
 				if (mask_n >= 0) {
-					bool overlap = false;
-					/*for (int n = 0; n < used.size(); n += 3) {
-						if (used[n * 3] == j && used[n * 23 + 1] == i && used[n * 23 + 2] == mask_n) {
-							DLOG(INFO) << "overlap";
-							overlap = true;
-						}
-					}
-					if (overlap) {
-						int mask_n_sec = int_index(mask_, best_n_second, num_);
-						if (mask_n_sec >= 0) {
-							mask_n = mask_n_sec
-						}
-					}
-					used.push_back(j);
-					used.push_back(i);
-					used.push_back(mask_n);*/
 					float iou;
 					best_n = mask_n;
 					//LOG(INFO) << best_n;
@@ -350,7 +329,7 @@ namespace caffe {
 
 			}
 		}
-		//LOG(INFO) << " ===================================================== " ;
+
 		for (int i = 0; i < diff_.count(); ++i) {
 			loss += diff[i] * diff[i];
 		}
