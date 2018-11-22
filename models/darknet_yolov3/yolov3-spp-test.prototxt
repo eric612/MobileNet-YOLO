@@ -15,7 +15,7 @@ layer {
 	force_color: true
     resize_param {
       prob: 1.0
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 608
       width: 608
       interp_mode: LINEAR
@@ -3475,17 +3475,9 @@ layer {
     bottom: "layer92-conv"
     top: "layer93-upsample"
     name: "layer93-upsample"
-    type: "Deconvolution"
-    convolution_param {
-        stride: 2
-        kernel_size: 4
-        num_output: 256
-        group: 256
-        pad: 1
-        bias_term: false
-        weight_filler {
-            type: "bilinear"
-        }
+    type: "Upsample"
+    upsample_param {
+        scale: 2
     }
 }
 layer {
@@ -3894,17 +3886,9 @@ layer {
     bottom: "layer104-conv"
     top: "layer105-upsample"
     name: "layer105-upsample"
-    type: "Deconvolution"
-    convolution_param {
-        stride: 2
-        kernel_size: 4
-        num_output: 128
-        group: 128
-        pad: 1
-        bias_term: false
-        weight_filler {
-            type: "bilinear"
-        }
+    type: "Upsample"
+    upsample_param {
+        scale: 2
     }
 }
 layer {
@@ -4253,9 +4237,9 @@ layer {
     top: "layer114-yolo"
     name: "layer114-yolo"
     yolov3_detection_output_param {
-        nms_threshold: 0.55
+        nms_threshold: 0.45
         num_classes: 80
-		confidence_threshold: 0.001
+		confidence_threshold: 0.01
         biases: 10
         biases: 13
         biases:   16

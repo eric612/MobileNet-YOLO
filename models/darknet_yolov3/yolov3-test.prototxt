@@ -1,10 +1,39 @@
 name: "Darkent2Caffe"
 layer {
   name: "data"
-  type: "Input"
+  type: "AnnotatedData"
   top: "data"
-  input_param { shape: { dim: 1 dim: 3 dim: 416 dim: 416 } }
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.0039215
+    mean_value: 0
+    mean_value: 0
+    mean_value: 0
+	force_color: true
+    resize_param {
+      prob: 1.0
+      resize_mode: WARP
+      #resize_mode: WARP
+      height: 416
+      width: 416
+      interp_mode: LINEAR
+    }
+  }
+  data_param {
+    source: "examples/coco/coco_minival_lmdb"
+    batch_size: 1
+    backend: LMDB
+  }
+  annotated_data_param {
+    batch_sampler {
+    }
+    label_map_file:  "data/coco/labelmap_coco.prototxt"
+  }
 }
+
 
 layer {
     bottom: "data"
@@ -4098,11 +4127,12 @@ layer {
     bottom: "layer95-yolo"
     bottom: "layer106-conv"
     type: "Yolov3DetectionOutput"
-    top: "detection_out"
-    name: "detection_out"
+    top: "layer107-yolo"
+    name: "layer107-yolo"
     yolov3_detection_output_param {
         nms_threshold: 0.45
         num_classes: 80
+	confidence_threshold: 0.01
         biases: 10
         biases: 13
         biases: 16
@@ -4135,4 +4165,20 @@ layer {
         anchors_scale: 16
         anchors_scale: 8
     }
+}
+layer {
+  name: "detection_eval"
+  type: "DetectionEvaluate"
+  bottom: "layer107-yolo"
+  bottom: "label"
+  top: "detection_eval"
+  include {
+    phase: TEST
+  }
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.5
+    evaluate_difficult_gt: false
+  }
 }

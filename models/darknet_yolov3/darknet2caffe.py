@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../build/python/')
+sys.path.append('../../python/')
 import caffe
 import numpy as np
 from collections import OrderedDict
@@ -348,6 +348,7 @@ def cfg2prototxt(cfgfile):
             bottom = upsample_layer['top']
             print('upsample:',layer_id)
             topnames[layer_id] = bottom
+            scale = scale /2
             layer_id = layer_id + 1          
         elif block['type'] == 'yolo':
             

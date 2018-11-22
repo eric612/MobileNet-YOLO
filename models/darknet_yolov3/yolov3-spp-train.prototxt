@@ -15,15 +15,97 @@ layer {
     mean_value: 0
     mean_value: 0
 	force_color: true
-	resize_param {
-      prob: 1
-      resize_mode: WARP
+ 	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 608
       width: 608
       interp_mode: LINEAR
       interp_mode: AREA
       interp_mode: LANCZOS4
     }
+    resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 416
+      width: 416
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 320
+      width: 320
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 352
+      width: 352
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 384
+      width: 384
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 448
+      width: 448
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 480
+      width: 480
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 512
+      width: 512
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 544
+      width: 544
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+	resize_param {
+      prob: 0.1
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
+      height: 576
+      width: 576
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
+
   }
   
   data_param {
@@ -3480,17 +3562,9 @@ layer {
     bottom: "layer92-conv"
     top: "layer93-upsample"
     name: "layer93-upsample"
-    type: "Deconvolution"
-    convolution_param {
-        stride: 2
-        kernel_size: 4
-        num_output: 256
-        group: 256
-        pad: 1
-        bias_term: false
-        weight_filler {
-            type: "bilinear"
-        }
+    type: "Upsample"
+    upsample_param {
+        scale: 2
     }
 }
 layer {
@@ -3899,17 +3973,9 @@ layer {
     bottom: "layer104-conv"
     top: "layer105-upsample"
     name: "layer105-upsample"
-    type: "Deconvolution"
-    convolution_param {
-        stride: 2
-        kernel_size: 4
-        num_output: 128
-        group: 128
-        pad: 1
-        bias_term: false
-        weight_filler {
-            type: "bilinear"
-        }
+    type: "Upsample"
+    upsample_param {
+        scale: 2
     }
 }
 layer {
@@ -4355,7 +4421,7 @@ layer {
     class_scale: 1.0
     coord_scale: 1.0
     thresh: 0.7
-	anchors_scale : 16
+	anchors_scale : 8
 	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	

@@ -12,6 +12,15 @@ MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ether
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/file/d/1jB-JvuoMlLHvAhefGCwLGh_oBldcsfW3/view?usp=sharing) 
+
+### Knowledge Transfer
+
+I use the following training path to improve accuracy , and decrease lite version trainning time 
+
+* First , train MobileNet-YOLOv3 on coco dataset 
+* Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output
+* Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output
+
 ## Windows Version
 
 [Caffe-YOLOv3-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)
@@ -24,8 +33,11 @@ test on coco_minival_lmdb (IOU 0.5)
 
 Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
-yolov3|54.4|416|[caffemodel](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
-yolov3-spp|59.3|608|[caffemodel](https://drive.google.com/file/d/17b5wsR9tzbdrRnyL_iFEvofJ8jCmQ1ff/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
+yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1nYgjOg8o48qQ3Cw47CamERgJVgLlo-Cu/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
+yolov3-spp|58.6|608|[caffemodel](https://drive.google.com/file/d/17b5wsR9tzbdrRnyL_iFEvofJ8jCmQ1ff/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
+
+* You can try to retrain models to approach original darknet  mAP 
+* I haven't implement [correct_yolo_boxes](https://github.com/pjreddie/darknet/blob/master/src/yolo_layer.c) function , so here only support square input resolution
 
 ## Performance
 

@@ -18,7 +18,7 @@ test_initialization: false
 average_loss: 10
 stepvalue: 20000
 stepvalue: 40000
-iter_size: 16
+iter_size: 32
 type: "SGD"
 eval_type: "detection"
 ap_version: "11point"
