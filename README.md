@@ -34,10 +34,17 @@ test on coco_minival_lmdb (IOU 0.5)
 Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
 yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1nYgjOg8o48qQ3Cw47CamERgJVgLlo-Cu/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
-yolov3-spp|58.6|608|[caffemodel](https://drive.google.com/file/d/17b5wsR9tzbdrRnyL_iFEvofJ8jCmQ1ff/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
+yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWtmS6zTsPkAQgW0VFkt7/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
 
-* You can try to retrain models to approach original darknet  mAP 
-* I haven't implement [correct_yolo_boxes](https://github.com/pjreddie/darknet/blob/master/src/yolo_layer.c) function , so here only support square input resolution
+1.  You can try to retrain models to approach original darknet  mAP , below was my test
+
+Network|mAP|Resolution|iters
+:---:|:---:|:---:|:---:
+yolov3-spp|58.7|608|100
+yolov3-spp|59.0|608|200
+yolov3-spp|59.8|608|1000
+
+2.  I haven't implement [correct_yolo_boxes](https://github.com/pjreddie/darknet/blob/master/src/yolo_layer.c) function , so here only support square input resolution
 
 ## Performance
 

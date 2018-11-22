@@ -4240,7 +4240,7 @@ layer {
         mask: 2
         mask_group_num: 3
         anchors_scale: 32
-        anchors_scale: 32
-        anchors_scale: 32
+        anchors_scale: 16
+        anchors_scale: 8
     }
 }
