@@ -21,6 +21,12 @@ Modify from [pytorch-caffe-darknet-convert](https://github.com/marvis/pytorch-ca
 ```
 
 
-## To do list :
+## Retrain  :
 
-1. retrain
+You can try  retrain models to approach original darknet  mAP , below was my test
+
+Network|mAP|Resolution|iters
+:---:|:---:|:---:|:---:
+yolov3-spp|58.7|608|100
+yolov3-spp|59.0|608|200
+yolov3-spp|59.8|608|1000
