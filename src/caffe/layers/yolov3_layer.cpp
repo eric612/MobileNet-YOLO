@@ -421,7 +421,7 @@ namespace caffe {
 	}
 
 #ifdef CPU_ONLY
-	//STUB_GPU(DetectionLossLayer);
+	STUB_GPU(Yolov3Layer);
 #endif
 
 	INSTANTIATE_CLASS(Yolov3Layer);

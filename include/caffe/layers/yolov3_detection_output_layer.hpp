@@ -18,7 +18,18 @@
 using namespace boost::property_tree;  // NOLINT(build/namespaces)
 
 namespace caffe {
-
+template <typename Dtype>
+class PredictionResult {
+public:
+	Dtype x;
+	Dtype y;
+	Dtype w;
+	Dtype h;
+	Dtype objScore;
+	Dtype classScore;
+	Dtype confidence;
+	int classType;
+};
 /**
  * @brief Generate the detection output based on location and confidence
  * predictions by doing non maximum suppression.
@@ -41,7 +52,7 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   virtual inline int MinBottomBlobs() const { return 1; }
   //virtual inline int MaxBottomBlobs() const { return 4; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
-
+  void get_region_box2(vector<Dtype> &b, const Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
  protected:
   /**
    * @brief Do non maximum suppression (nms) on prediction results.
@@ -60,13 +71,17 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
    */
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
-
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+	  const vector<Blob<Dtype>*>& top);
   /// @brief Not implemented
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-    NOT_IMPLEMENTED;
+      NOT_IMPLEMENTED;
   }
-
+  virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
+	  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+	  NOT_IMPLEMENTED;
+  }
   int side_;
   int num_class_;
   int num_;
@@ -74,7 +89,7 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   
   int mask_group_num_;
   int groups_num_;
-
+  vector< PredictionResult<Dtype> > predicts_;
   Dtype confidence_threshold_;
   Dtype nms_threshold_;
   vector<Dtype> biases_;
