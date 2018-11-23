@@ -31,7 +31,14 @@ mobilenet-yolov3-416  min =   94.59  max =   98.39  avg =   95.84
 [Darknet-YOLOv3](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view)
 
 
-## To do 
+## int8 inference mAP list
 
-* in8 inference and test mAP
-* increase fps
+https://github.com/eric612/caffe-int8-convert-tools
+
+Network|mAP|Resolution|Data Type|Framework|Bit
+:---:|:---:|:---:|:---:|:---:|:---:
+MobileNet-YOLOv3|0.737|416|float|caffe|32
+MobileNet-YOLOv3|0.729|416|float|ncnn|32
+MobileNet-YOLOv3|0.634|416|int|ncnn|8
+MobileNet-YOLOv3|0.668|416|mixed precision : remove conv0|ncnn|8
+
