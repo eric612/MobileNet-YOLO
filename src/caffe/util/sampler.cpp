@@ -145,7 +145,8 @@ void GenerateJitterSamples(float jitter, vector<NormalizedBBox>* sampled_bboxes)
 	float img_w,img_h,off_x,off_y;
 
 	caffe_rng_uniform(1, 1.0f - jitter, 1.0f, &img_w);
-	caffe_rng_uniform(1, 1.0f - jitter, 1.0f, &img_h);
+	//caffe_rng_uniform(1, 1.0f - jitter, 1.0f, &img_h);
+	img_h = img_w;
 	caffe_rng_uniform(1, 0.0f, 1.0f - img_w, &off_x);
 	caffe_rng_uniform(1, 0.0f, 1.0f - img_h, &off_y);
 
