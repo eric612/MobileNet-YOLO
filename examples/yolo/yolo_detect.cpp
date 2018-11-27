@@ -13,7 +13,7 @@
 //    folder/video2.mp4
 //
 #include <caffe/caffe.hpp>
-#define USE_OPENCV
+//#define USE_OPENCV
 #ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -82,16 +82,16 @@ class Detector {
 		   const string& cpu_mode,
 		   const int resize);
 
-  std::vector<vector<float> > Detect(const cv::Mat& img);
+  std::vector<vector<float> > Detect(cv::Mat& img);
 
  private:
   void SetMean(const string& mean_file, const string& mean_value);
 
   void WrapInputLayer(std::vector<cv::Mat>* input_channels);
 
-  void Preprocess(const cv::Mat& img,
+  cv::Mat Preprocess(const cv::Mat& img,
                   std::vector<cv::Mat>* input_channels);
-  void Preprocess(const cv::Mat& img,
+  cv::Mat Preprocess(const cv::Mat& img,
 	  std::vector<cv::Mat>* input_channels,double normalize_value);
   cv::Mat LetterBoxResize(cv::Mat img, int w, int h);
  private:
@@ -146,7 +146,7 @@ float sec(clock_t clocks)
 {
 	return (float)clocks / CLOCKS_PER_SEC;
 }
-std::vector<vector<float> > Detector::Detect(const cv::Mat& img) {
+std::vector<vector<float> > Detector::Detect(cv::Mat& img) {
   Blob<float>* input_layer = net_->input_blobs()[0];
   input_layer->Reshape(1, num_channels_,
                        input_geometry_.height, input_geometry_.width);
@@ -156,10 +156,10 @@ std::vector<vector<float> > Detector::Detect(const cv::Mat& img) {
   std::vector<cv::Mat> input_channels;
   WrapInputLayer(&input_channels);
   if (nor_val != 1.0) {
-	  Preprocess(img, &input_channels, nor_val);
+	  img = Preprocess(img, &input_channels, nor_val);
   }
   else {
-	  Preprocess(img, &input_channels);
+	  img = Preprocess(img, &input_channels);
   }
 	clock_t time;
 	time = clock();
@@ -287,10 +287,10 @@ cv::Mat Detector::LetterBoxResize(cv::Mat img, int w, int h)
 
 	return outputImg;
 }
-void Detector::Preprocess(const cv::Mat& img,
+cv::Mat Detector::Preprocess(const cv::Mat& img,
 	std::vector<cv::Mat>* input_channels) {
 	/* Convert the input image to the input image format of the network. */
-	cv::Mat sample;
+	cv::Mat sample,resized_img;
 	if (img.channels() == 3 && num_channels_ == 1)
 		cv::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
 	else if (img.channels() == 4 && num_channels_ == 1)
@@ -306,6 +306,7 @@ void Detector::Preprocess(const cv::Mat& img,
 	if (sample.size() != input_geometry_) {
 		if (resize_mode == 1) {
 			sample_resized = LetterBoxResize(sample, input_geometry_.width, input_geometry_.height);
+			resized_img = sample_resized;
 		}
 		else {
 			cv::resize(sample, sample_resized, input_geometry_);
@@ -332,12 +333,16 @@ void Detector::Preprocess(const cv::Mat& img,
 	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
 		== net_->input_blobs()[0]->cpu_data())
 		<< "Input channels are not wrapping the input layer of the network.";
+	if(resize_mode == 1)
+		return resized_img;
+	else 
+		return img;
 }
 
-void Detector::Preprocess(const cv::Mat& img,
+cv::Mat Detector::Preprocess(const cv::Mat& img,
                             std::vector<cv::Mat>* input_channels, double normalize_value) {
   /* Convert the input image to the input image format of the network. */
-  cv::Mat sample;
+  cv::Mat sample, resized_img;
   if (img.channels() == 3 && num_channels_ == 1)
     cv::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
   else if (img.channels() == 4 && num_channels_ == 1)
@@ -353,6 +358,7 @@ void Detector::Preprocess(const cv::Mat& img,
   if (sample.size() != input_geometry_) {
 	  if (resize_mode == 1) {
 		  sample_resized = LetterBoxResize(sample, input_geometry_.width, input_geometry_.height);
+		  resized_img = sample_resized;
 	  }
 	  else {
 		  cv::resize(sample, sample_resized, input_geometry_);
@@ -378,6 +384,10 @@ void Detector::Preprocess(const cv::Mat& img,
   CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
         == net_->input_blobs()[0]->cpu_data())
     << "Input channels are not wrapping the input layer of the network.";
+  if (resize_mode == 1)
+	  return resized_img;
+  else
+	  return img;
 }
 
 DEFINE_string(mean_file, "",
@@ -486,28 +496,10 @@ int main(int argc, char** argv) {
 				  out << static_cast<int>(d[6] * img.rows) << std::endl;
 
 				  cv::Point pt1, pt2;
-				  if (resize_mode == 0) {
-					  pt1.x = (img.cols*d[3]);
-					  pt1.y = (img.rows*d[4]);
-					  pt2.x = (img.cols*d[5]);
-					  pt2.y = (img.rows*d[6]);
-				  }
-				  else {
-					  float cx = (d[3] + d[5]) / 2.0;
-					  float cy = (d[4] + d[6]) / 2.0;
-					  float w = (d[5] - d[3]) ;
-					  float h = (d[6] - d[4]);
-
-					  float left = (cx - w * detector.w_scale/ 2.);
-					  float right = (cx + w * detector.w_scale / 2.);
-					  float top = (cy - h * detector.h_scale / 2.);
-					  float bot = (cy + h * detector.h_scale / 2.);
-
-					  pt1.x = (img.cols*left);
-					  pt1.y = (img.rows*top);
-					  pt2.x = (img.cols*right);
-					  pt2.y = (img.rows*bot);
-				  }
+				  pt1.x = (img.cols*d[3]);
+				  pt1.y = (img.rows*d[4]);
+				  pt2.x = (img.cols*d[5]);
+				  pt2.y = (img.rows*d[6]);
 
 				  cv::rectangle(img, pt1, pt2, cvScalar(0, 255, 0), 1, 8, 0);
 
@@ -576,28 +568,10 @@ int main(int argc, char** argv) {
 					  out << static_cast<int>(d[6] * img.rows) << std::endl;
 
 					  cv::Point pt1, pt2;
-					  if (resize_mode == 0) {
-						  pt1.x = (img.cols*d[3]);
-						  pt1.y = (img.rows*d[4]);
-						  pt2.x = (img.cols*d[5]);
-						  pt2.y = (img.rows*d[6]);
-					  }
-					  else {
-						  float cx = (d[3] + d[5]) / 2.0;
-						  float cy = (d[4] + d[6]) / 2.0;
-						  float w = (d[5] - d[3]);
-						  float h = (d[6] - d[4]);
-
-						  float left = (cx - w * detector.w_scale / 2.);
-						  float right = (cx + w * detector.w_scale / 2.);
-						  float top = (cy - h * detector.h_scale / 2.);
-						  float bot = (cy + h * detector.h_scale / 2.);
-
-						  pt1.x = (img.cols*left);
-						  pt1.y = (img.rows*top);
-						  pt2.x = (img.cols*right);
-						  pt2.y = (img.rows*bot);
-					  }
+						pt1.x = (img.cols*d[3]);
+						pt1.y = (img.rows*d[4]);
+						pt2.x = (img.cols*d[5]);
+						pt2.y = (img.rows*d[6]);
 					  int index = static_cast<int>(d[1]);
 					  int green = 255 * ((index + 1) % 3);
 					  int blue = 255 * (index % 3);
