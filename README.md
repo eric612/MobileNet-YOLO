@@ -13,14 +13,6 @@ MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ether
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/file/d/1jB-JvuoMlLHvAhefGCwLGh_oBldcsfW3/view?usp=sharing) 
 
-### Knowledge Transfer
-
-I use the following training path to improve accuracy , and decrease lite version trainning time 
-
-* First , train MobileNet-YOLOv3 on coco dataset 
-* Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output
-* Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output
-
 ## Windows Version
 
 [Caffe-YOLOv3-Windows](https://github.com/eric612/Caffe-YOLOv2-Windows)

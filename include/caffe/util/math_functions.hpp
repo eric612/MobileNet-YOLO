@@ -14,12 +14,19 @@ namespace caffe {
 
 static inline float logistic_activate(float x) { return 1. / (1. + exp(-x)); }
 static inline float logistic_gradient(float x) { return (1 - x)*x; }
+static inline float hard_sigmoid(float x) { return  std::min(1., std::max(0., x * 0.2 + 0.5)); }
 
 template <typename Dtype>
 void caffe_cpu_logistic_activate(Dtype *x, const int n);
 
 template <typename Dtype>
 void caffe_gpu_logistic_activate(const int N, const Dtype* a, Dtype* y);
+
+template <typename Dtype>
+void caffe_gpu_hard_sigmoid(const int N, const Dtype* a, Dtype* y); // not test yet , do no use
+
+template <typename Dtype>
+void caffe_cpu_hard_sigmoid(Dtype *x, const int n); // not test yet , do no use
 
 // Caffe gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.

@@ -17,7 +17,14 @@ void caffe_cpu_logistic_activate(float *x, const int n)
 		x[i] = logistic_activate(x[i]);
 	}
 }
-
+template <>
+void caffe_cpu_hard_sigmoid(float *x, const int n)
+{
+	int i;
+	for (i = 0; i < n; ++i) {
+		x[i] = hard_sigmoid(x[i]);
+	}
+}
 template<>
 void caffe_cpu_gemm<float>(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
