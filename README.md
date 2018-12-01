@@ -66,3 +66,20 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
       Author = {eric612,avisonic},
       Year = {2018}
     }
+    
+## Credit
+
+@article{yolov3,
+	title={YOLOv3: An Incremental Improvement},
+	author={Redmon, Joseph and Farhadi, Ali},
+	journal = {arXiv},
+	year={2018}
+}
+
+## Reference
+
+> https://github.com/weiliu89/caffe/tree/ssd
+
+> https://pjreddie.com/darknet/yolo/
+
+> https://github.com/gklz1982/caffe-yolov2
