@@ -15,7 +15,7 @@ layer {
 	force_color: true
     resize_param {
       prob: 1.0
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 416
       width: 416
       interp_mode: LINEAR
@@ -1836,10 +1836,10 @@ layer {
 }
 
 layer {
-  name: "conv16/dw"
+  name: "conv15/dw"
   type: "DepthwiseConvolution"
   bottom: "conv13"
-  top: "conv16/dw"
+  top: "conv15/dw"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -1857,10 +1857,10 @@ layer {
   }
 }
 layer {
-  name: "conv16/dw/bn"
+  name: "conv15/dw/bn"
   type: "BatchNorm"
-  bottom: "conv16/dw"
-  top: "conv16/dw"
+  bottom: "conv15/dw"
+  top: "conv15/dw"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -1875,10 +1875,10 @@ layer {
   }
 }
 layer {
-  name: "conv16/dw/scale"
+  name: "conv15/dw/scale"
   type: "Scale"
-  bottom: "conv16/dw"
-  top: "conv16/dw"
+  bottom: "conv15/dw"
+  top: "conv15/dw"
   param {
     lr_mult: 1
     decay_mult: 0.0
@@ -1898,16 +1898,16 @@ layer {
   }
 }
 layer {
-  name: "conv16/dw/relu"
+  name: "conv15/dw/relu"
   type: "ReLU"
-  bottom: "conv16/dw"
-  top: "conv16/dw"
+  bottom: "conv15/dw"
+  top: "conv15/dw"
 }
 layer {
-  name: "conv16"
+  name: "conv15"
   type: "Convolution"
-  bottom: "conv16/dw"
-  top: "conv16"
+  bottom: "conv15/dw"
+  top: "conv15"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -1922,10 +1922,10 @@ layer {
   }
 }
 layer {
-  name: "conv16/bn"
+  name: "conv15/bn"
   type: "BatchNorm"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv15"
+  top: "conv15"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -1940,10 +1940,10 @@ layer {
   }
 }
 layer {
-  name: "conv16/scale"
+  name: "conv15/scale"
   type: "Scale"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv15"
+  top: "conv15"
   param {
     lr_mult: 1
     decay_mult: 0.0
@@ -1963,25 +1963,41 @@ layer {
   }
 }
 layer {
-  name: "conv16/relu"
+  name: "conv15/relu"
   type: "ReLU"
-  bottom: "conv16"
-  top: "conv16"
+  bottom: "conv15"
+  top: "conv15"
 }
 layer {
   name: "upsample"
   type: "Deconvolution"
-  bottom: "conv16"
+  bottom: "conv15"
   top: "upsample"
   param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
     num_output: 512
-    kernel_size: 4  stride: 2  pad: 1
-    group: 512
-    weight_filler: { type: "bilinear" }
+	group: 512
+    kernel_size: 1  stride: 2  pad: 0
+    weight_filler: { 
+      type: "constant"
+	  value : 1
+    }
     bias_term: false
   }
 }
+layer {
+    name: "maxpool"
+    top: "maxpool"
+	bottom: "upsample"   
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 2
+        stride: 1
+        pool: MAX
+        pad: 1
+    }
+}
+
 layer {
   name: "conv17/dw"
   type: "DepthwiseConvolution"
@@ -2118,10 +2134,11 @@ layer {
 layer {
   name: "conv17/sum"
   type: "Eltwise"
+  bottom: "maxpool"
   bottom: "conv17"
-  bottom: "upsample"
   top: "conv17/sum"
 }
+
 layer {
   name: "conv18/dw"
   type: "DepthwiseConvolution"
@@ -2200,7 +2217,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 1024
+    num_output: 512
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2258,9 +2275,36 @@ layer {
 
 
 layer {
+  name: "conv22"
+  type: "Convolution"
+  bottom: "conv15"
+  top: "conv22"
+    param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 255
+    kernel_size: 1
+    pad: 0
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+	bias_filler {
+      value: 0
+    }
+  }
+}
+
+layer {
   name: "conv23"
   type: "Convolution"
-  bottom: "conv16"
+  bottom: "conv18"
   top: "conv23"
     param {
     lr_mult: 1
@@ -2276,54 +2320,26 @@ layer {
     pad: 0
     stride: 1
     weight_filler {
-      type: "msra"
+      type: "xavier"
     }
 	bias_filler {
       value: 0
     }
   }
 }
-
-layer {
-  name: "conv24"
-  type: "Convolution"
-  bottom: "conv18"
-  top: "conv24"
-    param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  convolution_param {
-    num_output: 255
-    kernel_size: 1
-    pad: 0
-    stride: 1
-    weight_filler {
-      type: "msra"
-    }
-	bias_filler {
-      value: 0
-    }
-  }
-}
-
 
 layer {
   name: "detection_out"
   type: "Yolov3DetectionOutput"
+  bottom: "conv22"
   bottom: "conv23"
-  bottom: "conv24"
   top: "detection_out"
   include {
 	phase: TEST
   }
   yolov3_detection_output_param {
-    confidence_threshold: 0.001
-	nms_threshold: 0.55
+    confidence_threshold: 0.01
+	nms_threshold: 0.45
     num_classes: 80
 	
 	
@@ -2353,14 +2369,12 @@ layer {
   }
 }
 layer {
-  name: "detection_eval"
+  name: "detection_eval_50"
   type: "DetectionEvaluate"
   bottom: "detection_out"
   bottom: "label"
-  top: "detection_eval"
-  include {
-    phase: TEST
-  }
+  top: "detection_eval_50"
+
   detection_evaluate_param {
     num_classes: 81
     background_label_id: 0
@@ -2368,4 +2382,129 @@ layer {
     evaluate_difficult_gt: false
   }
 }
+layer {
+  name: "detection_eval_55"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_55"
 
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.55
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_60"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_60"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.60
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_65"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_65"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.65
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_70"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_70"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.70
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_75"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_75"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.75
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_80"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_80"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.80
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_85"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_85"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.85
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_90"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_90"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.90
+    evaluate_difficult_gt: false
+  }
+}
+layer {
+  name: "detection_eval_95"
+  type: "DetectionEvaluate"
+  bottom: "detection_out"
+  bottom: "label"
+  top: "detection_eval_95"
+
+  detection_evaluate_param {
+    num_classes: 81
+    background_label_id: 0
+    overlap_threshold: 0.95
+    evaluate_difficult_gt: false
+  }
+}

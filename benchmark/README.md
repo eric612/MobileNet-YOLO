@@ -42,3 +42,7 @@ MobileNet-YOLOv3|0.729|416|float|ncnn|32
 MobileNet-YOLOv3|0.634|416|int|ncnn|8
 MobileNet-YOLOv3|0.668|416|mixed precision : remove conv0|ncnn|8
 
+## To do
+
+* ["A Quantization-Friendly Separable Convolution for MobileNets"](https://arxiv.org/pdf/1803.08607.pdf)
+* [Ristretto ](http://lepsucd.com/?page_id=621)

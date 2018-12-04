@@ -1,6 +1,6 @@
 train_net: "models/yolov3_coco/mobilenet_yolov3_train.prototxt"
 test_net: "models/yolov3_coco/mobilenet_yolov3_test.prototxt"
-test_iter: 4952
+test_iter: 5000
 test_interval: 1000
 base_lr: 0.0005
 display: 10
@@ -18,8 +18,8 @@ average_loss: 10
 stepvalue: 25000
 stepvalue: 50000
 stepvalue: 75000
-iter_size: 16
+iter_size: 13
 type: "RMSProp"
 eval_type: "detection"
 ap_version: "11point"
-show_per_class_result: true
+#show_per_class_result: true

@@ -17,7 +17,7 @@ layer {
 	force_color: true
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 608
       width: 608
       interp_mode: LINEAR
@@ -26,7 +26,7 @@ layer {
     }
     resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 416
       width: 416
       interp_mode: LINEAR
@@ -35,7 +35,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 320
       width: 320
       interp_mode: LINEAR
@@ -44,7 +44,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 352
       width: 352
       interp_mode: LINEAR
@@ -53,7 +53,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 384
       width: 384
       interp_mode: LINEAR
@@ -62,7 +62,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 448
       width: 448
       interp_mode: LINEAR
@@ -71,7 +71,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 480
       width: 480
       interp_mode: LINEAR
@@ -80,7 +80,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 512
       width: 512
       interp_mode: LINEAR
@@ -89,7 +89,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 544
       width: 544
       interp_mode: LINEAR
@@ -98,7 +98,7 @@ layer {
     }
 	resize_param {
       prob: 0.1
-      resize_mode: WARP
+      resize_mode: FIT_LARGE_SIZE_AND_PAD
       height: 576
       width: 576
       interp_mode: LINEAR
@@ -123,20 +123,16 @@ layer {
       saturation_upper: 1.5
       random_order_prob: 0.0
     }
-	expand_param {
-      prob: 0.5
-      max_expand_ratio: 1.5
-    }
   }
   
   data_param {
     source: "examples/coco/coco_train_lmdb"
-    batch_size: 4
+    batch_size: 5
     backend: LMDB
   }
   annotated_data_param {
 	yolo_data_type : 1
-	yolo_data_jitter : 0.2
+	yolo_data_jitter : 0.3
     label_map_file:  "data/coco/labelmap_coco.prototxt"
   }
 }
@@ -2081,20 +2077,34 @@ layer {
   type: "Deconvolution"
   bottom: "conv15"
   top: "upsample"
-  param { lr_mult: 1  decay_mult: 1 }
+  param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
     num_output: 512
 	group: 512
-    kernel_size: 2  stride: 2  pad: 0
-    weight_filler: { type: "bilinear" }
+    kernel_size: 1  stride: 2  pad: 0
+    weight_filler: { 
+      type: "constant"
+	  value : 1
+    }
     bias_term: false
   }
 }
-
+layer {
+    name: "maxpool"
+    top: "maxpool"
+	bottom: "upsample"   
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 2
+        stride: 1
+        pool: MAX
+        pad: 1
+    }
+}
 layer {
   name: "conv16/dw"
   type: "DepthwiseConvolution"
-  bottom: "upsample"
+  bottom: "maxpool"
   top: "conv16/dw"
   param {
     lr_mult: 1
@@ -2506,19 +2516,34 @@ layer {
   type: "Deconvolution"
   bottom: "conv18"
   top: "upsample2"
-  param { lr_mult: 1  decay_mult: 1 }
+  param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
     num_output: 256
 	group: 256
-    kernel_size: 2  stride: 2  pad: 0
-    weight_filler: { type: "bilinear" }
+    kernel_size: 1  stride: 2  pad: 0
+    weight_filler: { 
+      type: "constant"
+	  value : 1
+    }
     bias_term: false
   }
 }
 layer {
+    name: "maxpool2"
+    top: "maxpool2"
+	bottom: "upsample2"   
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 2
+        stride: 1
+        pool: MAX
+        pad: 1
+    }
+}
+layer {
   name: "conv19/dw"
   type: "DepthwiseConvolution"
-  bottom: "upsample2"
+  bottom: "maxpool2"
   top: "conv19/dw"
   param {
     lr_mult: 1
@@ -3107,7 +3132,7 @@ layer {
     noobject_scale: 1.0
     class_scale: 1.0
     coord_scale: 1.0
-    thresh: 0.7
+    thresh: 0.6
 	anchors_scale : 8
 	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
