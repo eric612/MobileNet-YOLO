@@ -40,13 +40,11 @@ yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWt
 
 ## Performance
 
-Train on  COCO trainval35k(2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
+Train on  COCO trainval35k (2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
 
 Network|IOU 0.5:0.95|IOU 0.5|IOU 0.75|Weight size|Resolution|NetScope
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|19.0|33.6|18.7|[19.9 mb](https://drive.google.com/file/d/131sPcoe1Vrou790MVCAhs8vHCtsCugjp/view?usp=sharing)|320|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|
 [MobileNet-YOLOv3-Lite](models/yolov3_coco/)|21.6|38.2|21.5|[19.9 mb](https://drive.google.com/file/d/131sPcoe1Vrou790MVCAhs8vHCtsCugjp/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|22.3|40.3|21.2|[19.9 mb](https://drive.google.com/file/d/131sPcoe1Vrou790MVCAhs8vHCtsCugjp/view?usp=sharing)|512|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|
 [MobileNet-YOLOv3](models/yolov3_coco/)|22.7|40.2|22.6|[22.5 mb](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/ef69b621d69703be0327836ec9708634)
 YOLOv3-Tiny||33.1||33.8 mb|416
 
