@@ -15,9 +15,9 @@ layer {
 	force_color: true
     resize_param {
       prob: 1.0
-      resize_mode: FIT_LARGE_SIZE_AND_PAD
-      height: 416
-      width: 416
+      resize_mode: WARP
+      height: 320
+      width: 320
       interp_mode: LINEAR
     }
   }
@@ -2208,16 +2208,16 @@ layer {
   top: "conv18/dw"
 }
 layer {
-  name: "conv18"
+  name: "conv18_new"
   type: "Convolution"
   bottom: "conv18/dw"
-  top: "conv18"
+  top: "conv18_new"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 512
+    num_output: 1024
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2226,10 +2226,10 @@ layer {
   }
 }
 layer {
-  name: "conv18/bn"
+  name: "conv18_new/bn"
   type: "BatchNorm"
-  bottom: "conv18"
-  top: "conv18"
+  bottom: "conv18_new"
+  top: "conv18_new"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -2244,10 +2244,10 @@ layer {
   }
 }
 layer {
-  name: "conv18/scale"
+  name: "conv18_new/scale"
   type: "Scale"
-  bottom: "conv18"
-  top: "conv18"
+  bottom: "conv18_new"
+  top: "conv18_new"
   param {
     lr_mult: 1
     decay_mult: 0.0
@@ -2267,10 +2267,10 @@ layer {
   }
 }
 layer {
-  name: "conv18/relu"
+  name: "conv18_new/relu"
   type: "ReLU"
-  bottom: "conv18"
-  top: "conv18"
+  bottom: "conv18_new"
+  top: "conv18_new"
 }
 
 
@@ -2302,10 +2302,10 @@ layer {
 }
 
 layer {
-  name: "conv23"
+  name: "conv23_new"
   type: "Convolution"
-  bottom: "conv18"
-  top: "conv23"
+  bottom: "conv18_new"
+  top: "conv23_new"
     param {
     lr_mult: 1
     decay_mult: 1
@@ -2332,7 +2332,7 @@ layer {
   name: "detection_out"
   type: "Yolov3DetectionOutput"
   bottom: "conv22"
-  bottom: "conv23"
+  bottom: "conv23_new"
   top: "detection_out"
   include {
 	phase: TEST

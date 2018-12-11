@@ -23,10 +23,10 @@ template <typename Dtype>
 void caffe_gpu_logistic_activate(const int N, const Dtype* a, Dtype* y);
 
 template <typename Dtype>
-void caffe_gpu_hard_sigmoid(const int N, const Dtype* a, Dtype* y); // not test yet , do no use
+void caffe_gpu_hard_sigmoid(const int N, const Dtype* a, Dtype* y); 
 
 template <typename Dtype>
-void caffe_cpu_hard_sigmoid(Dtype *x, const int n); // not test yet , do no use
+void caffe_cpu_hard_sigmoid(Dtype *x, const int n); 
 
 // Caffe gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.

@@ -215,6 +215,7 @@ namespace caffe {
 		int count = 0;
 		int class_count = 0;
 		const Dtype* input_data = bottom[0]->cpu_data();
+
 		//const Dtype* label_data = bottom[1]->cpu_data();
 		//Blob<Dtype> swap;
 		swap_.ReshapeLike(*bottom[0]);
