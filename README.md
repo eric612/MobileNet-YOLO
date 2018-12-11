@@ -2,7 +2,7 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainval35k then fine-tune on 07+12 , test on VOC2007
+A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainvalno5k then fine-tune on 07+12 , test on VOC2007
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
@@ -40,7 +40,7 @@ yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWt
 
 ## Performance
 
-Train on  COCO trainval35k (2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
+Train on  COCO trainvalno5k (2014) compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
 
 Network|IOU 0.5:0.95|IOU 0.5|IOU 0.75|Weight size|Resolution|NetScope|Resize Mode
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
