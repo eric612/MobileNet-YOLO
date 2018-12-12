@@ -2,7 +2,7 @@
 
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainvalno5k then fine-tune on 07+12 , test on VOC2007
+A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainval35k then fine-tune on 07+12 , test on VOC2007
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
@@ -18,7 +18,7 @@ MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ether
 I use the following training path to improve accuracy , and decrease lite version trainning time
 
 * First , train MobileNet-YOLOv3 on coco dataset (IOU_0.5 : [40.2 mAP](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing))
-* Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output (IOU_0.5 : [38.6 mAP](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing))
+* Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output (IOU_0.5 : [38.9 mAP](https://drive.google.com/open?id=1O1dtD_wmcCM2pfi6CqEEdCmIT7JkHJXV))
 * Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output (comming soon)
 
 ## Windows Version
@@ -40,12 +40,12 @@ yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWt
 
 ## Performance
 
-Train on  COCO trainvalno5k (2014) compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
+Train on  COCO trainval35k (2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
 
 Network|IOU 0.5:0.95|IOU 0.5|IOU 0.75|Weight size|Resolution|NetScope|Resize Mode
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|19.5|35.2|19.2|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|320|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|21.3|38.6|21.1|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|19.9|35.5|19.6|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|320|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
+[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|21.5|38.9|21.2|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
 [MobileNet-YOLOv3](models/yolov3_coco/)|22.7|40.2|22.6|[22.5 mb](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/ef69b621d69703be0327836ec9708634)|LetterBox
 YOLOv3-Tiny||33.1||33.8 mb|416
 
