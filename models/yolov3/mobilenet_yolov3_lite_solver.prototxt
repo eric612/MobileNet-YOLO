@@ -4,7 +4,7 @@ test_iter: 4952
 test_interval: 1000
 base_lr: 0.0005
 display: 10
-max_iter: 120000
+max_iter: 50000
 lr_policy: "multistep"
 gamma: 0.5
 weight_decay: 0.00005
@@ -15,10 +15,11 @@ debug_info: false
 snapshot_after_train: true
 test_initialization: false
 average_loss: 10
+stepvalue: 10000
 stepvalue: 20000
+stepvalue: 30000
 stepvalue: 40000
-stepvalue: 60000
-iter_size: 4
+iter_size: 9
 type: "RMSProp"
 eval_type: "detection"
 ap_version: "11point"

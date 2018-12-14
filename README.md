@@ -6,12 +6,12 @@ A caffe implementation of MobileNet-YOLO detection network , first train on COCO
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|0.747|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|6 ms|150 ms
-MobileNet-YOLOv3-Lite|0.757|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/816d4d061c77d42246c5c9d49c4cbcf4)|11 ms|280 ms
+MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|6 ms|150 ms
+MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|11 ms|280 ms
 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
-* bn_model download [here](https://drive.google.com/file/d/1jB-JvuoMlLHvAhefGCwLGh_oBldcsfW3/view?usp=sharing) 
+* bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 
 
 ### Knowledge Transfer
 
@@ -19,7 +19,7 @@ I use the following training path to improve accuracy , and decrease lite versio
 
 * First , train MobileNet-YOLOv3 on coco dataset (IOU_0.5 : [40.2 mAP](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing))
 * Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output (IOU_0.5 : [38.9 mAP](https://drive.google.com/open?id=1O1dtD_wmcCM2pfi6CqEEdCmIT7JkHJXV))
-* Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output (comming soon)
+* Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output (76.3 mAP)
 
 ## Windows Version
 
