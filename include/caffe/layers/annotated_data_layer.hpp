@@ -38,6 +38,7 @@ class AnnotatedDataLayer : public BasePrefetchingDataLayer<Dtype> {
   string label_map_file_;
   int yolo_data_type_;
   float yolo_data_jitter_;
+  bool train_diffcult_;
 };
 
 }  // namespace caffe

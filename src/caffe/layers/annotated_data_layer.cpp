@@ -39,6 +39,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
   label_map_file_ = anno_data_param.label_map_file();
   yolo_data_type_ = anno_data_param.yolo_data_type();
   yolo_data_jitter_ = anno_data_param.yolo_data_jitter();
+  train_diffcult_ = anno_data_param.train_diffcult();
   // Make sure dimension is consistent within batch.
   const TransformationParameter& transform_param =
     this->layer_param_.transform_param();
@@ -357,8 +358,8 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
               const NormalizedBBox& bbox = anno.bbox();
 			  if (yolo_data_type_ == 1) {  
 
-				  //LOG(INFO) << "difficult: " << bbox.difficult();
-				  if (!bbox.difficult()) {
+				  //LOG(INFO) << "difficult: " << bbox.difficult() << ", train_difficult: " << train_diffcult_;
+				  if (!bbox.difficult() || train_diffcult_) {
 					  float x = (bbox.xmin() + bbox.xmax()) / 2.0;
 					  float y = (bbox.ymin() + bbox.ymax()) / 2.0;
 					  float w = bbox.xmax() - bbox.xmin();

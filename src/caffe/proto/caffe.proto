@@ -828,6 +828,7 @@ message AnnotatedDataParameter {
   optional AnnotatedDatum.AnnotationType anno_type = 3;
   optional int32 yolo_data_type = 4 [default = 0];
   optional float yolo_data_jitter = 5 [default = 0.3];
+  optional bool train_diffcult = 6 [default = false];
 }
 
 message ArgMaxParameter {
