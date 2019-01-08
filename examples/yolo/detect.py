@@ -104,7 +104,7 @@ def main(args):
                     caffe.TEST)     # use test mode (e.g., don't perform dropout)
 
     
-    mu = np.array([0.5, 0.5, 0.5])
+    mu = np.array([1.0, 1.0, 1.0])
     # create transformer for the input called 'data'
     transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
 
