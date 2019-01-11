@@ -50,7 +50,8 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
         << "Only support batch size of 1 for FIT_SMALL_SIZE.";
     }
   }
-
+  iters_ = 0;
+  policy_num_ = 0;
   // Read a data point, and use it to initialize the top blob.
   AnnotatedDatum& anno_datum = *(reader_.full().peek());
 
@@ -139,8 +140,8 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   AnnotatedDatum& anno_datum = *(reader_.full().peek());
   // Use data_transformer to infer the expected blob shape from anno_datum.
   int num_resize_policies = transform_param.resize_param_size();
-  int policy_num = 0;
-  if (num_resize_policies > 0) {
+  bool size_change = false;
+  if (num_resize_policies > 0 && iters_%10 == 0) {
 	  std::vector<float> probabilities;
 	  float prob_sum = 0;
 	  for (int i = 0; i < num_resize_policies; i++) {
@@ -151,21 +152,20 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 		  probabilities.push_back(prob);
 	  }
 	  CHECK_NEAR(prob_sum, 1.0, prob_eps);
-	  policy_num = roll_weighted_die(probabilities);
+	  policy_num_ = roll_weighted_die(probabilities);
+	  size_change = true;
   }
   else {
 
   }
   vector<int> top_shape =
-      this->data_transformer_->InferBlobShape(anno_datum.datum(), policy_num);
-  this->transformed_data_.Reshape(top_shape);
+	  this->data_transformer_->InferBlobShape(anno_datum.datum(), policy_num_);
   // Reshape batch according to the batch_size.
+  this->transformed_data_.Reshape(top_shape);
   top_shape[0] = batch_size;
   batch->data_.Reshape(top_shape);
-
-  for (int i = 0; i < this->PREFETCH_COUNT; ++i) {
-    this->prefetch_[i].data_.Reshape(top_shape);
-  }
+  //LOG(INFO) << this->prefetch_[i].data_.width() << "," << transform_param.resize_param(policy_num_).width() << "," << iters_;
+  this->prefetch_[0].data_.Reshape(top_shape);
   Dtype* top_data = batch->data_.mutable_cpu_data();
   Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
   if (this->output_labels_ && !has_anno_type_) {
@@ -211,7 +211,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 	  	GenerateBatchSamples(*expand_datum, batch_samplers_, &sampled_bboxes);
 	  }
 	  else {
-	    bool keep = transform_param.resize_param(policy_num).resize_mode() == ResizeParameter_Resize_mode_FIT_LARGE_SIZE_AND_PAD;
+	    bool keep = transform_param.resize_param(policy_num_).resize_mode() == ResizeParameter_Resize_mode_FIT_LARGE_SIZE_AND_PAD;
 	    GenerateJitterSamples(yolo_data_jitter_, &sampled_bboxes , keep);
 	  }
       if (sampled_bboxes.size() > 0) {
@@ -231,11 +231,11 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     CHECK(sampled_datum != NULL);
 
     vector<int> shape =
-        this->data_transformer_->InferBlobShape(sampled_datum->datum(), policy_num);
+        this->data_transformer_->InferBlobShape(sampled_datum->datum(), policy_num_);
 
 	//LOG(INFO) << shape[2] << "," << shape[3];
     if (transform_param.resize_param_size()) {
-      if (transform_param.resize_param(policy_num).resize_mode() ==
+      if (transform_param.resize_param(policy_num_).resize_mode() ==
           ResizeParameter_Resize_mode_FIT_SMALL_SIZE) {
         this->transformed_data_.Reshape(shape);
         batch->data_.Reshape(shape);
@@ -268,7 +268,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 		//LOG(INFO) << "test";
         this->data_transformer_->Transform(*sampled_datum,
                                            &(this->transformed_data_),
-                                           &transformed_anno_vec, policy_num);
+                                           &transformed_anno_vec, policy_num_);
         if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX) {
           // Count the number of bboxes.
           for (int g = 0; g < transformed_anno_vec.size(); ++g) {
@@ -392,6 +392,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       LOG(FATAL) << "Unknown annotation type.";
     }
   }
+  iters_++;
   timer.Stop();
   batch_timer.Stop();
   DLOG(INFO) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
