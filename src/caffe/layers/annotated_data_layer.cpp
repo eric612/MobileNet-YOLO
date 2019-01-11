@@ -165,7 +165,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   top_shape[0] = batch_size;
   batch->data_.Reshape(top_shape);
   //LOG(INFO) << this->prefetch_[i].data_.width() << "," << transform_param.resize_param(policy_num_).width() << "," << iters_;
-  this->prefetch_[0].data_.Reshape(top_shape);
+  //this->prefetch_[0].data_.Reshape(top_shape);
   Dtype* top_data = batch->data_.mutable_cpu_data();
   Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
   if (this->output_labels_ && !has_anno_type_) {
