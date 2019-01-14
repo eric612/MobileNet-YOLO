@@ -64,21 +64,46 @@ namespace caffe {
 		return box_intersection(a, b) / box_union(a, b);
 	}
 	template <typename Dtype>
-	void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride)
+	void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
 	{
 		if (diff[index]) {
 			diff[index + stride*class_label] = 1 - input_data[index + stride*class_label];
 			*avg_cat += input_data[index + stride*class_label];
 			return;
 		}
-		for (int n = 0; n < classes; ++n) {
-			diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
-			//std::cout<<diff[index+n]<<",";
-			if (n == class_label) {
-				*avg_cat += input_data[index + n*stride];
-				//std::cout<<"avg_cat:"<<input_data[index+n]<<std::endl; 
+		if (use_focal_loss) {
+			//Reference : https://github.com/AlexeyAB/darknet/blob/master/src/yolo_layer.c
+			float alpha = 0.5;    // 0.25 or 0.5
+								  //float gamma = 2;    // hardcoded in many places of the grad-formula
+
+			int ti = index + stride*class_label;
+			float pt = input_data[ti] + 0.000000000000001F;
+			// http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiItKDEteCkqKDIqeCpsb2coeCkreC0xKSIsImNvbG9yIjoiIzAwMDAwMCJ9LHsidHlwZSI6MTAwMH1d
+			float grad = -(1 - pt) * (2 * pt*logf(pt) + pt - 1);    // http://blog.csdn.net/linmingan/article/details/77885832
+																	//float grad = (1 - pt) * (2 * pt*logf(pt) + pt - 1);    // https://github.com/unsky/focal-loss
+
+			for (int n = 0; n < classes; ++n) {
+				diff[index + stride*n] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
+
+				diff[index + stride*n] *= alpha*grad;
+
+				if (n == class_label) {
+					*avg_cat += input_data[index + stride*n];
+				}
+			}
+
+		}
+		else {
+			for (int n = 0; n < classes; ++n) {
+				diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
+				//std::cout<<diff[index+n]<<",";
+				if (n == class_label) {
+					*avg_cat += input_data[index + n*stride];
+					//std::cout<<"avg_cat:"<<input_data[index+n]<<std::endl; 
+				}
 			}
 		}
+
 	}
 	template <typename Dtype>
 	void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
@@ -127,6 +152,7 @@ namespace caffe {
 		coord_scale_ = param.coord_scale(); //1.0
 		thresh_ = param.thresh(); //0.6
 		use_logic_gradient_ = param.use_logic_gradient();
+		use_focal_loss_  = param.use_focal_loss();
 		for (int c = 0; c < param.biases_size(); ++c) {
 			biases_.push_back(param.biases(c));
 		} 
@@ -241,7 +267,7 @@ namespace caffe {
 						LOG(INFO) << "best_iou > 1"; // plz tell me ..
 						diff[index + 4 * stride] = (-1) * (1 - swap_data[index + 4 * stride]);
 
-						delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride);
+						delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
 						delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_, side_,
 							side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride);
 					}
@@ -321,7 +347,7 @@ namespace caffe {
 
 					//diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-					delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride); //softmax_tree_
+					delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
 
 					++count;
 					++class_count_;

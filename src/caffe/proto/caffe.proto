@@ -466,6 +466,7 @@ message Yolov3Parameter{
   repeated float biases = 11;
   repeated uint32 mask = 12;
   optional bool use_logic_gradient = 13 [default = false];
+  optional bool use_focal_loss = 14 [default = false];
 }
 message RegionLossParameter{
   //Yolo 9000
