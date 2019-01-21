@@ -92,3 +92,7 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 > https://github.com/alexgkendall/caffe-segnet
 
 > https://github.com/BVLC/caffe/pull/6384/commits/4d2400e7ae692b25f034f02ff8e8cd3621725f5c
+
+Cudnn convolution
+
+> https://github.com/chuanqi305/MobileNetv2-SSDLite/tree/master/src
