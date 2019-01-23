@@ -30,6 +30,9 @@ mobilenet-yolov3-416  min =   94.59  max =   98.39  avg =   95.84
 
 [Darknet-YOLOv3](https://drive.google.com/file/d/12nLE6GtmwZxDiulwdEmB3Ovj5xx18Nnh/view)
 
+## inference time issue
+
+The most time consuming layer were group convolution , not deconvolution
 
 ## int8 inference mAP list
 

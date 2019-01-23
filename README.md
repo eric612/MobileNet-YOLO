@@ -6,9 +6,10 @@ A caffe implementation of MobileNet-YOLO detection network , first train on COCO
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|6 ms|150 ms
-MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|11 ms|280 ms
+MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[4.44 ms](benchmark/test-320.log)|150 ms
+MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[5.98 ms](benchmark/test-416.log)|280 ms
 
+* inference time was log from caffe time [script](benchmark/test_yolov3_lite.sh) , here do not include detection output layer and pre-processing time 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 
@@ -48,8 +49,9 @@ Network|IOU 0.5:0.95|IOU 0.5|IOU 0.75|Weight size|Resolution|NetScope|Resize Mod
 [MobileNet-YOLOv3-Lite](models/yolov3_coco/)|21.5|38.9|21.2|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
 [MobileNet-YOLOv3](models/yolov3_coco/)|22.7|40.2|22.6|[22.5 mb](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/ef69b621d69703be0327836ec9708634)|LetterBox
 YOLOv3-Tiny||33.1||33.8 mb|416
-
+[MobileNet-YOLOv3-Lite-trt](https://github.com/eric612/TensorRT-Yolov3-model)||37.5||[23.5 mb](https://github.com/eric612/TensorRT-Yolov3-model/blob/master/mobilenet_yolov3_lite_deploy_iter_21000.caffemodel)|416|[graph](http://ethereon.github.io/netscope/#/gist/cf22541c314a5896abd45b88d430ca1f)|WARP
 * (*) testdev-2015 server was closed , here use coco 2014 minival
+* MobileNet-YOLOv3-Lite-trt was the fastest model
 
 ## Other Models
 
