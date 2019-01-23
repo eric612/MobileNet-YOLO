@@ -40,16 +40,16 @@ void Yolov3Layer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     if (use_logic_gradient_) {
       Backward_cpu(top,propagate_down,bottom);
     }
-  }
-  else {
-    const Dtype sign(1.);
-    const Dtype alpha = sign * top[0]->cpu_diff()[0] / bottom[0]->num();
-    caffe_gpu_axpby(
-    bottom[0]->count(),
-    alpha,
-    diff_.gpu_data(),
-    Dtype(0),
-    bottom[0]->mutable_gpu_diff());
+    else {
+      const Dtype sign(1.);
+      const Dtype alpha = sign * top[0]->cpu_diff()[0] / bottom[0]->num();
+      caffe_gpu_axpby(
+      bottom[0]->count(),
+      alpha,
+      diff_.gpu_data(),
+      Dtype(0),
+      bottom[0]->mutable_gpu_diff());
+    }
   }
 }
 
