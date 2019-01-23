@@ -964,7 +964,7 @@ layer {
   }
   yolov3_detection_output_param {
     num_classes: 20
-    confidence_threshold: 0.00999999977648
+    confidence_threshold: 0.3
     nms_threshold: 0.449999988079
     biases: 10.0
     biases: 14.0

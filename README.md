@@ -6,10 +6,10 @@ A caffe implementation of MobileNet-YOLO detection network , first train on COCO
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[4.44 ms](benchmark/test-320.log)|150 ms
-MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[5.98 ms](benchmark/test-416.log)|280 ms
+MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[4.79 ms](benchmark/test-320.log)|150 ms
+MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[6.52 ms](benchmark/test-416.log)|280 ms
 
-* inference time was log from caffe time [script](benchmark/test_yolov3_lite.sh) , here do not include detection output layer and pre-processing time 
+* inference time was log from [script](benchmark/test_yolov3_lite.sh) , does not include pre-processing 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 

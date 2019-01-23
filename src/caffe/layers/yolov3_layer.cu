@@ -19,13 +19,13 @@ void Yolov3Layer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   //caffe_copy(count, input_data, swap_data);
   for (int b = 0; b < bottom[0]->num(); ++b) {
     for (int n = 0; n < num_; ++n) {
-    int index = n*len*stride  + b*bottom[0]->count(1);
-    caffe_gpu_logistic_activate(2 * side_*side_,input_data + index,swap_data +index );
-    index = n*len*stride  + b*bottom[0]->count(1) + 2 * stride;
-    caffe_copy(2 * side_*side_, input_data + index, swap_data + index);
-    index = n*len*stride  + b*bottom[0]->count(1) + 4 * stride;
-    caffe_gpu_logistic_activate((num_class_+1) * side_*side_,input_data + index,swap_data +index );
-  }
+      int index = n*len*stride  + b*bottom[0]->count(1);
+      caffe_gpu_logistic_activate(2 * side_*side_,input_data + index,swap_data +index );
+      index = n*len*stride  + b*bottom[0]->count(1) + 2 * stride;
+      caffe_copy(2 * side_*side_, input_data + index, swap_data + index);
+      index = n*len*stride  + b*bottom[0]->count(1) + 4 * stride;
+      caffe_gpu_logistic_activate((num_class_+1) * side_*side_,input_data + index,swap_data +index );
+    }
   }
     
   Forward_cpu(bottom,top);	
@@ -38,7 +38,8 @@ void Yolov3Layer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<Blob<Dtype>*>& bottom) {
   if (propagate_down[0]) {
     if (use_logic_gradient_) {
-    Backward_cpu(top,propagate_down,bottom);
+      Backward_cpu(top,propagate_down,bottom);
+    }
   }
   else {
     const Dtype sign(1.);
@@ -49,7 +50,6 @@ void Yolov3Layer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     diff_.gpu_data(),
     Dtype(0),
     bottom[0]->mutable_gpu_diff());
-      }
   }
 }
 

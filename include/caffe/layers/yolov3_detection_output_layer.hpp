@@ -76,11 +76,11 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   /// @brief Not implemented
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-      NOT_IMPLEMENTED;
+      return;
   }
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
 	  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-	  NOT_IMPLEMENTED;
+	  return;
   }
   int side_;
   int num_class_;
