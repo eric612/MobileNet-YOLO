@@ -3,6 +3,7 @@
 
 #include "caffe/layers/yolov3_detection_output_layer.hpp"
 #include "caffe/util/math_functions.hpp"
+#include "caffe/util/bbox_util.hpp"
 namespace caffe {
 template <typename Dtype>
 void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
@@ -29,13 +30,13 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
         index = n*len*stride  + b*bottom[0]->count(1) + 4 * stride;
         caffe_gpu_logistic_activate((num_class_+1) * side_*side_,input_data + index,swap_data +index );
       }
-      const Dtype* swap_data = swap_.mutable_cpu_data();
+      Dtype* swap_data = swap_.mutable_cpu_data();
       for (int s = 0; s < side_*side_; s++) {				
         for (int n = 0; n < num_; n++) {
           //LOG(INFO) << bottom[t]->count(1);
           int index = n*len*stride + s + b*bottom[t]->count(1);
           vector<Dtype> pred;
-          const Dtype* swap_data = swap_.mutable_cpu_data();
+          Dtype* swap_data = swap_.mutable_cpu_data();
           for (int c = 5; c < len; ++c) {
             int index2 = c*stride + index;
             class_score[c - 5] = (swap_data[index2 + 0]);
@@ -43,13 +44,13 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
           int y2 = s / side_;
           int x2 = s % side_;
           Dtype obj_score = swap_data[index + 4 * stride];
-          get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+          
           PredictionResult<Dtype> predict;
           for (int c = 0; c < num_class_; ++c) {
             class_score[c] *= obj_score;
             if (class_score[c] > confidence_threshold_)
             {						
-              
+              get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
               predict.x = pred[0];
               predict.y = pred[1];
               predict.w = pred[2];
