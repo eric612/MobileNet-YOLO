@@ -16,6 +16,7 @@
 #include "caffe/layers/yolov3_layer.hpp"
 #include "caffe/util/math_functions.hpp"
 #include "caffe/layers/sigmoid_layer.hpp"
+#include "caffe/util/bbox_util.hpp"
 #include <algorithm>
 #include <cfloat>
 #include <vector>
@@ -105,15 +106,7 @@ namespace caffe {
     }
 
   }
-  template <typename Dtype>
-  void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
 
-    b.clear();
-    b.push_back((i + (x[index + 0 * stride])) / lw);
-    b.push_back((j + (x[index + 1 * stride])) / lh);
-    b.push_back(exp(x[index + 2 * stride]) * biases[2 * n] / (w));
-    b.push_back(exp(x[index + 3 * stride]) * biases[2 * n + 1] / (h));
-  }
   template <typename Dtype>
   Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, Dtype* delta, float scale, int stride) {
     vector<Dtype> pred;

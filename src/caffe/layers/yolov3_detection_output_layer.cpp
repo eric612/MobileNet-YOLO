@@ -18,7 +18,7 @@
 //#include "caffe/layers/region_loss_layer.hpp"
 #include "caffe/layers/yolov3_detection_output_layer.hpp"
 #include "caffe/util/io.hpp"
-#include "caffe/util/bbox_util.hpp"
+
 
 namespace caffe {
 template <typename Dtype>
@@ -160,16 +160,7 @@ void class_index_and_score(Dtype* input, int classes, PredictionResult<Dtype>& p
   predict.classType = classIndex;
   predict.classScore = large;
 }
-template <typename Dtype>
-void Yolov3DetectionOutputLayer<Dtype>::get_region_box2(vector<Dtype> &b, const Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
 
-  //LOG(INFO) << lw << "," << lh << "," << w << "," << h << "," << stride;
-  b.clear();
-  b.push_back((i + (x[index + 0 * stride])) / lw);
-  b.push_back((j + (x[index + 1 * stride])) / lh);
-  b.push_back(exp(x[index + 2 * stride]) * biases[2 * n] / (w));
-  b.push_back(exp(x[index + 3 * stride]) * biases[2 * n + 1] / (h));
-}
 template <typename Dtype>
 void Yolov3DetectionOutputLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -271,7 +262,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
               //LOG(INFO) << class_score[c];
               if (class_score[c] > confidence_threshold_)
               {
-                get_region_box2(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+                get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
                 predict.x = pred[0];
                 predict.y = pred[1];
                 predict.w = pred[2];

@@ -14,7 +14,7 @@
 #include "caffe/data_transformer.hpp"
 #include "caffe/layer.hpp"
 #include "caffe/proto/caffe.pb.h"
-
+#include "caffe/util/bbox_util.hpp"
 using namespace boost::property_tree;  // NOLINT(build/namespaces)
 
 namespace caffe {
@@ -52,7 +52,7 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   virtual inline int MinBottomBlobs() const { return 1; }
   //virtual inline int MaxBottomBlobs() const { return 4; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
-  void get_region_box2(vector<Dtype> &b, const Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
+  
  protected:
   /**
    * @brief Do non maximum suppression (nms) on prediction results.

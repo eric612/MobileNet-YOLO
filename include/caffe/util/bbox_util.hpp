@@ -19,6 +19,8 @@
 #include "caffe/caffe.hpp"
 
 namespace caffe {
+template <typename Dtype>
+void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
 
 typedef EmitConstraint_EmitType EmitType;
 typedef PriorBoxParameter_CodeType CodeType;
@@ -507,6 +509,7 @@ template <typename Dtype>
       const vector<map<int, vector<int> > >& all_match_indices,
       const map<int, vector<NormalizedBBox> >& all_gt_bboxes,
       vector<vector<float> >* all_conf_loss);
+
 #endif  // !CPU_ONLY
 
 #ifdef USE_OPENCV

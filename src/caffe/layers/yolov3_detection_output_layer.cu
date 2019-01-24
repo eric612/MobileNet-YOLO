@@ -43,7 +43,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
           int y2 = s / side_;
           int x2 = s % side_;
           Dtype obj_score = swap_data[index + 4 * stride];
-          get_region_box2(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+          get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
           PredictionResult<Dtype> predict;
           for (int c = 0; c < num_class_; ++c) {
             class_score[c] *= obj_score;
