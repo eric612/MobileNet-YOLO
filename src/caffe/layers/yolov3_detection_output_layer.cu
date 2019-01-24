@@ -74,7 +74,11 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
   Forward_cpu(bottom,top);	
 }
 
-
+template <typename Dtype>
+void Yolov3DetectionOutputLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
+	const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+	return;
+}
 
 INSTANTIATE_LAYER_GPU_FUNCS(Yolov3DetectionOutputLayer);
 

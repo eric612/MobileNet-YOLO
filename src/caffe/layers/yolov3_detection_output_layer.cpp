@@ -216,6 +216,7 @@ template <typename Dtype>
 bool BoxSortDecendScore(const PredictionResult<Dtype>& box1, const PredictionResult<Dtype>& box2) {
   return box1.confidence> box2.confidence;
 }
+
 template <typename Dtype>
 void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
@@ -263,39 +264,23 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
             }
             int y2 = s / side_;
             int x2 = s % side_;
-            //LOG(INFO) << x2 << "," << y2;
             Dtype obj_score = swap_data[index + 4 * stride];
-            //LOG(INFO) << obj_score;
-            get_region_box2(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
-            //LOG(INFO)<<anchors_scale_[t];
-            //LOG(INFO) << pred[0] << "," << pred[1];
-            //float maxmima_score = 0;
             PredictionResult<Dtype> predict;
             for (int c = 0; c < num_class_; ++c) {
               class_score[c] *= obj_score;
               //LOG(INFO) << class_score[c];
               if (class_score[c] > confidence_threshold_)
               {
-                //if(class_score[c]>maxmima_score)
-                {
-                  //maxmima_score = class_score[c];
-                  predict.x = pred[0];
-                  predict.y = pred[1];
-                  predict.w = pred[2];
-                  predict.h = pred[3];
-                  predict.classType = c;
-                  predict.confidence = class_score[c];
-                  predicts_.push_back(predict);
-                }
-
-                //LOG(INFO) << predict.x << "," << predict.y << "," << predict.w << "," << predict.h;
-                //LOG(INFO) << predict.confidence;
+                get_region_box2(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+                predict.x = pred[0];
+                predict.y = pred[1];
+                predict.w = pred[2];
+                predict.h = pred[3];
+                predict.classType = c;
+                predict.confidence = class_score[c];
+                predicts_.push_back(predict);
               }
             }
-            //if(maxmima_score> confidence_threshold_)
-            //{
-            //	predicts.push_back(predict);
-            //}
           }
         }
       }
@@ -339,22 +324,26 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
       top_data[i*7] = 0;                              //Image_Id
       top_data[i*7+1] = predicts_[idxes[i]].classType + 1; //label
       top_data[i*7+2] = predicts_[idxes[i]].confidence; //confidence
-    float left = (predicts_[idxes[i]].x - predicts_[idxes[i]].w / 2.);
-    float right = (predicts_[idxes[i]].x + predicts_[idxes[i]].w / 2.);
-    float top = (predicts_[idxes[i]].y - predicts_[idxes[i]].h / 2.);
-    float bot = (predicts_[idxes[i]].y + predicts_[idxes[i]].h / 2.);
+      float left = (predicts_[idxes[i]].x - predicts_[idxes[i]].w / 2.);
+      float right = (predicts_[idxes[i]].x + predicts_[idxes[i]].w / 2.);
+      float top = (predicts_[idxes[i]].y - predicts_[idxes[i]].h / 2.);
+      float bot = (predicts_[idxes[i]].y + predicts_[idxes[i]].h / 2.);
 
       top_data[i*7+3] = left;
       top_data[i*7+4] = top;
       top_data[i*7+5] = right;
       top_data[i*7+6] = bot;
-    DLOG(INFO) << "Detection box"  << "," << predicts_[idxes[i]].classType << "," << predicts_[idxes[i]].x << "," << predicts_[idxes[i]].y << "," << predicts_[idxes[i]].w << "," << predicts_[idxes[i]].h;
+      DLOG(INFO) << "Detection box"  << "," << predicts_[idxes[i]].classType << "," << predicts_[idxes[i]].x << "," << predicts_[idxes[i]].y << "," << predicts_[idxes[i]].w << "," << predicts_[idxes[i]].h;
     }
 
   }
 
 }
-
+template <typename Dtype>
+void Yolov3DetectionOutputLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
+	const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+	return;
+}
 #ifdef CPU_ONLY
   STUB_GPU_FORWARD(Yolov3DetectionOutputLayer, Forward);
 #endif
