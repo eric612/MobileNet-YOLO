@@ -153,7 +153,13 @@ class DataTransformer {
    * @param transformed_blob
    *    This is destination blob. It can be part of top blob's data if
    *    set_cpu_data() is used. See image_data_layer.cpp for an example.
+   * @param preserve_pixel_vals
+   *    Use with dense label images to preserve the input pixel values
+   *    which would be labels (and thus cannot be interpolated or scaled).
    */
+  void Transform2(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
+                 bool preserve_pixel_vals = false);
+
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
                  NormalizedBBox* crop_bbox, bool* do_mirror, int policy_num = 0);
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
