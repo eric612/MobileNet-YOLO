@@ -72,6 +72,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
   if (this->output_labels_) {
     has_anno_type_ = anno_datum.has_type() || anno_data_param.has_anno_type();
     vector<int> label_shape(4, 1);
+
     if (has_anno_type_) {
       anno_type_ = anno_datum.type();
       if (anno_data_param.has_anno_type()) {
@@ -113,11 +114,25 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
       label_shape[0] = batch_size;
     }
     top[1]->Reshape(label_shape);
+	
     for (int i = 0; i < this->prefetch_.size(); ++i) {
       this->prefetch_[i]->label_.Reshape(label_shape);
     }
   }
+  if (this->output_seg_labels_) {
+	  vector<int> seg_label_shape(4, 1);
+	  seg_label_shape[0] = batch_size;
+	  seg_label_shape[1] = 1;
+	  seg_label_shape[2] = top_shape[2] / 4;
+	  seg_label_shape[3] = top_shape[3] / 4;
+	  top[2]->Reshape(seg_label_shape);
+	  for (int i = 0; i < this->prefetch_.size(); ++i) {
+		  this->prefetch_[i]->seg_label_.Reshape(seg_label_shape);
+	  }
+	  this->transformed_label_.Reshape(seg_label_shape);
+  }
 }
+
 
 // This function is called on prefetch thread
 template<typename Dtype>
@@ -168,10 +183,13 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   //this->prefetch_[0].data_.Reshape(top_shape);
   Dtype* top_data = batch->data_.mutable_cpu_data();
   Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
+  Dtype* top_seg_label = NULL;  // suppress warnings about uninitialized variables
   if (this->output_labels_ && !has_anno_type_) {
     top_label = batch->label_.mutable_cpu_data();
   }
-
+  if (this->output_seg_labels_ ) {
+	  top_seg_label = batch->seg_label_.mutable_cpu_data();
+  }
   // Store transformed annotation.
   map<int, vector<AnnotationGroup> > all_anno;
   int num_bboxes = 0;
@@ -299,15 +317,37 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     trans_time += timer.MicroSeconds();
 
     reader_.free().push(const_cast<AnnotatedDatum*>(&anno_datum));
+
+	if (this->output_seg_labels_) {
+		vector<int> seg_label_shape(4);
+		seg_label_shape[0] = batch_size;
+		seg_label_shape[1] = 1;
+		seg_label_shape[2] = top_shape[2] / 4;
+		seg_label_shape[3] = top_shape[3] / 4;
+		batch->seg_label_.Reshape(seg_label_shape);
+		caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
+		// sanity check label image
+		cv::Mat cv_lab = ReadImageToCVMat("data//mask.png",
+			seg_label_shape[2], seg_label_shape[3], false, true);
+		//cv::imwrite("data//read.png", cv_lab);
+		this->transformed_label_.Reshape(seg_label_shape);
+		int offset = batch->seg_label_.offset(item_id);
+		this->transformed_label_.set_cpu_data(top_seg_label + offset);
+		this->data_transformer_->Transform2(cv_lab, &this->transformed_label_, true);
+		
+	}
   }
 
   // Store "rich" annotation if needed.
   if (this->output_labels_ && has_anno_type_) {
     vector<int> label_shape(4);
+	
     if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX) {
       label_shape[0] = 1;
       label_shape[1] = 1;
       label_shape[3] = 8;
+
+
 	  if (yolo_data_type_ == 1) {
 		  label_shape[0] = batch_size;
 		  label_shape[3] = 5;
@@ -364,6 +404,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 					  float y = (bbox.ymin() + bbox.ymax()) / 2.0;
 					  float w = bbox.xmax() - bbox.xmin();
 					  float h = bbox.ymax() - bbox.ymin();
+					  //LOG(INFO) <<anno_group.group_label();
 					  top_label[idx++] = anno_group.group_label() - 1;
 					  //LOG(INFO) << "class: " << anno_group.group_label();
 					  top_label[idx++] = x;
@@ -376,6 +417,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 			  else {
 				  top_label[idx++] = item_id;
 				  top_label[idx++] = anno_group.group_label();
+				  
 				  top_label[idx++] = anno.instance_id();
 				  top_label[idx++] = bbox.xmin();
 				  top_label[idx++] = bbox.ymin();
@@ -388,10 +430,13 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
           }
         }
       }
+
     } else {
       LOG(FATAL) << "Unknown annotation type.";
     }
+
   }
+
   iters_++;
   timer.Stop();
   batch_timer.Stop();
