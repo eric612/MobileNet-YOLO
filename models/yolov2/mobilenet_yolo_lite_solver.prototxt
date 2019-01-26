@@ -15,9 +15,9 @@ debug_info: false
 snapshot_after_train: true
 test_initialization: false
 average_loss: 10
-stepvalue: 30000
-stepvalue: 60000
-iter_size: 2
+stepvalue: 20000
+stepvalue: 40000
+iter_size: 8
 type: "RMSProp"
 eval_type: "detection"
 ap_version: "11point"
