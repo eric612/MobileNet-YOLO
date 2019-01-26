@@ -88,7 +88,7 @@ namespace caffe {
 			const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 		// virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
 		//     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-
+    	int iter_;
 		int side_;
 		int bias_match_;
 		int num_class_;
@@ -106,6 +106,8 @@ namespace caffe {
 		int absolute_;
 		float thresh_;
 		int random_;
+   		int time_count_;
+		int class_count_;
 		vector<Dtype> biases_;
 
 		Blob<Dtype> diff_;
