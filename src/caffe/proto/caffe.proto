@@ -38,6 +38,7 @@ message Datum {
   repeated float float_data = 6;
   // If true data contains an encoded image that need to be decoded
   optional bool encoded = 7 [default = false];
+  optional bytes seg_label = 8;
 }
 
 // The label (display) name and label id.
@@ -144,6 +145,7 @@ message AnnotationGroup {
 message AnnotatedDatum {
   enum AnnotationType {
     BBOX = 0;
+    BBOXandSeg = 1;
   }
   optional Datum datum = 1;
   // If there are "rich" annotations, specify the type of annotation.

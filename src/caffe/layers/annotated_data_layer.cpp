@@ -1,5 +1,7 @@
 #ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #endif  // USE_OPENCV
 #include <stdint.h>
 
@@ -12,6 +14,7 @@
 #include "caffe/util/benchmark.hpp"
 #include "caffe/util/sampler.hpp"
 #include "caffe/util/im_transforms.hpp"
+#include "caffe/util/bbox_util.hpp"
 const float prob_eps = 0.01;
 namespace caffe {
 
@@ -83,7 +86,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
       }
       // Infer the label shape from anno_datum.AnnotationGroup().
       int num_bboxes = 0;
-      if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX) {
+      if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX || anno_type_ == AnnotatedDatum_AnnotationType_BBOXandSeg) {
         // Since the number of bboxes can be different for each image,
         // we store the bbox information in a specific format. In specific:
         // All bboxes are stored in one spatial plane (num and channels are 1)
@@ -123,8 +126,8 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
 	  vector<int> seg_label_shape(4, 1);
 	  seg_label_shape[0] = batch_size;
 	  seg_label_shape[1] = 1;
-	  seg_label_shape[2] = top_shape[2] / 4;
-	  seg_label_shape[3] = top_shape[3] / 4;
+	  seg_label_shape[2] = top_shape[2] / 8;
+	  seg_label_shape[3] = top_shape[3] / 8;
 	  top[2]->Reshape(seg_label_shape);
 	  for (int i = 0; i < this->prefetch_.size(); ++i) {
 		  this->prefetch_[i]->seg_label_.Reshape(seg_label_shape);
@@ -193,7 +196,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   // Store transformed annotation.
   map<int, vector<AnnotationGroup> > all_anno;
   int num_bboxes = 0;
-
+  NormalizedBBox crop_box;
   for (int item_id = 0; item_id < batch_size; ++item_id) {
     timer.Start();
     // get a anno_datum
@@ -236,6 +239,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         // Randomly pick a sampled bbox and crop the expand_datum.
         int rand_idx = caffe_rng_rand() % sampled_bboxes.size();
         sampled_datum = new AnnotatedDatum();
+		crop_box = sampled_bboxes[rand_idx];
         this->data_transformer_->CropImage(*expand_datum,
                                            sampled_bboxes[rand_idx],
                                            sampled_datum);
@@ -287,7 +291,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         this->data_transformer_->Transform(*sampled_datum,
                                            &(this->transformed_data_),
                                            &transformed_anno_vec, policy_num_);
-        if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX) {
+        if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX || anno_type_ == AnnotatedDatum_AnnotationType_BBOXandSeg) {
           // Count the number of bboxes.
           for (int g = 0; g < transformed_anno_vec.size(); ++g) {
             num_bboxes += transformed_anno_vec[g].annotation_size();
@@ -307,6 +311,69 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       this->data_transformer_->Transform(sampled_datum->datum(),
                                          &(this->transformed_data_));
     }
+    if (this->output_seg_labels_) {
+      //LOG(INFO)<<iters_*batch_size + item_id;
+      vector<int> seg_label_shape(4);
+      seg_label_shape[0] = batch_size;
+      seg_label_shape[1] = 1;
+      seg_label_shape[2] = top_shape[2] / 8;
+      seg_label_shape[3] = top_shape[3] / 8;
+      batch->seg_label_.Reshape(seg_label_shape);
+      caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
+      cv::Mat cv_lab = DecodeDatumToCVMatSeg(anno_datum.datum(), false);
+      
+      cv::Mat resized, crop_img;
+      //LOG(INFO) << crop_box.xmin() << crop_box.xmax() << crop_box.ymin() << crop_box.ymax();
+      const int img_height = cv_lab.rows;
+      const int img_width = cv_lab.cols;
+      //if (this->data_transformer_->get_mirror()) {
+      //  cv::flip(cv_lab, cv_lab, 1);
+      //}
+      //LOG(INFO) << this->data_transformer_->get_mirror() << ",anno";
+      // Get the bbox dimension.
+      NormalizedBBox clipped_bbox;
+      ClipBBox(crop_box, &clipped_bbox);
+      NormalizedBBox scaled_bbox;
+      ScaleBBox(clipped_bbox, img_height, img_width, &scaled_bbox);
+
+
+      // Crop the image using bbox.
+      int w_off = static_cast<int>(scaled_bbox.xmin());
+      int h_off = static_cast<int>(scaled_bbox.ymin());
+      int width = static_cast<int>(scaled_bbox.xmax() - scaled_bbox.xmin());
+      int height = static_cast<int>(scaled_bbox.ymax() - scaled_bbox.ymin());
+      //LOG(INFO) << w_off <<","<< h_off << "," << width << "," << height;
+      cv::Rect bbox_roi(w_off, h_off, width, height);
+
+      cv_lab(bbox_roi).copyTo(crop_img);
+
+      cv::resize(crop_img, resized,cv::Size(seg_label_shape[2], seg_label_shape[3]));
+      cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+      this->transformed_label_.Reshape(seg_label_shape);
+      int offset = batch->seg_label_.offset(item_id);
+      this->transformed_label_.set_cpu_data(top_seg_label + offset);
+      this->data_transformer_->Transform2(resized, &this->transformed_label_, true);
+      
+
+      //this->data_transformer_->Transform(*sampled_datum,
+      //	&(this->transformed_label_),
+      //	&transformed_anno_vec, policy_num_);
+
+      // sanity check label image
+      //cv::Mat cv_lab = ReadImageToCVMat("data//mask.png",
+      //	seg_label_shape[2], seg_label_shape[3], false, true);
+
+      //cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
+      //char filename[256];
+      //sprintf(filename, "input//input_%05d_mask.png", iters_*batch_size + item_id);
+      //cv::imwrite(filename, resized);
+
+      //this->transformed_label_.Reshape(seg_label_shape);
+      //int offset = batch->seg_label_.offset(item_id);
+      //this->transformed_label_.set_cpu_data(top_seg_label + offset);
+      //this->data_transformer_->Transform2(cv_lab, &this->transformed_label_, true);
+		
+	  }
     // clear memory
     if (has_sampled) {
       delete sampled_datum;
@@ -318,120 +385,103 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<AnnotatedDatum*>(&anno_datum));
 
-	if (this->output_seg_labels_) {
-		vector<int> seg_label_shape(4);
-		seg_label_shape[0] = batch_size;
-		seg_label_shape[1] = 1;
-		seg_label_shape[2] = top_shape[2] / 4;
-		seg_label_shape[3] = top_shape[3] / 4;
-		batch->seg_label_.Reshape(seg_label_shape);
-		caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
-		// sanity check label image
-		cv::Mat cv_lab = ReadImageToCVMat("data//mask.png",
-			seg_label_shape[2], seg_label_shape[3], false, true);
-		//cv::imwrite("data//read.png", cv_lab);
-		this->transformed_label_.Reshape(seg_label_shape);
-		int offset = batch->seg_label_.offset(item_id);
-		this->transformed_label_.set_cpu_data(top_seg_label + offset);
-		this->data_transformer_->Transform2(cv_lab, &this->transformed_label_, true);
-		
-	}
+
   }
 
   // Store "rich" annotation if needed.
   if (this->output_labels_ && has_anno_type_) {
     vector<int> label_shape(4);
 	
-    if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX) {
+    if (anno_type_ == AnnotatedDatum_AnnotationType_BBOX || anno_type_ == AnnotatedDatum_AnnotationType_BBOXandSeg) {
       label_shape[0] = 1;
       label_shape[1] = 1;
       label_shape[3] = 8;
 
 
-	  if (yolo_data_type_ == 1) {
-		  label_shape[0] = batch_size;
-		  label_shape[3] = 5;
-	  }
+      if (yolo_data_type_ == 1) {
+        label_shape[0] = batch_size;
+        label_shape[3] = 5;
+      }
       if (num_bboxes == 0) {
-        // Store all -1 in the label.
-		if (yolo_data_type_ == 1) {
-			label_shape[2] = 300;
-			batch->label_.Reshape(label_shape);
-			caffe_set<Dtype>(8, 0, batch->label_.mutable_cpu_data());
-		}
-		else {
-			label_shape[2] = 1;
-			batch->label_.Reshape(label_shape);
-			caffe_set<Dtype>(8, -1, batch->label_.mutable_cpu_data());
-		}
+          // Store all -1 in the label.
+        if (yolo_data_type_ == 1) {
+          label_shape[2] = 300;
+          batch->label_.Reshape(label_shape);
+          caffe_set<Dtype>(8, 0, batch->label_.mutable_cpu_data());
+        }
+        else {
+          label_shape[2] = 1;
+          batch->label_.Reshape(label_shape);
+          caffe_set<Dtype>(8, -1, batch->label_.mutable_cpu_data());
+        }
 
-      } else {
-		if (num_bboxes > 300) {
-			LOG(INFO) << num_bboxes;
-		}
-        // Reshape the label and store the annotation.
-		if (yolo_data_type_ == 1) {
-			label_shape[2] = 300;
-			//LOG(INFO) << "num_bboxes: " << num_bboxes;
-			batch->label_.Reshape(label_shape);
-			
-		}
-		else {
-			label_shape[2] = num_bboxes;
-			batch->label_.Reshape(label_shape);
-		}
+      } 
+      else {
+        if (num_bboxes > 300) {
+          LOG(INFO) << num_bboxes;
+        }
+            // Reshape the label and store the annotation.
+        if (yolo_data_type_ == 1) {
+          label_shape[2] = 300;
+          //LOG(INFO) << "num_bboxes: " << num_bboxes;
+          batch->label_.Reshape(label_shape);
+          
+        }
+        else {
+          label_shape[2] = num_bboxes;
+          batch->label_.Reshape(label_shape);
+        }
 
         top_label = batch->label_.mutable_cpu_data();
         int idx = 0;
         for (int item_id = 0; item_id < batch_size; ++item_id) {
           const vector<AnnotationGroup>& anno_vec = all_anno[item_id];
-		  if (yolo_data_type_ == 1) {
-			  int label_offset = batch->label_.offset(item_id);
-			  idx = label_offset;
-			  caffe_set(300 * 5, Dtype(0), &top_label[idx]);
-		  }
+          if (yolo_data_type_ == 1) {
+            int label_offset = batch->label_.offset(item_id);
+            idx = label_offset;
+            caffe_set(300 * 5, Dtype(0), &top_label[idx]);
+          }
 
           for (int g = 0; g < anno_vec.size(); ++g) {
             const AnnotationGroup& anno_group = anno_vec[g];
             for (int a = 0; a < anno_group.annotation_size(); ++a) {
               const Annotation& anno = anno_group.annotation(a);
               const NormalizedBBox& bbox = anno.bbox();
-			  if (yolo_data_type_ == 1) {  
+              if (yolo_data_type_ == 1) {  
+                //LOG(INFO) << "difficult: " << bbox.difficult() << ", train_difficult: " << train_diffcult_;
+                if (!bbox.difficult() || train_diffcult_) {
+                  float x = (bbox.xmin() + bbox.xmax()) / 2.0;
+                  float y = (bbox.ymin() + bbox.ymax()) / 2.0;
+                  float w = bbox.xmax() - bbox.xmin();
+                  float h = bbox.ymax() - bbox.ymin();
+                  //LOG(INFO) <<anno_group.group_label();
+                  top_label[idx++] = anno_group.group_label() - 1;
+                  //LOG(INFO) << "class: " << anno_group.group_label();
+                  top_label[idx++] = x;
+                  top_label[idx++] = y;
+                  top_label[idx++] = w;
+                  top_label[idx++] = h;
+                }
 
-				  //LOG(INFO) << "difficult: " << bbox.difficult() << ", train_difficult: " << train_diffcult_;
-				  if (!bbox.difficult() || train_diffcult_) {
-					  float x = (bbox.xmin() + bbox.xmax()) / 2.0;
-					  float y = (bbox.ymin() + bbox.ymax()) / 2.0;
-					  float w = bbox.xmax() - bbox.xmin();
-					  float h = bbox.ymax() - bbox.ymin();
-					  //LOG(INFO) <<anno_group.group_label();
-					  top_label[idx++] = anno_group.group_label() - 1;
-					  //LOG(INFO) << "class: " << anno_group.group_label();
-					  top_label[idx++] = x;
-					  top_label[idx++] = y;
-					  top_label[idx++] = w;
-					  top_label[idx++] = h;
-				  }
-
-			  }
-			  else {
-				  top_label[idx++] = item_id;
-				  top_label[idx++] = anno_group.group_label();
-				  
-				  top_label[idx++] = anno.instance_id();
-				  top_label[idx++] = bbox.xmin();
-				  top_label[idx++] = bbox.ymin();
-				  top_label[idx++] = bbox.xmax();
-				  top_label[idx++] = bbox.ymax();
-				  top_label[idx++] = bbox.difficult();
-			  }
-
+              }
+              else {
+                top_label[idx++] = item_id;
+                top_label[idx++] = anno_group.group_label();
+                
+                top_label[idx++] = anno.instance_id();
+                top_label[idx++] = bbox.xmin();
+                top_label[idx++] = bbox.ymin();
+                top_label[idx++] = bbox.xmax();
+                top_label[idx++] = bbox.ymax();
+                top_label[idx++] = bbox.difficult();
+              }
             }
           }
         }
       }
 
-    } else {
+    } 
+    else {
       LOG(FATAL) << "Unknown annotation type.";
     }
 

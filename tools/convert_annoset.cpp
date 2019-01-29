@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-
+#include <tuple>
 #include "boost/scoped_ptr.hpp"
 #include "boost/variant.hpp"
 #include "gflags/gflags.h"
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     gflags::ShowUsageWithFlagsRestrict(argv[0], "tools/convert_annoset");
     return 1;
   }
-
+  
   const bool is_color = !FLAGS_gray;
   const bool check_size = FLAGS_check_size;
   const bool encoded = FLAGS_encoded;
@@ -96,15 +96,20 @@ int main(int argc, char** argv) {
 
   std::ifstream infile(argv[2]);
   std::vector<std::pair<std::string, boost::variant<int, std::string> > > lines;
+  std::vector<std::pair<std::string, std::pair<std::string,std::string> > > lines_seg;
   std::string filename;
   int label;
   std::string labelname;
+  std::string seglabelname;
+  LOG(INFO)<<anno_type;
+
   if (anno_type == "classification") {
     while (infile >> filename >> label) {
       lines.push_back(std::make_pair(filename, label));
     }
   } else if (anno_type == "detection") {
     type = AnnotatedDatum_AnnotationType_BBOX;
+    
     LabelMap label_map;
     CHECK(ReadProtoFromTextFile(label_map_file, &label_map))
         << "Failed to read label map file.";
@@ -113,13 +118,41 @@ int main(int argc, char** argv) {
     while (infile >> filename >> labelname) {
       lines.push_back(std::make_pair(filename, labelname));
     }
+  } else if (anno_type == "detection_with_segmentation") {
+    type = AnnotatedDatum_AnnotationType_BBOXandSeg;
+    
+    LabelMap label_map;
+    CHECK(ReadProtoFromTextFile(label_map_file, &label_map))
+        << "Failed to read label map file.";
+    CHECK(MapNameToLabel(label_map, check_label, &name_to_label))
+        << "Failed to convert name to label.";
+    
+    while (infile >> filename >> labelname >> seglabelname) {
+      //LOG(INFO)<<filename<<labelname<<seglabelname;
+      lines_seg.push_back(std::make_pair(filename, std::make_pair(labelname,seglabelname)));
+    }
   }
   if (FLAGS_shuffle) {
     // randomly shuffle data
     LOG(INFO) << "Shuffling data";
-    shuffle(lines.begin(), lines.end());
+    if (anno_type == "detection_with_segmentation") {
+      shuffle(lines.begin(), lines.end());
+    }
+    else {
+      shuffle(lines_seg.begin(), lines_seg.end());
+    }
+    
   }
-  LOG(INFO) << "A total of " << lines.size() << " images.";
+  int lines_size ;
+  if (anno_type == "detection_with_segmentation") {
+    LOG(INFO) << "A total of " << lines_seg.size() << " images.";
+    lines_size = lines_seg.size();
+  }
+  else {
+    LOG(INFO) << "A total of " << lines.size() << " images.";
+    lines_size = lines.size();
+  }
+  
 
   if (encode_type.size() && !encoded)
     LOG(INFO) << "encode_type specified, assuming encoded=true.";
@@ -142,19 +175,31 @@ int main(int argc, char** argv) {
   int data_size = 0;
   bool data_size_initialized = false;
 
-  for (int line_id = 0; line_id < lines.size(); ++line_id) {
+  for (int line_id = 0; line_id < lines_size; ++line_id) {
     bool status = true;
     std::string enc = encode_type;
     if (encoded && !enc.size()) {
       // Guess the encoding type from the file name
-      string fn = lines[line_id].first;
+      string fn;
+      if (anno_type == "detection_with_segmentation") {
+        fn = lines_seg[line_id].first;
+      }
+      else {
+        fn = lines[line_id].first;
+      }
       size_t p = fn.rfind('.');
       if ( p == fn.npos )
         LOG(WARNING) << "Failed to guess the encoding of '" << fn << "'";
       enc = fn.substr(p);
       std::transform(enc.begin(), enc.end(), enc.begin(), ::tolower);
     }
-    filename = root_folder + lines[line_id].first;
+    if (anno_type == "detection_with_segmentation") {
+      filename = root_folder + lines_seg[line_id].first;
+    }
+    else {
+      filename = root_folder + lines[line_id].first;
+    }
+    
     if (anno_type == "classification") {
       label = boost::get<int>(lines[line_id].second);
       status = ReadImageToDatum(filename, label, resize_height, resize_width,
@@ -165,9 +210,27 @@ int main(int argc, char** argv) {
           resize_width, min_dim, max_dim, is_color, enc, type, label_type,
           name_to_label, &anno_datum);
       anno_datum.set_type(AnnotatedDatum_AnnotationType_BBOX);
+    } else if (anno_type == "detection_with_segmentation") {
+      //LOG(INFO)<<filename;
+      std::pair<std::string,std::string> pair_name = lines_seg[line_id].second;
+      //boost::get<std::pair<std::string,std::string>>(lines_seg[line_id].second);
+      labelname = root_folder + pair_name.first;
+      seglabelname = root_folder + pair_name.second;
+      //LOG(INFO)<<labelname;
+      status = ReadRichImageToAnnotatedDatumWithSeg(filename, labelname , seglabelname, resize_height,
+          resize_width, min_dim, max_dim, is_color, enc, type, label_type,
+          name_to_label, &anno_datum);
+      anno_datum.set_type(AnnotatedDatum_AnnotationType_BBOXandSeg);
     }
+    
     if (status == false) {
-      LOG(WARNING) << "Failed to read " << lines[line_id].first;
+      
+      if (anno_type == "detection_with_segmentation") {
+        LOG(WARNING) << "Failed to read " << lines_seg[line_id].first;
+      }
+      else {
+        LOG(WARNING) << "Failed to read " << lines[line_id].first;
+      }
       continue;
     }
     if (check_size) {
@@ -181,7 +244,14 @@ int main(int argc, char** argv) {
       }
     }
     // sequential
-    string key_str = caffe::format_int(line_id, 8) + "_" + lines[line_id].first;
+    string key_str;
+    if (anno_type == "detection_with_segmentation") {
+      key_str = caffe::format_int(line_id, 8) + "_" + lines_seg[line_id].first;
+    }
+    else {
+      key_str = caffe::format_int(line_id, 8) + "_" + lines[line_id].first;
+    }
+    
 
     // Put in db
     string out;

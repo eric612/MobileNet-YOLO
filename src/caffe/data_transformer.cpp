@@ -300,7 +300,7 @@ void DataTransformer<Dtype>::TransformAnnotation(
   const int num_resize_policies = param_.resize_param_size();
   //LOG(INFO) << policy_num;
   //LOG(INFO) << img_width << "," << img_height;
-  if (anno_datum.type() == AnnotatedDatum_AnnotationType_BBOX) {
+  if (anno_datum.type() == AnnotatedDatum_AnnotationType_BBOX || anno_datum.type() == AnnotatedDatum_AnnotationType_BBOXandSeg) {
     // Go through each AnnotationGroup.
     for (int g = 0; g < anno_datum.annotation_group_size(); ++g) {
       const AnnotationGroup& anno_group = anno_datum.annotation_group(g);
@@ -376,6 +376,7 @@ void DataTransformer<Dtype>::CropImage(const Datum& datum,
     // Save the image into datum.
     EncodeCVMatToDatum(crop_img, "jpg", crop_datum);
     crop_datum->set_label(datum.label());
+
     return;
 #else
     LOG(FATAL) << "Encoded datum requires OpenCV; compile with USE_OPENCV.";
@@ -623,83 +624,27 @@ void DataTransformer<Dtype>::Transform2(const cv::Mat& cv_img,
 
   CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
   const int crop_size = param_.crop_size();
-  const Dtype scale = preserve_pixel_vals ? 1 : param_.scale();
+  const float scale = 1/255.0;
   const bool do_mirror = param_.mirror() && Rand(2);
-  const bool has_mean_file = param_.has_mean_file();
-  const bool has_mean_values = mean_values_.size() > 0;
-
   CHECK_GT(img_channels, 0);
-  CHECK_GE(img_height, crop_size);
-  CHECK_GE(img_width, crop_size);
-
-  Dtype* mean = NULL;
-  if (has_mean_file && !preserve_pixel_vals) {
-    CHECK_EQ(img_channels, data_mean_.channels());
-    CHECK_EQ(img_height, data_mean_.height());
-    CHECK_EQ(img_width, data_mean_.width());
-    mean = data_mean_.mutable_cpu_data();
-  }
-  if (has_mean_values && !preserve_pixel_vals) {
-    CHECK(mean_values_.size() == 1 || mean_values_.size() == img_channels) <<
-     "Specify either 1 mean_value or as many as channels: " << img_channels;
-    if (img_channels > 1 && mean_values_.size() == 1) {
-      // Replicate the mean_value for simplicity
-      for (int c = 1; c < img_channels; ++c) {
-        mean_values_.push_back(mean_values_[0]);
-      }
-    }
-  }
-
-  int h_off = 0;
-  int w_off = 0;
-  cv::Mat cv_cropped_img = cv_img;
-  if (crop_size) {
-    CHECK_EQ(crop_size, height);
-    CHECK_EQ(crop_size, width);
-    // We only do random crop when we do training.
-    if (phase_ == TRAIN) {
-      h_off = Rand(img_height - crop_size + 1);
-      w_off = Rand(img_width - crop_size + 1);
-    } else {
-      h_off = (img_height - crop_size) / 2;
-      w_off = (img_width - crop_size) / 2;
-    }
-    cv::Rect roi(w_off, h_off, crop_size, crop_size);
-    cv_cropped_img = cv_img(roi);
-  } else {
-    CHECK_EQ(img_height, height);
-    CHECK_EQ(img_width, width);
-  }
-
-  CHECK(cv_cropped_img.data);
-  LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
+  //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
   Dtype* transformed_data = transformed_blob->mutable_cpu_data();
   int top_index;
   for (int h = 0; h < height; ++h) {
-    const uchar* ptr = cv_cropped_img.ptr<uchar>(h);
+    const uchar* ptr = cv_img.ptr<uchar>(h);
     int img_index = 0;
     for (int w = 0; w < width; ++w) {
       for (int c = 0; c < img_channels; ++c) {
         if (do_mirror) {
           top_index = (c * height + h) * width + (width - 1 - w);
-        } else {
+        } 
+        else {
           top_index = (c * height + h) * width + w;
         }
         // int top_index = (c * height + h) * width + w;
         Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
-        if (has_mean_file && !preserve_pixel_vals) {
-          int mean_index = (c * img_height + h_off + h) * img_width + w_off + w;
-          transformed_data[top_index] =
-            (pixel - mean[mean_index]) * scale;
-        } else {
-          if (has_mean_values && !preserve_pixel_vals) {
-            transformed_data[top_index] =
-              (pixel - mean_values_[c]) * scale;
-          } else {
-            transformed_data[top_index] = pixel * scale;
-          }
-        }
-		
+        transformed_data[top_index] = pixel * scale;	
+        //LOG(INFO) << pixel * scale;
       }
     }
   }
@@ -725,6 +670,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const int crop_size = param_.crop_size();
   const Dtype scale = param_.scale();
   *do_mirror = param_.mirror() && Rand(2);
+  mirror_param_ = *do_mirror;
   const bool has_mean_file = param_.has_mean_file();
   const bool has_mean_values = mean_values_.size() > 0;
 
@@ -761,6 +707,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
 		cv::flip(cv_resized_image, cv_resized_image, 1);
 	}
 	cv::imwrite(buf,cv_resized_image);*/
+	//LOG(INFO) << *do_mirror << ",data";
   } else {
     cv_resized_image = cv_img;
   }

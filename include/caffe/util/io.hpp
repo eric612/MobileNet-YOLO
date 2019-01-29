@@ -128,6 +128,11 @@ bool ReadFileToDatum(const string& filename, const int label, Datum* datum);
 inline bool ReadFileToDatum(const string& filename, Datum* datum) {
   return ReadFileToDatum(filename, -1, datum);
 }
+bool ReadFileToDatumSeg(const string& filename, const int label, Datum* datum);
+
+inline bool ReadFileToDatumSeg(const string& filename, Datum* datum) {
+	return ReadFileToDatumSeg(filename, -1, datum);
+}
 
 bool ReadImageToDatum(const string& filename, const int label,
     const int height, const int width, const int min_dim, const int max_dim,
@@ -179,6 +184,9 @@ inline bool ReadImageToDatum(const string& filename, const int label,
     const std::string & encoding, Datum* datum) {
   return ReadImageToDatum(filename, label, 0, 0, true, encoding, datum);
 }
+bool ReadImageToDatumSeg(const string& filename, const int label,
+	const int height, const int width, const int min_dim, const int max_dim,
+	const bool is_color, const std::string & encoding, Datum* datum);
 
 bool DecodeDatumNative(Datum* datum);
 bool DecodeDatum(Datum* datum, bool is_color);
@@ -202,7 +210,13 @@ inline bool ReadRichImageToAnnotatedDatum(const string& filename,
                       is_color, encoding, type, labeltype, name_to_label,
                       anno_datum);
 }
-
+bool ReadRichImageToAnnotatedDatumWithSeg(const string& filename,
+    const string& labelname,const string& seg_filename, const int height, const int width,
+    const int min_dim, const int max_dim, const bool is_color,
+    const std::string& encoding, const AnnotatedDatum_AnnotationType type,
+    const string& labeltype, const std::map<string, int>& name_to_label,
+    AnnotatedDatum* anno_datum);
+    
 bool ReadXMLToAnnotatedDatum(const string& labelname, const int img_height,
     const int img_width, const std::map<string, int>& name_to_label,
     AnnotatedDatum* anno_datum);
@@ -273,11 +287,14 @@ cv::Mat ReadImageToCVMat(const string& filename);
 
 cv::Mat DecodeDatumToCVMatNative(const Datum& datum);
 cv::Mat DecodeDatumToCVMat(const Datum& datum, bool is_color);
+cv::Mat DecodeDatumToCVMatSeg(const Datum& datum, bool is_color);
 
 void EncodeCVMatToDatum(const cv::Mat& cv_img, const string& encoding,
                         Datum* datum);
-
+void EncodeCVMatToDatumSeg(const cv::Mat& cv_img, const string& encoding,
+                        Datum* datum);
 void CVMatToDatum(const cv::Mat& cv_img, Datum* datum);
+void CVMatToDatumSeg(const cv::Mat& cv_img, Datum* datum); 
 #endif  // USE_OPENCV
 
 }  // namespace caffe

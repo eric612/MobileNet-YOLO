@@ -201,7 +201,34 @@ bool ReadImageToDatum(const string& filename, const int label,
     return false;
   }
 }
+bool ReadImageToDatumSeg(const string& filename, const int label,
+	const int height, const int width, const int min_dim, const int max_dim,
+	const bool is_color, const std::string & encoding, Datum* datum) {
+	cv::Mat cv_img = ReadImageToCVMat(filename, height, width, min_dim, max_dim,
+		is_color);
+	if (cv_img.data) {		
+		if (encoding.size()) {
 
+			if ((cv_img.channels() == 3) == is_color && !height && !width &&
+				!min_dim && !max_dim && matchExt(filename, encoding)) {
+				datum->set_channels(cv_img.channels());
+				datum->set_height(cv_img.rows);
+				datum->set_width(cv_img.cols);
+				return ReadFileToDatumSeg(filename, label, datum);
+			}
+			EncodeCVMatToDatumSeg(cv_img, encoding, datum);
+			
+			//datum->set_label(label);
+			return true;
+		}
+		CVMatToDatumSeg(cv_img, datum);
+		//datum->set_label(label);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 void GetImageSize(const string& filename, int* height, int* width) {
   cv::Mat cv_img = cv::imread(filename);
   if (!cv_img.data) {
@@ -211,7 +238,73 @@ void GetImageSize(const string& filename, int* height, int* width) {
   *height = cv_img.rows;
   *width = cv_img.cols;
 }
+bool ReadRichImageToAnnotatedDatumWithSeg(const string& filename,
+    const string& labelfile,const string& seg_filename, const int height, const int width,
+    const int min_dim, const int max_dim, const bool is_color,
+    const std::string& encoding, const AnnotatedDatum_AnnotationType type,
+    const string& labeltype, const std::map<string, int>& name_to_label,
+    AnnotatedDatum* anno_datum) {
+  // Read image to datum.
+  //LOG(INFO)<<"ttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
+  bool status = ReadImageToDatum(filename, -1, height, width,
+                                 min_dim, max_dim, is_color, encoding,
+                                 anno_datum->mutable_datum());    
+  if (status == false) {
+    return status;
+  }
+  anno_datum->clear_annotation_group();
+  if (!boost::filesystem::exists(labelfile)) {
+    return true;
+  }
+  cv::Mat cv_img;
+  switch (type) {
+    case AnnotatedDatum_AnnotationType_BBOX:
+      int ori_height, ori_width;
+      GetImageSize(filename, &ori_height, &ori_width);
+      if (labeltype == "xml") {
+        return ReadXMLToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                       name_to_label, anno_datum);
+      } else if (labeltype == "json") {
+        return ReadJSONToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                        name_to_label, anno_datum);
+      } else if (labeltype == "txt") {
+        return ReadTxtToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                       anno_datum);
+      } else {
+        LOG(FATAL) << "Unknown label file type.";
+        return false;
+      }
+      break;
+    case AnnotatedDatum_AnnotationType_BBOXandSeg:
+      GetImageSize(filename, &ori_height, &ori_width);
+      if (labeltype == "xml") {
+        ReadXMLToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                       name_to_label, anno_datum);
+      } else if (labeltype == "json") {
+        ReadJSONToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                        name_to_label, anno_datum);
+      } else if (labeltype == "txt") {
+        ReadTxtToAnnotatedDatum(labelfile, ori_height, ori_width,
+                                       anno_datum);
+      } else {
+        LOG(FATAL) << "Unknown label file type.";
+        return false;
+      }
+	  //LOG(INFO) << "ttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
+	  status = ReadImageToDatumSeg(seg_filename, -1, height, width,
+		  min_dim, max_dim, is_color, "png",
+		  anno_datum->mutable_datum());
+      //cv_img = ReadImageToCVMat(seg_filename, height, width, min_dim, max_dim,is_color);
+      //CVMatToDatumSeg(cv_img,anno_datum->mutable_datum()); 
+      return status;                           
+      break;
 
+    default:
+      LOG(FATAL) << "Unknown annotation type.";
+      return false;
+  }
+
+}
 bool ReadRichImageToAnnotatedDatum(const string& filename,
     const string& labelfile, const int height, const int width,
     const int min_dim, const int max_dim, const bool is_color,
@@ -274,7 +367,26 @@ bool ReadFileToDatum(const string& filename, const int label,
     return false;
   }
 }
+bool ReadFileToDatumSeg(const string& filename, const int label,
+	Datum* datum) {
+	std::streampos size;
 
+	fstream file(filename.c_str(), ios::in | ios::binary | ios::ate);
+	if (file.is_open()) {
+		size = file.tellg();
+		std::string buffer(size, ' ');
+		file.seekg(0, ios::beg);
+		file.read(&buffer[0], size);
+		file.close();
+		datum->set_seg_label(buffer);
+		//datum->set_label(label);
+		//datum->set_encoded(true);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 // Parse VOC/ILSVRC detection annotation.
 bool ReadXMLToAnnotatedDatum(const string& labelfile, const int img_height,
     const int img_width, const std::map<string, int>& name_to_label,
@@ -692,7 +804,19 @@ cv::Mat DecodeDatumToCVMat(const Datum& datum, bool is_color) {
   }
   return cv_img;
 }
-
+cv::Mat DecodeDatumToCVMatSeg(const Datum& datum, bool is_color) {
+  cv::Mat cv_img;
+  CHECK(datum.encoded()) << "Datum not encoded";
+  const string& data = datum.seg_label();
+  std::vector<char> vec_data(data.c_str(), data.c_str() + data.size());
+  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
+	  CV_LOAD_IMAGE_GRAYSCALE);
+  cv_img = cv::imdecode(vec_data, cv_read_flag);
+  if (!cv_img.data) {
+	  LOG(ERROR) << "Could not decode datum ";
+  }
+  return cv_img;
+}
 // If Datum is encoded will decoded using DecodeDatumToCVMat and CVMatToDatum
 // If Datum is not encoded will do nothing
 bool DecodeDatumNative(Datum* datum) {
@@ -725,7 +849,36 @@ void EncodeCVMatToDatum(const cv::Mat& cv_img, const string& encoding,
   datum->set_width(cv_img.cols);
   datum->set_encoded(true);
 }
+void EncodeCVMatToDatumSeg(const cv::Mat& cv_img, const string& encoding,
+	Datum* datum) {
+	std::vector<uchar> buf;
+	cv::imencode("." + encoding, cv_img, buf);
+	datum->set_seg_label(std::string(reinterpret_cast<char*>(&buf[0]),
+		buf.size()));
+	//datum->set_channels(cv_img.channels());
+	//datum->set_height(cv_img.rows);
+	//datum->set_width(cv_img.cols);
+	//datum->set_encoded(true);
+}
+void CVMatToDatumSeg(const cv::Mat& cv_img, Datum* datum) {
 
+  int datum_channels = datum->channels();
+  int datum_height = datum->height();
+  int datum_width = datum->width();
+  int datum_size = datum_channels * datum_height * datum_width;
+  std::string buffer(datum_size, ' ');
+  for (int h = 0; h < datum_height; ++h) {
+    const uchar* ptr = cv_img.ptr<uchar>(h);
+    int img_index = 0;
+    for (int w = 0; w < datum_width; ++w) {
+      for (int c = 0; c < datum_channels; ++c) {
+        int datum_index = (c * datum_height + h) * datum_width + w;
+        buffer[datum_index] = static_cast<char>(ptr[img_index++]);
+      }
+    }
+  }
+  datum->set_seg_label(buffer);
+}
 void CVMatToDatum(const cv::Mat& cv_img, Datum* datum) {
   CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
   datum->set_channels(cv_img.channels());

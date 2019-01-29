@@ -230,7 +230,8 @@ class DataTransformer {
    */
   vector<int> InferBlobShape(const cv::Mat& cv_img, int policy_num = 0);
 #endif  // USE_OPENCV
-
+  bool mirror_param_;
+  bool get_mirror() { return mirror_param_; }
  protected:
    /**
    * @brief Generates a random integer from Uniform({0, 1, ..., n-1}).

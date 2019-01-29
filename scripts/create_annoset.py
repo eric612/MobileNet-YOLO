@@ -3,7 +3,8 @@ import os
 import shutil
 import subprocess
 import sys
-
+caffe_root = './'
+sys.path.insert(0, caffe_root + 'python') 
 from caffe.proto import caffe_pb2
 from google.protobuf import text_format
 
@@ -20,7 +21,7 @@ if __name__ == "__main__":
   parser.add_argument("--redo", default = False, action = "store_true",
       help="Recreate the database.")
   parser.add_argument("--anno-type", default = "classification",
-      help="The type of annotation {classification, detection}.")
+      help="The type of annotation {classification, detection , detection_with_segmentation}.")
   parser.add_argument("--label-type", default = "xml",
       help="The type of label file format for detection {xml, json, txt}.")
   parser.add_argument("--backend", default = "lmdb",
@@ -84,7 +85,7 @@ if __name__ == "__main__":
   # check list file format is correct
   with open(list_file, "r") as lf:
     for line in lf.readlines():
-      img_file, anno = line.strip("\n").split(" ")
+      img_file, anno ,seg = line.strip("\n").split(" ")
       if not os.path.exists(root_dir + img_file):
         print("image file: {} does not exist".format(root_dir + img_file))
       if anno_type == "classification":
@@ -94,9 +95,13 @@ if __name__ == "__main__":
         if not os.path.exists(root_dir + anno):
           print("annofation file: {} does not exist".format(root_dir + anno))
           sys.exit()
+      elif anno_type == "detection_with_segmentation":
+        if not os.path.exists(root_dir + anno):
+          print("annofation file: {} does not exist".format(root_dir + anno))
+          sys.exit()
       break
   # check if label map file exist
-  if anno_type == "detection":
+  if anno_type == "detection" or anno_type == "detection_with_segmentation":
     if not os.path.exists(label_map_file):
       print("label map file: {} does not exist".format(label_map_file))
       sys.exit()
@@ -115,11 +120,11 @@ if __name__ == "__main__":
     sys.exit()
   if os.path.exists(out_dir):
     shutil.rmtree(out_dir)
-
+  #print("testttttttttttttttttttttttttttttttttttttttttttt\n");
   # get caffe root directory
   caffe_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-  if anno_type == "detection":
-    cmd = "{}/build/tools/convert_annoset" \
+  if anno_type == "detection" or anno_type == "detection_with_segmentation":
+    cmd = "{}/tools/convert_annoset" \
         " --anno_type={}" \
         " --label_type={}" \
         " --label_map_file={}" \
@@ -155,6 +160,26 @@ if __name__ == "__main__":
         .format(caffe_root, anno_type, min_dim, max_dim, resize_height,
             resize_width, backend, shuffle, check_size, encode_type, encoded,
             gray, root_dir, list_file, out_dir)
+  elif anno_type == "detection_with_segmentation":
+    cmd = "{}/tools/convert_annoset" \
+        " --anno_type={}" \
+        " --label_type={}" \
+        " --label_map_file={}" \
+        " --check_label={}" \
+        " --min_dim={}" \
+        " --max_dim={}" \
+        " --resize_height={}" \
+        " --resize_width={}" \
+        " --backend={}" \
+        " --shuffle={}" \
+        " --check_size={}" \
+        " --encode_type={}" \
+        " --encoded={}" \
+        " --gray={}" \
+        " {} {} {}" \
+        .format(caffe_root, anno_type, label_type, label_map_file, check_label,
+            min_dim, max_dim, resize_height, resize_width, backend, shuffle,
+            check_size, encode_type, encoded, gray, root_dir, list_file, out_dir)
   print(cmd)
   process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
   output = process.communicate()[0]
