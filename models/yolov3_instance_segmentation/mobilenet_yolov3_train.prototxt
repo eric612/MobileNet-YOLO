@@ -3225,7 +3225,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 1 # channel = class 
+    num_output: 256 
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -3281,8 +3281,34 @@ layer {
   top: "conv25"
 }
 layer {
-  name: "sigmoid"
+  name: "conv26"
+  type: "Convolution"
   bottom: "conv25"
+  top: "conv26"
+    param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1 # channel = class 
+    kernel_size: 1
+    pad: 0
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+	bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "sigmoid"
+  bottom: "conv26"
   top: "sigmoid"
   type: "Sigmoid"
 }
