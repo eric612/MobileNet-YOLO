@@ -453,7 +453,14 @@ message ParamSpec {
   // The multiplier on the global weight decay for this parameter.
   optional float decay_mult = 4 [default = 1.0];
 }
-
+message YoloSegParameter{
+  //YoloSeg
+  optional uint32 num_class = 1 [default = 0];
+  optional float object_scale = 2 [default = 5.0];
+  optional float class_scale = 3 [default = 1.0];
+  optional bool use_logic_gradient = 4 [default = false];
+  optional bool use_hardsigmoid = 5 [default = false];
+}
 message Yolov3Parameter{
   //Yolov3
   optional uint32 side = 1 [default = 13];
@@ -547,6 +554,7 @@ message LayerParameter {
 
   optional RegionLossParameter region_loss_param = 600;
   optional Yolov3Parameter yolov3_param = 603;
+  optional YoloSegParameter yolo_seg_param = 604;
   // Layer type-specific parameters.
   //
   // Note: certain layers may have more than one computational engine
