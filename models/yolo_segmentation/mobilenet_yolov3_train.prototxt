@@ -3306,17 +3306,12 @@ layer {
     }
   }
 }
+
 layer {
-  name: "sigmoid"
+  name: "YoloSegLoss"
+  type: "YoloSeg"
   bottom: "conv26"
-  top: "sigmoid"
-  type: "Sigmoid"
-}
-layer {
-  name: "EuclideanLoss"
-  type: "EuclideanLoss"
-  bottom: "sigmoid"
   bottom: "seg_label"
-  top: "seg_loss"
+  top: "Seg_loss"
   loss_weight: 1
 }
