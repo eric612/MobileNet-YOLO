@@ -10,7 +10,7 @@ Currently was under construction
 
 - [x] create lmdb with detection xml file and segementation png 
 - [x] yolo segementation (cpu)
-- [ ] yolo segementation (gpu)
+- [x] yolo segementation (gpu)
 - [ ] model architechure
 - [ ] segementation evalute
 - [x] one class segementation

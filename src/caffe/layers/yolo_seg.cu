@@ -5,6 +5,7 @@
 * @https://github.com/eric612/MobileNet-YOLO
 * Avisonic , ELAN microelectronics
 */
+
 #include <cmath>
 #include <vector>
 
@@ -14,14 +15,17 @@ namespace caffe {
 template <typename Dtype>
 void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  /*const int count = bottom[0]->count();
+  if (diff_.width() != bottom[0]->width()) {
+    diff_.ReshapeLike(*bottom[0]);
+  }
+  const int count = bottom[0]->count();
   const Dtype* input_data = bottom[0]->gpu_data();	
-  const Dtype* label_data = bottom[1]->gpu_data(); 
+  const Dtype* label_data = bottom[1]->cpu_data(); 
   Dtype* diff = diff_.mutable_gpu_data();
   caffe_gpu_logistic_activate(count,input_data ,diff );
+
   
-  
-  caffe_gpu_set(diff_.count(), Dtype(0.0), diff);
+  //caffe_gpu_set(diff_.count(), Dtype(0.0), diff);
   Dtype loss(0.0);
   const Dtype alpha = object_scale_;
   
@@ -31,8 +35,8 @@ void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   for (int i = 0; i < diff_.count(); ++i) {
     loss += diff[i] * diff[i];
   }
-  top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();*/
-	Forward_cpu(bottom,top);	
+  top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
+	//Forward_cpu(bottom,top);	
 }
 
 
