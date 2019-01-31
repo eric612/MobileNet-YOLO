@@ -16,4 +16,6 @@ Currently was under construction
 - [x] one class segementation
 - [ ] multi class segementation
 - [ ] open dataset test
-- [ ] detection and segementation demo and visualize
+- [ ] visualize detection and segementation
+- [ ] data augmentation (mirror)
+- [ ] data augmentation (crop)
