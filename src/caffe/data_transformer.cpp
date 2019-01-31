@@ -630,13 +630,14 @@ void DataTransformer<Dtype>::Transform2(const cv::Mat& cv_img,
   //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
   Dtype* transformed_data = transformed_blob->mutable_cpu_data();
   int top_index;
+  //LOG(INFO) << do_mirror;
   for (int h = 0; h < height; ++h) {
     const uchar* ptr = cv_img.ptr<uchar>(h);
     int img_index = 0;
     for (int w = 0; w < width; ++w) {
       for (int c = 0; c < img_channels; ++c) {
-        if (do_mirror) {
-          top_index = (c * height + h) * width + (width - 1 - w);
+        if (mirror_param_) {
+          top_index = (c * height + h) * width + (width - 1 - w);		  
         } 
         else {
           top_index = (c * height + h) * width + w;

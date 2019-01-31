@@ -36,6 +36,7 @@ void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     loss += diff[i] * diff[i];
   }
   top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
+  //visualization(bottom,top);	
 	//Forward_cpu(bottom,top);	
 }
 

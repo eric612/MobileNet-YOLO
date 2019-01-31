@@ -5,7 +5,7 @@
 * @https://github.com/eric612/MobileNet-YOLO
 * Avisonic , ELAN microelectronics
 */
-#if show_training
+
 #ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -13,7 +13,7 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/video.hpp>
 #endif  // USE_OPENCV
-#endif
+
 #include <cmath>
 #include <vector>
 #include "caffe/util/math_functions.hpp"
@@ -46,7 +46,32 @@ void YoloSegLayer<Dtype>::Reshape(
       "YoloSeg layer inputs must have the same count.";
   diff_.ReshapeLike(*bottom[0]);
 }
+template <typename Dtype>
+void YoloSegLayer<Dtype>::visualization(const vector<Blob<Dtype>*>& bottom,const vector<Blob<Dtype>*>& top)
+{
+  int w = bottom[0]->width();
+  int h = bottom[0]->height();
+  cv::Mat img2(w, h, CV_8UC1);
+  uchar* ptr2;
+  int img_index1 = 0;
+  const Dtype* bottom_data = bottom[0]->cpu_data();
+  for (int y = 0; y < h; y++) {
+    uchar* ptr2 = img2.ptr<uchar>(y);
+    int img_index2 = 0;
+    for (int j = 0; j < w; j++)
+    {
+      ptr2[img_index2] = (unsigned char)(sigmoid(bottom_data[img_index1]) * 255);
 
+      img_index1++;
+      img_index2++;
+    }
+  }
+  //cv::imwrite("test.jpg",img2);
+  cv::namedWindow("show", cv::WINDOW_NORMAL);
+  cv::resizeWindow("show", 600, 600);
+  cv::imshow("show", img2);
+  cv::waitKey(1);
+}
 template <typename Dtype>
 void YoloSegLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
@@ -66,29 +91,7 @@ void YoloSegLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	//LOG(INFO) << sigmoid(bottom_data[i]);
   }
   
-#if show_training
-  int w = bottom[0]->width();
-  int h = bottom[0]->height();
-  cv::Mat img2(w, h, CV_8UC1);
-  uchar* ptr2;
-  int img_index1 = 0;
-  for (int y = 0; y < h; y++) {
-	  uchar* ptr2 = img2.ptr<uchar>(y);
-	  int img_index2 = 0;
-	  for (int j = 0; j < w; j++)
-	  {
-		  ptr2[img_index2] = (unsigned char)(sigmoid(bottom_data[img_index1]) * 255) ;
-		  
-		  img_index1++;
-		  img_index2++;
-	  }
-  }
-  //cv::imwrite("test.jpg",img2);
-  cv::namedWindow("show", cv::WINDOW_NORMAL);
-  cv::resizeWindow("show", 600, 600);
-  cv::imshow("show", img2);
-  cv::waitKey(1);
-#endif
+
   for (int i = 0; i < diff_.count(); ++i) {
     loss += diff[i] * diff[i];
   }
@@ -119,7 +122,7 @@ void YoloSegLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(HardSigmoidLayer);
+STUB_GPU(YoloSegLayer);
 #endif
 
 INSTANTIATE_CLASS(YoloSegLayer);

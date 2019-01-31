@@ -17,5 +17,5 @@ Currently was under construction
 - [ ] multi class segementation
 - [ ] open dataset test
 - [ ] visualize detection and segementation
-- [ ] data augmentation (mirror)
+- [x] data augmentation (mirror)
 - [ ] data augmentation (crop)

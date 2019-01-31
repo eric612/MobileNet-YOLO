@@ -3314,4 +3314,9 @@ layer {
   bottom: "seg_label"
   top: "Seg_loss"
   loss_weight: 1
+  
+  yolo_seg_param {
+    object_scale: 0.5
+    num_class: 0
+  }
 }
