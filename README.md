@@ -90,7 +90,7 @@ See [wiki](https://github.com/eric612/MobileNet-YOLO/wiki)
 Please cite MobileNet-YOLO in your publications if it helps your research:
 
     @article{MobileNet-YOLO,
-      Author = {eric612,avisonic},
+      Author = {eric612 , Avisonic , ELAN},
       Year = {2018}
     }
     
