@@ -36,6 +36,7 @@ void YoloSegLayer<Dtype>::LayerSetUp(
   object_scale_ = param.object_scale();
   class_scale_ = param.class_scale();
   num_class_ = param.num_class();
+  iter_ = 0;
 }
   
 template <typename Dtype>

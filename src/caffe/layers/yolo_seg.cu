@@ -28,13 +28,29 @@ void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   //caffe_gpu_set(diff_.count(), Dtype(0.0), diff);
   Dtype loss(0.0);
   const Dtype alpha = object_scale_;
-  
+  //caffe_gpu_mul(count,label,diff);
   caffe_gpu_axpby(bottom[0]->count(),-alpha,label_data,alpha,diff);
-
+  
   diff = diff_.mutable_cpu_data();
+  Dtype obj(0.0),no_obj(0.0);
+  
   for (int i = 0; i < diff_.count(); ++i) {
+    //if(diff[i]>0) 
+    //  no_obj += diff[i];
+    //else
+    //  obj += 1.0 - diff[i];
     loss += diff[i] * diff[i];
   }
+  if(iter_%16==0) {
+    //LOG(INFO)  << "avg_no_obj : " << no_obj_score_/16 << " , avg_obj : " << obj_score_/16;
+    //obj_score_ = 0;
+    //no_obj_score_ = 0;
+  }
+  else {
+    //obj_score_ += obj/count;
+    //no_obj_score_ += no_obj/count;
+  }
+  iter_++;
   top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
   //visualization(bottom,top);	
 	//Forward_cpu(bottom,top);	

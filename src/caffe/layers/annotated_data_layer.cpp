@@ -326,10 +326,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       //LOG(INFO) << crop_box.xmin() << crop_box.xmax() << crop_box.ymin() << crop_box.ymax();
       const int img_height = cv_lab.rows;
       const int img_width = cv_lab.cols;
-      //if (this->data_transformer_->get_mirror()) {
-      //  cv::flip(cv_lab, cv_lab, 1);
-      //}
-      //LOG(INFO) << this->data_transformer_->get_mirror() << ",anno";
+
       // Get the bbox dimension.
       NormalizedBBox clipped_bbox;
       ClipBBox(crop_box, &clipped_bbox);
@@ -363,10 +360,14 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       //cv::Mat cv_lab = ReadImageToCVMat("data//mask.png",
       //	seg_label_shape[2], seg_label_shape[3], false, true);
 
-      //cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
-      //char filename[256];
-      //sprintf(filename, "input//input_%05d_mask.png", iters_*batch_size + item_id);
-      //cv::imwrite(filename, resized);
+	  /*if (this->data_transformer_->get_mirror()) {
+	    cv::flip(crop_img, crop_img, 1);
+	  }
+	  cv::threshold(crop_img, crop_img, 100, 255, cv::THRESH_BINARY);
+      cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
+      char filename[256];
+      sprintf(filename, "input//input_%05d_mask.png", iters_*batch_size + item_id);
+      cv::imwrite(filename, resized);*/
 
       //this->transformed_label_.Reshape(seg_label_shape);
       //int offset = batch->seg_label_.offset(item_id);

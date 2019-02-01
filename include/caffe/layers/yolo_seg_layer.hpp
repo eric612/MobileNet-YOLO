@@ -41,7 +41,9 @@ class YoloSegLayer : public LossLayer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-  
+
+  void visualization(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top);
+
  protected:
   Blob<Dtype> diff_;  // cached for backward pass
   bool use_logic_gradient_;
@@ -49,6 +51,9 @@ class YoloSegLayer : public LossLayer<Dtype> {
   float object_scale_;
   float class_scale_;
   int num_class_;
+  int iter_;
+  float obj_score_;
+  float no_obj_score_;
 };
 
 }  // namespace caffe

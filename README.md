@@ -18,4 +18,4 @@ Currently was under construction
 - [ ] open dataset test
 - [ ] visualize detection and segementation
 - [x] data augmentation (mirror)
-- [ ] data augmentation (crop)
+- [x] data augmentation (crop)
