@@ -14,18 +14,9 @@ MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethere
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 
 
-### MobileNet-YOLO-Lite for tensorRT
+### Coverted tensorRT models
 
-Currently , the fatest model in caffe of this project 
-
-Network|Resolution|Inference time (GTX 1080)|
-:---:|:---:|:---:|
-[MobileNet-YOLOv3-trt](https://github.com/eric612/TensorRT-Yolov3-model)|416|[4.78  ms](https://github.com/eric612/TensorRT-Yolov3-model/blob/master/test-416.log)
-[MobileNet-YOLOv3-trt](https://github.com/eric612/TensorRT-Yolov3-model)|320|[3.20  ms](https://github.com/eric612/TensorRT-Yolov3-model/blob/master/test-320.log)
-
-Note : 
-
-not test in tensorRT yet , contribution is welcome , if you can help me to test
+[TensorRT-Yolov3-models](https://github.com/eric612/TensorRT-Yolov3-models)
 
 ### Knowledge Transfer
 
