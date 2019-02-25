@@ -4,6 +4,10 @@ Dectection and Segementation in one stage end-to-end [models](http://ethereon.gi
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/rHMW8gkbe6s/0.jpg)](https://www.youtube.com/watch?v=rHMW8gkbe6s)
 
+## Cityscape demo
+
+![alt tag](00085.jpg)
+
 ## Functions
 
 Currently was under construction 
@@ -15,7 +19,7 @@ Currently was under construction
 - [ ] segementation evalute
 - [x] one class segementation
 - [ ] multi class segementation
-- [ ] open dataset test
-- [ ] visualize detection and segementation
+- [x] open dataset test
+- [x] visualize detection and segementation
 - [x] data augmentation (mirror)
 - [x] data augmentation (crop)

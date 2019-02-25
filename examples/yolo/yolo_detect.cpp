@@ -30,6 +30,7 @@
 #include <utility>
 #include <vector>
 #include "caffe/util/benchmark.hpp"
+#define BOUND(a,min_val,max_val)           ( (a < min_val) ? min_val : (a >= max_val) ? (max_val) : a )
 //#define custom_class
 #ifdef custom_class
 //char* CLASSES[6] = { "__background__",
@@ -83,7 +84,8 @@ class Detector {
 		   const int resize);
 
   std::vector<vector<float> > Detect(cv::Mat& img);
-
+  std::vector<vector<float> > DetectAndSegment(cv::Mat& img, cv::Mat& seg_img);
+  cv::Size input_geometry_;
  private:
   void SetMean(const string& mean_file, const string& mean_value);
 
@@ -129,7 +131,7 @@ Detector::Detector(const string& model_file,
   net_->CopyTrainedLayersFrom(weights_file);
 
   CHECK_EQ(net_->num_inputs(), 1) << "Network should have exactly one input.";
-  CHECK_EQ(net_->num_outputs(), 1) << "Network should have exactly one output.";
+  //CHECK_EQ(net_->num_outputs(), 1) << "Network should have exactly one output.";
 
   Blob<float>* input_layer = net_->input_blobs()[0];
   num_channels_ = input_layer->channels();
@@ -180,9 +182,67 @@ std::vector<vector<float> > Detector::Detect(cv::Mat& img) {
     detections.push_back(detection);
     result += 7;
   }
+
   return detections;
 }
+std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, cv::Mat& seg_img) {
+	Blob<float>* input_layer = net_->input_blobs()[0];
+	input_layer->Reshape(1, num_channels_,
+		input_geometry_.height, input_geometry_.width);
+	/* Forward dimension change to all layers. */
+	net_->Reshape();
 
+	std::vector<cv::Mat> input_channels;
+	WrapInputLayer(&input_channels);
+	if (nor_val != 1.0) {
+		img = Preprocess(img, &input_channels, nor_val);
+	}
+	else {
+		img = Preprocess(img, &input_channels);
+	}
+	clock_t time;
+	time = clock();
+	net_->Forward();
+	printf("Predicted in %f seconds.\n", sec(clock() - time));
+	/* Copy the output layer to a std::vector */
+	Blob<float>* result_blob = net_->output_blobs()[0];
+	const float* result = result_blob->cpu_data();
+	const int num_det = result_blob->height();
+	vector<vector<float> > detections;
+	for (int k = 0; k < num_det; ++k) {
+		if (result[0] == -1) {
+			// Skip invalid detection.
+			result += 7;
+			continue;
+		}
+		vector<float> detection(result, result + 7);
+		detections.push_back(detection);
+		result += 7;
+	}
+	Blob<float>* result_blob2 = net_->output_blobs()[1];
+	const float* result2 = result_blob2->cpu_data();
+	//seg_img = cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1);
+	int img_index1 = 0;
+	int w = input_geometry_.width / 8;
+	int h = input_geometry_.height / 8;
+	for (int y = 0; y < h; y++) {
+		uchar* ptr2 = seg_img.ptr<uchar>(y);
+		int img_index2 = 0;
+		for (int j = 0; j < w; j++)
+		{
+			ptr2[img_index2] = (unsigned char)BOUND((result2[img_index1]) * 255,0,255);
+
+			img_index1++;
+			img_index2++;
+		}
+	}
+	//cv::imwrite("test.jpg",img2);
+	/*cv::namedWindow("show", cv::WINDOW_NORMAL);
+	cv::resizeWindow("show", 600, 600);
+	cv::imshow("show", seg_img);
+	cv::waitKey(1);*/
+	return detections;
+}
 /* Load the mean file in binaryproto format. */
 void Detector::SetMean(const string& mean_file, const string& mean_value) {
   cv::Scalar channel_mean;
@@ -389,7 +449,28 @@ cv::Mat Detector::Preprocess(const cv::Mat& img,
   else
 	  return img;
 }
+void MatMul(cv::Mat img1, cv::Mat img2)
+{
+	int i, j;
+	int height = img1.rows;
+	int width = img1.cols;
+	//LOG(INFO) << width << "," << height << "," << img2.rows << "," << img2.cols;
+	//#pragma omp parallel for
+	for (i = 0; i < height; i++) {
+		unsigned char* ptr1 = img1.ptr<unsigned char>(i);
+		const unsigned char* ptr2 = img2.ptr<unsigned char>(i);
+		int img_index1 = 0;
+		int img_index2 = 0;
+		for (j = 0; j < width; j++) {
+			ptr1[img_index1] = (unsigned char) BOUND(ptr1[img_index1] + ptr2[img_index2] * 0.4,0,255);
+			//ptr1[img_index1+1] = (ptr2[img_index2]);
+			ptr1[img_index1+2] = (unsigned char) BOUND(ptr1[img_index1+2] + (255-ptr2[img_index2]) * 0.4,0,255);
+			img_index1+=3;
+			img_index2++;
+		}
+	}
 
+}
 DEFINE_string(mean_file, "",
     "The mean file used to subtract from the input image.");
 DEFINE_string(mean_value, "104,117,123",
@@ -410,6 +491,8 @@ DEFINE_int32(resize_mode, 0,
 	"0:WARP , 1:FIT_LARGE_SIZE_AND_PAD");
 DEFINE_string(cpu_mode, "cpu",
 	"cpu , gpu");
+DEFINE_int32(detect_mode, 0,
+	"0: detect , 1:segementation");
 int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -440,6 +523,7 @@ int main(int argc, char** argv) {
   const int& wait_time = FLAGS_wait_time;
   const int& resize_mode = FLAGS_resize_mode;
   const string& cpu_mode = FLAGS_cpu_mode;
+  const int& detect_mode = FLAGS_detect_mode;
   // Initialize the network.
   
   Detector detector(model_file, weights_file, mean_file, mean_value, confidence_threshold, normalize_value, cpu_mode, resize_mode);
@@ -473,12 +557,22 @@ int main(int argc, char** argv) {
 	  {
 		  //cv::Mat img = cv::imread("data//000166.jpg");
 		  cv::Mat img = cv::imread(fn[k]);
+      cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
+		  cv::Mat seg_img_resized;
 		  if (img.empty()) continue; //only proceed if sucsessful
 									// you probably want to do some preprocessing
 		  CHECK(!img.empty()) << "Unable to decode image " << file;
 		  CPUTimer batch_timer;
 		  batch_timer.Start();
-		  std::vector<vector<float> > detections = detector.Detect(img);
+      std::vector<vector<float> > detections;
+      if (detect_mode) {
+        detections = detector.DetectAndSegment(img, seg_img);
+        cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+        MatMul(img, seg_img_resized);
+      }
+      else {
+        detections = detector.Detect(img);
+			}
 		  LOG(INFO) << "Computing time: " << batch_timer.MilliSeconds() << " ms.";
 		  /* Print the detection results. */
 		  for (int i = 0; i < detections.size(); ++i) {
@@ -541,6 +635,8 @@ int main(int argc, char** argv) {
 			  LOG(FATAL) << "Failed to open video: " << file;
 		  }
 		  cv::Mat img;
+		  cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
+		  cv::Mat seg_img_resized;
 		  int frame_count = 0;
 		  while (true) {
 			  bool success = cap.read(img);
@@ -549,8 +645,15 @@ int main(int argc, char** argv) {
 				  break;
 			  }
 			  CHECK(!img.empty()) << "Error when read frame";
-			  std::vector<vector<float> > detections = detector.Detect(img);
-
+			  std::vector<vector<float> > detections;
+			  if (detect_mode) {
+				  detections = detector.DetectAndSegment(img, seg_img);
+				  cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+				  MatMul(img, seg_img_resized);
+			  }
+			  else {
+				  detections = detector.Detect(img);
+			  }
 			  /* Print the detection results. */
 			  for (int i = 0; i < detections.size(); ++i) {
 				  const vector<float>& d = detections[i];
