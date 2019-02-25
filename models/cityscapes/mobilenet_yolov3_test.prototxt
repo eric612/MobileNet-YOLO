@@ -2910,24 +2910,24 @@ layer {
 	
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
-    biases: 2
-    biases: 9
-    biases: 3
-    biases: 14
     biases: 4
-    biases: 21
+    biases: 9
     biases: 6
-    biases: 29
+    biases: 15
     biases: 8
-    biases: 40
-    biases: 11
-    biases: 57
+    biases: 22
+    biases: 12
+    biases: 31
     biases: 16
-    biases: 80
-    biases: 25
-    biases: 123
-    biases: 41
-    biases: 207
+    biases: 42
+    biases: 22
+    biases: 57
+    biases: 32
+    biases: 81
+    biases: 50
+    biases: 124
+    biases: 82
+    biases: 207 
 	
     mask:6
     mask:7
@@ -2944,6 +2944,7 @@ layer {
     mask_group_num:3
   }
 }
+
 layer {
   name: "detection_eval"
   type: "DetectionEvaluate"
