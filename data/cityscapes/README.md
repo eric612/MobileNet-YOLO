@@ -13,3 +13,7 @@
   # and make soft links at examples/cityscapes/
   bash data/cityscapes/create_data.sh
   ```
+
+### Reference 
+
+> https://github.com/dongdonghy/citypersons2voc

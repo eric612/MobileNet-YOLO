@@ -4,7 +4,7 @@ item {
   display_name: "background"
 }
 item {
-  name: "ped"
+  name: "pedestrian"
   label: 1
   display_name: "pedestrian"
 }
