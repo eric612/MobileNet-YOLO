@@ -33,13 +33,14 @@
 #define BOUND(a,min_val,max_val)           ( (a < min_val) ? min_val : (a >= max_val) ? (max_val) : a )
 //#define custom_class
 #ifdef custom_class
-//char* CLASSES[6] = { "__background__",
+char* YOLO_CLASSES[2] = { "__background__", "pedestrian"};
+//char* YOLO_CLASSES[6] = { "__background__",
 //"bicyle", "car", "motorbike", "person","cones"
 //};
-char* CLASSES[5] = { "__background__",
-"big car","car", "motorbike","person"
+char* YOLO_CLASSES[11] = { "__background__",
+"big car","car", "motorbike","bicycle","person","cones","motor rider","bike rider","animal","object"
 };
-/*char* CLASSES[81] = { "__background__",
+/*char* YOLO_CLASSES[81] = { "__background__",
 "person", "bicycle", "car", "motorcycle",
 "airplane", "bus", "train", "truck", "boat",
 "traffic light", "fire hydrant", "stop sign", "parking meter",
@@ -62,12 +63,22 @@ char* CLASSES[5] = { "__background__",
 "scissors", "teddy bear", "hair drier", "toothbrush" ,
 };*/
 #else
-char* CLASSES[21] = { "__background__",
+char* YOLO_CLASSES[21] = { "__background__",
 "aeroplane", "bicycle", "bird", "boat",
 "bottle", "bus", "car", "cat", "chair",
 "cow", "diningtable", "dog", "horse",
 "motorbike", "person", "pottedplant",
 "sheep", "sofa", "train", "tvmonitor" };
+char* YOLO_CLASSES[21] = { "__background__",
+"obj" };
+
+/*char* YOLO_CLASSES[23] = { "__background__",
+"b_w_t", "b_w_b", "b_n_t", "b_n_b",
+"c_r_t", "c_r_b", "c_g_t", "c_g_b", "c_b_t",
+"c_b_b", "c_y_t", "c_y_b", "c_x_t",
+"c_x_b", "c_w_t", "c_w_b",
+"c_n_t", "c_n_b", "m_w_t", "m_w_b","m_n_t" , "m_n_b" };*/
+
 #endif
 #ifdef USE_OPENCV
 using namespace caffe;  // NOLINT(build/namespaces)
@@ -98,7 +109,7 @@ class Detector {
   cv::Mat LetterBoxResize(cv::Mat img, int w, int h);
  private:
   shared_ptr<Net<float> > net_;
-  cv::Size input_geometry_;
+  
   int num_channels_;
   cv::Mat mean_;
   float nor_val = 1.0;
@@ -598,7 +609,7 @@ int main(int argc, char** argv) {
 				  cv::rectangle(img, pt1, pt2, cvScalar(0, 255, 0), 1, 8, 0);
 
 				  char label[100];
-				  sprintf(label, "%s,%f", CLASSES[static_cast<int>(d[1])], score);
+				  sprintf(label, "%s,%f", YOLO_CLASSES[static_cast<int>(d[1])], score);
 				  int baseline;
 				  cv::Size size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 0, &baseline);
 				  cv::Point pt3;
@@ -609,6 +620,9 @@ int main(int argc, char** argv) {
 				  cv::putText(img, label, pt1, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 			  }
 		  }
+		  //cv::imshow("show", img);
+		  cv::namedWindow("show", cv::WINDOW_NORMAL);
+		  cv::resizeWindow("show", 800, 400);
 		  cv::imshow("show", img);
 		  sprintf(buf, "out//%05d.jpg", k);
 		  cv::imwrite(buf, img);
@@ -682,7 +696,7 @@ int main(int argc, char** argv) {
 					  cv::rectangle(img, pt1, pt2, cvScalar(red, green, blue), 1, 8, 0);
 
 					  char label[100];
-					  sprintf(label, "%s,%f", CLASSES[static_cast<int>(d[1])], score);
+					  sprintf(label, "%s,%f", YOLO_CLASSES[static_cast<int>(d[1])], score);
 					  int baseline;
 					  cv::Size size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 0, &baseline);
 					  cv::Point pt3;
@@ -696,8 +710,11 @@ int main(int argc, char** argv) {
 
 				  }
 			  }
+			  //cv::namedWindow("show", cv::WINDOW_NORMAL);
+			  //cv::resizeWindow("show", 800, 800);
 			  cv::imshow("show", img);
-			  
+
+			  cv::waitKey(1);
 			  if (count <= max)
 			  {
 				  cv::Size size;
@@ -705,7 +722,7 @@ int main(int argc, char** argv) {
 				  size.height = img.rows;
 				  static cv::VideoWriter writer;    // cv::VideoWriter output_video;
 				  if (count == 0) {
-					  writer.open("VideoTest.mov", CV_FOURCC('M', 'P', '4', 'V'), 30, size);
+					  writer.open("VideoTest.mp4", CV_FOURCC('M', 'P', '4', 'V'), 30, size);
 				  }
 				  else if (count == max) {
 					  writer << img;
@@ -719,7 +736,7 @@ int main(int argc, char** argv) {
 				  count++;
 
 			  }
-			  cv::waitKey(1);
+			  
 			  ++frame_count;
 		  }
 		  if (cap.isOpened()) {

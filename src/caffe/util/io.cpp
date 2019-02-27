@@ -107,6 +107,7 @@ cv::Mat ReadImageToCVMat(const string& filename, const int height,
   int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
     CV_LOAD_IMAGE_GRAYSCALE);
   cv::Mat cv_img_origin = cv::imread(filename, cv_read_flag);
+  //LOG(INFO) << filename;
   if (!cv_img_origin.data) {
     LOG(ERROR) << "Could not open or find file " << filename;
     return cv_img_origin;

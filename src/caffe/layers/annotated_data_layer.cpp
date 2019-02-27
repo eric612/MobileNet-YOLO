@@ -361,10 +361,10 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       //	seg_label_shape[2], seg_label_shape[3], false, true);
 
 	  /*if (this->data_transformer_->get_mirror()) {
-	    cv::flip(crop_img, crop_img, 1);
+	    cv::flip(resized, resized, 1);
 	  }
-	  cv::threshold(crop_img, crop_img, 100, 255, cv::THRESH_BINARY);
-      cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
+	  //cv::threshold(crop_img, crop_img, 100, 255, cv::THRESH_BINARY);
+      //cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
       char filename[256];
       sprintf(filename, "input//input_%05d_mask.png", iters_*batch_size + item_id);
       cv::imwrite(filename, resized);*/
