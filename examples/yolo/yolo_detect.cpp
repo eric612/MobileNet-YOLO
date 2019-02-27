@@ -37,9 +37,9 @@ char* YOLO_CLASSES[2] = { "__background__", "pedestrian"};
 //char* YOLO_CLASSES[6] = { "__background__",
 //"bicyle", "car", "motorbike", "person","cones"
 //};
-char* YOLO_CLASSES[11] = { "__background__",
-"big car","car", "motorbike","bicycle","person","cones","motor rider","bike rider","animal","object"
-};
+//char* YOLO_CLASSES[11] = { "__background__",
+//"big car","car", "motorbike","bicycle","person","cones","motor rider","bike rider","animal","object"
+//};
 /*char* YOLO_CLASSES[81] = { "__background__",
 "person", "bicycle", "car", "motorcycle",
 "airplane", "bus", "train", "truck", "boat",
@@ -69,8 +69,8 @@ char* YOLO_CLASSES[21] = { "__background__",
 "cow", "diningtable", "dog", "horse",
 "motorbike", "person", "pottedplant",
 "sheep", "sofa", "train", "tvmonitor" };
-char* YOLO_CLASSES[21] = { "__background__",
-"obj" };
+//char* YOLO_CLASSES[21] = { "__background__",
+//"obj" };
 
 /*char* YOLO_CLASSES[23] = { "__background__",
 "b_w_t", "b_w_b", "b_n_t", "b_n_b",
