@@ -1,0 +1,170 @@
+item {
+  name: "unlabeled"
+  label: 0
+  label_id: 0 # background
+}
+item {
+  name: "ego vehicle"
+  label: 1
+  label_id: 0 # background
+}
+item {
+  name: "rectification border"
+  label: 2
+  label_id: 0 # background
+}
+item {
+  name: "out of roi"
+  label: 3
+  label_id: 0 # background
+}
+item {
+  name: "static"
+  label: 4
+  label_id: 0 # background
+}
+item {
+  name: "dynamic"
+  label: 5
+  label_id: 0 # background
+}
+item {
+  name: "ground"
+  label: 6
+  label_id: 0 # background
+}
+item {
+  name: "road"
+  label: 7
+  label_id: 1
+}
+item {
+  name: "sidewalk"
+  label: 8
+  label_id: 0 # background
+}
+item {
+  name: "parking"
+  label: 9
+  label_id: 0 # background
+}
+item {
+  name: "rail track"
+  label: 10
+  label_id: 0 # background
+}
+item {
+  name: "building"
+  label: 11
+  label_id: 0 # background
+}
+item {
+  name: "wall"
+  label: 12
+  label_id: 0 # background
+}
+item {
+  name: "fence"
+  label: 13
+  label_id: 0 # background
+}
+item {
+  name: "guard rail"
+  label: 14
+  label_id: 0 # background
+}
+item {
+  name: "bridge"
+  label: 15
+  label_id: 0 # background
+}
+item {
+  name: "tunnel"
+  label: 16
+  label_id: 0 # background
+}
+item {
+  name: "pole"
+  label: 17
+  label_id: 0 # background
+}
+item {
+  name: "polegroup"
+  label: 18
+  label_id: 0 # background
+}
+item {
+  name: "traffic light"
+  label: 19
+  label_id: 0 # background
+}
+item {
+  name: "traffic sign"
+  label: 20
+  label_id: 0 # background
+}
+item {
+  name: "vegetation"
+  label: 21
+  label_id: 0 # background
+}
+item {
+  name: "terrain"
+  label: 22
+  label_id: 0 # background
+}
+item {
+  name: "sky"
+  label: 23
+  label_id: 0 # background
+}
+item {
+  name: "person"
+  label: 24
+  label_id: 2
+}
+item {
+  name: "rider"
+  label: 25
+  label_id: 2
+}
+item {
+  name: "car"
+  label: 26
+  label_id: 0 # background
+}
+item {
+  name: "truck"
+  label: 27
+  label_id: 0 # background
+}
+item {
+  name: "bus"
+  label: 28
+  label_id: 0 # background
+}
+item {
+  name: "caravan"
+  label: 29
+  label_id: 0 # background
+}
+item {
+  name: "trailer"
+  label: 30
+  label_id: 0 # background
+}
+item {
+  name: "train"
+  label: 31
+  label_id: 0 # background
+}
+item {
+  name: "motorcycle"
+  label: 32
+  label_id: 0 # background
+}
+item {
+  name: "bicycle"
+  label: 33
+  label_id: 0 # background
+}

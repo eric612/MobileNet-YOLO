@@ -138,6 +138,7 @@ layer {
   annotated_data_param {
     yolo_data_type : 1
     train_diffcult : true
+    single_class : false
     batch_sampler {
       max_sample: 1
       max_trials: 1
@@ -3112,23 +3113,23 @@ layer {
 	
     #10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
     biases: 4
-    biases: 9
+    biases: 7
     biases: 6
-    biases: 15
+    biases: 13
     biases: 8
-    biases: 22
-    biases: 12
-    biases: 31
+    biases: 21
+    biases: 18
     biases: 16
-    biases: 42
-    biases: 22
-    biases: 57
-    biases: 32
-    biases: 81
-    biases: 50
-    biases: 124
-    biases: 82
-    biases: 207
+    biases: 12
+    biases: 33
+    biases: 20
+    biases: 47
+    biases: 30
+    biases: 71
+    biases: 46
+    biases: 112
+    biases: 78
+    biases: 193    
     mask:6
     mask:7
     mask:8
@@ -3155,23 +3156,23 @@ layer {
     #10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 4
-    biases: 9
+    biases: 7
     biases: 6
-    biases: 15
+    biases: 13
     biases: 8
-    biases: 22
-    biases: 12
-    biases: 31
+    biases: 21
+    biases: 18
     biases: 16
-    biases: 42
-    biases: 22
-    biases: 57
-    biases: 32
-    biases: 81
-    biases: 50
-    biases: 124
-    biases: 82
-    biases: 207
+    biases: 12
+    biases: 33
+    biases: 20
+    biases: 47
+    biases: 30
+    biases: 71
+    biases: 46
+    biases: 112
+    biases: 78
+    biases: 193   
     
     mask:3
     mask:4
@@ -3202,6 +3203,8 @@ layer {
     #1.62,8.55, 2.77,14.11, 4.09,20.55, 5.79,28.93, 8.13,40.41, 11.38,56.56, 16.10,80.23, 24.53,122.90, 41.38,206.71
     #2,  6,   3, 13,   5, 21,   6, 31,  13, 21,   9, 44,  14, 68,  22,109,  38,190
     #2,  9,   3, 15,   4, 22,   6, 31,   8, 42,  11, 57,  16, 81,  25,124,  41,207
+    #2,  7,   3, 14,   5, 21,   6, 30,   8, 38,  11, 52,  14, 68,  22,109,  38,190
+    #2,  7,   3, 13,   4, 21,   9, 16,   6, 32,  10, 47,  15, 71,  23,112,  39,193
     #biases: 12
     #biases: 19
     #biases: 15
@@ -3222,23 +3225,23 @@ layer {
     #biases: 168
 
     biases: 4
-    biases: 9
+    biases: 7
     biases: 6
-    biases: 15
+    biases: 13
     biases: 8
-    biases: 22
-    biases: 12
-    biases: 31
+    biases: 21
+    biases: 18
     biases: 16
-    biases: 42
-    biases: 22
-    biases: 57
-    biases: 32
-    biases: 81
-    biases: 50
-    biases: 124
-    biases: 82
-    biases: 207    
+    biases: 12
+    biases: 33
+    biases: 20
+    biases: 47
+    biases: 30
+    biases: 71
+    biases: 46
+    biases: 112
+    biases: 78
+    biases: 193    
     mask:0
     mask:1
     mask:2
@@ -3391,7 +3394,7 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 1 # channel = class 
+    num_output: 2 # channel = class 
     kernel_size: 1
     pad: 0
     stride: 1

@@ -54,6 +54,18 @@ message LabelMap {
   repeated LabelMapItem item = 1;
 }
 
+// The yolo segmentation required 
+message YoloSegItem {
+  optional string name = 1;
+  // lable value from annotation files
+  optional int32 label_id = 2;
+  // lable mapping
+  optional int32 label = 3;
+}
+
+message YoloSegLabel {
+  repeated YoloSegItem item = 1;
+}
 // Sample a bbox in the normalized space [0, 1] with provided constraints.
 message Sampler {
   // Minimum scale of the sampled bbox.

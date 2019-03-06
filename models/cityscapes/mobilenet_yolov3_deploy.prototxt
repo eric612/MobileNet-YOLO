@@ -2885,23 +2885,24 @@ layer {
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 4
-    biases: 9
+    biases: 7
     biases: 6
-    biases: 15
+    biases: 13
     biases: 8
-    biases: 22
-    biases: 12
-    biases: 31
+    biases: 21
+    biases: 18
     biases: 16
-    biases: 42
-    biases: 22
-    biases: 57
-    biases: 32
-    biases: 81
-    biases: 50
-    biases: 124
-    biases: 82
-    biases: 207 
+    biases: 12
+    biases: 33
+    biases: 20
+    biases: 47
+    biases: 30
+    biases: 71
+    biases: 46
+    biases: 112
+    biases: 78
+    biases: 193 
+ 
 	
     mask:6
     mask:7
@@ -3066,7 +3067,7 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 1 # channel = class 
+    num_output: 2 # channel = class 
     kernel_size: 1
     pad: 0
     stride: 1

@@ -41,6 +41,9 @@ class AnnotatedDataLayer : public BasePrefetchingDataLayer<Dtype> {
   bool train_diffcult_;
   int iters_;
   int policy_num_ ;
+  bool single_class_; //for yolo segementation
+  YoloSegLabel label_map_;
+  int seg_label_maxima_;
 };
 
 }  // namespace caffe

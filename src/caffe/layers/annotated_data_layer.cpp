@@ -43,6 +43,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
   yolo_data_type_ = anno_data_param.yolo_data_type();
   yolo_data_jitter_ = anno_data_param.yolo_data_jitter();
   train_diffcult_ = anno_data_param.train_diffcult();
+  single_class_ = anno_data_param.single_class();
   // Make sure dimension is consistent within batch.
   const TransformationParameter& transform_param =
     this->layer_param_.transform_param();
@@ -53,6 +54,9 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
         << "Only support batch size of 1 for FIT_SMALL_SIZE.";
     }
   }
+
+
+
   iters_ = 0;
   policy_num_ = 0;
   // Read a data point, and use it to initialize the top blob.
@@ -123,9 +127,29 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
     }
   }
   if (this->output_seg_labels_) {
+    
+    CHECK(ReadProtoFromTextFile(label_map_file_, &label_map_))
+    << "Failed to read label map file.";
+    int maxima = 0;
+    if(!single_class_) {
+      for(int i =0;i<label_map_.item().size();i++)
+      {
+        if(label_map_.item(i).label_id()) {            
+          //LOG(INFO)<<label_map_.item(i).name() << "," <<label_map_.item(i).label_id()<< "," <<label_map_.item(i).label();
+          if(label_map_.item(i).label_id()>maxima) {
+            maxima = label_map_.item(i).label_id();
+          }
+        }
+      }
+      seg_label_maxima_ = maxima;
+    }
+    else {
+      maxima = 1;
+      seg_label_maxima_ = maxima;
+    }
 	  vector<int> seg_label_shape(4, 1);
 	  seg_label_shape[0] = batch_size;
-	  seg_label_shape[1] = 1;
+	  seg_label_shape[1] = maxima;
 	  seg_label_shape[2] = top_shape[2] / 8;
 	  seg_label_shape[3] = top_shape[3] / 8;
 	  top[2]->Reshape(seg_label_shape);
@@ -315,14 +339,14 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       //LOG(INFO)<<iters_*batch_size + item_id;
       vector<int> seg_label_shape(4);
       seg_label_shape[0] = batch_size;
-      seg_label_shape[1] = 1;
+      seg_label_shape[1] = seg_label_maxima_;
       seg_label_shape[2] = top_shape[2] / 8;
       seg_label_shape[3] = top_shape[3] / 8;
       batch->seg_label_.Reshape(seg_label_shape);
-      caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
+      //caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
       cv::Mat cv_lab = DecodeDatumToCVMatSeg(anno_datum.datum(), false);
       
-      cv::Mat resized, crop_img;
+      cv::Mat crop_img;
       //LOG(INFO) << crop_box.xmin() << crop_box.xmax() << crop_box.ymin() << crop_box.ymax();
       const int img_height = cv_lab.rows;
       const int img_width = cv_lab.cols;
@@ -344,35 +368,67 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
       cv_lab(bbox_roi).copyTo(crop_img);
 
-      cv::resize(crop_img, resized,cv::Size(seg_label_shape[2], seg_label_shape[3]));
-      cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
-      this->transformed_label_.Reshape(seg_label_shape);
-      int offset = batch->seg_label_.offset(item_id);
-      this->transformed_label_.set_cpu_data(top_seg_label + offset);
-      this->data_transformer_->Transform2(resized, &this->transformed_label_, true);
-      
+      if (single_class_) {
+        std::vector<cv::Mat> channels;
+        cv::Mat resized;
+        cv::resize(crop_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]));
+        cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+        this->transformed_label_.Reshape(seg_label_shape);
+        int offset = batch->seg_label_.offset(item_id);
+        this->transformed_label_.set_cpu_data(top_seg_label + offset);
+        channels.push_back(resized);
+        this->data_transformer_->Transform2(channels, &this->transformed_label_, true);
+        
+      }
+      else {
+        caffe_set<Dtype>(batch->seg_label_.count(), 0, batch->seg_label_.mutable_cpu_data());
+        std::vector<cv::Mat> channels;
+        channels.clear();
+        //LOG(INFO)<<type2str(crop_img.type());
+        //cv::Mat lut_mat = cv::CreateMatHeader(1, 256, CV_8UC1);
+        int maxima = seg_label_maxima_;
+        for(int idx = 1;idx<=maxima;idx++) {
+          cv::Mat table = cv::Mat(1, 256, CV_8UC1);
+          uchar *p = table.data;
+          memset(p,0,256);
+          for(int ori_idx =0;ori_idx<label_map_.item().size();ori_idx++)
+          {
+            if(label_map_.item(ori_idx).label_id()==idx) {
+              p[ori_idx] = 255;
+            }           
+          }
+          cv::Mat resized;
+          cv::Mat binary_img = cv::Mat(height, width, CV_8UC1);
+          cv::LUT(crop_img,table,binary_img);
+          cv::resize(binary_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]),cv::INTER_AREA);
+          //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
 
-      //this->data_transformer_->Transform(*sampled_datum,
-      //	&(this->transformed_label_),
-      //	&transformed_anno_vec, policy_num_);
-
-      // sanity check label image
-      //cv::Mat cv_lab = ReadImageToCVMat("data//mask.png",
-      //	seg_label_shape[2], seg_label_shape[3], false, true);
-
-	  /*if (this->data_transformer_->get_mirror()) {
-	    cv::flip(resized, resized, 1);
-	  }
-	  //cv::threshold(crop_img, crop_img, 100, 255, cv::THRESH_BINARY);
-      //cv::resize(crop_img, resized, cv::Size(top_shape[2], top_shape[3]));
-      char filename[256];
-      sprintf(filename, "input//input_%05d_mask.png", iters_*batch_size + item_id);
-      cv::imwrite(filename, resized);*/
-
-      //this->transformed_label_.Reshape(seg_label_shape);
-      //int offset = batch->seg_label_.offset(item_id);
-      //this->transformed_label_.set_cpu_data(top_seg_label + offset);
-      //this->data_transformer_->Transform2(cv_lab, &this->transformed_label_, true);
+          channels.push_back(resized);
+          
+          /*if(true) {
+            //cv::resize(binary_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]));
+            if (this->data_transformer_->get_mirror()) {
+              cv::flip(resized, resized, 1);
+            }
+            //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+            char filename[256];
+            sprintf(filename, "input//input_%05d_%02d_mask.png", iters_*batch_size + item_id,idx);
+            cv::imwrite(filename, resized);
+          }*/
+        }
+        //cv::Mat merged;
+        //cv::merge(channels, merged);
+        
+        //LOG(INFO)<<type2str(merged.type());
+        //LOG(INFO)<<merged.channels()<<","<<merged.rows<<","<<merged.cols;
+        this->transformed_label_.Reshape(seg_label_shape);
+        //LOG(INFO)<<seg_label_shape[0]<<","<<seg_label_shape[1]<<","<<seg_label_shape[2]<<","<<seg_label_shape[3];
+        //LOG(INFO)<<this->transformed_label_.num()<<","<<this->transformed_label_.channels()<<","<<this->transformed_label_.width()<<","<<this->transformed_label_.height();      
+        int offset = batch->seg_label_.offset(item_id);
+        //LOG(INFO)<<offset;
+        this->transformed_label_.set_cpu_data(top_seg_label + offset);
+        this->data_transformer_->Transform2(channels, &this->transformed_label_, true);
+      }
 		
 	  }
     // clear memory

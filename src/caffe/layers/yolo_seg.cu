@@ -15,6 +15,7 @@ namespace caffe {
 template <typename Dtype>
 void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
+  //LOG(INFO)<<bottom[1]->width()<<","<<bottom[1]->height()<<","<<bottom[1]->num()<<","<<bottom[1]->channels();
   if (diff_.width() != bottom[0]->width()) {
     diff_.ReshapeLike(*bottom[0]);
   }

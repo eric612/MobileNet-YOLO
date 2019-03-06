@@ -31,7 +31,7 @@
 #include <vector>
 #include "caffe/util/benchmark.hpp"
 #define BOUND(a,min_val,max_val)           ( (a < min_val) ? min_val : (a >= max_val) ? (max_val) : a )
-//#define custom_class
+#define custom_class
 #ifdef custom_class
 char* YOLO_CLASSES[2] = { "__background__", "pedestrian"};
 //char* YOLO_CLASSES[6] = { "__background__",
@@ -95,7 +95,7 @@ class Detector {
 		   const int resize);
 
   std::vector<vector<float> > Detect(cv::Mat& img);
-  std::vector<vector<float> > DetectAndSegment(cv::Mat& img, cv::Mat& seg_img);
+  std::vector<vector<float> > DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img);
   cv::Size input_geometry_;
  private:
   void SetMean(const string& mean_file, const string& mean_value);
@@ -196,7 +196,7 @@ std::vector<vector<float> > Detector::Detect(cv::Mat& img) {
 
   return detections;
 }
-std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, cv::Mat& seg_img) {
+std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img) {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, num_channels_,
 		input_geometry_.height, input_geometry_.width);
@@ -232,21 +232,30 @@ std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, cv::Mat& se
 	}
 	Blob<float>* result_blob2 = net_->output_blobs()[1];
 	const float* result2 = result_blob2->cpu_data();
+  int size = result_blob2->channels();
+  //
 	//seg_img = cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1);
 	int img_index1 = 0;
 	int w = input_geometry_.width / 8;
 	int h = input_geometry_.height / 8;
-	for (int y = 0; y < h; y++) {
-		uchar* ptr2 = seg_img.ptr<uchar>(y);
-		int img_index2 = 0;
-		for (int j = 0; j < w; j++)
-		{
-			ptr2[img_index2] = (unsigned char)BOUND((result2[img_index1]) * 255,0,255);
-
-			img_index1++;
-			img_index2++;
-		}
-	}
+  for(int i = 0; i<size;i++) {   
+    seg_img.push_back(cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1));
+  }
+  //printf("%d\n",seg_img.size());
+  for(int c = 0; c<seg_img.size();c++) {   
+    img_index1=0;
+    for (int y = 0; y < h; y++) {
+      uchar* ptr2 = seg_img[c].ptr<uchar>(y);
+      int img_index2 = 0;
+      for (int j = 0; j < w; j++) {
+        ptr2[img_index2] = (unsigned char)BOUND((result2[img_index1+c*w*h]) * 255,0,255);
+        //if(c==1)
+        //  printf("%f\n",result2[img_index1+c*w*h]);
+        img_index1++;
+        img_index2++;
+      }
+    }
+  }
 	//cv::imwrite("test.jpg",img2);
 	/*cv::namedWindow("show", cv::WINDOW_NORMAL);
 	cv::resizeWindow("show", 600, 600);
@@ -345,7 +354,7 @@ cv::Mat Detector::LetterBoxResize(cv::Mat img, int w, int h)
 		new_h = h;
 		new_w = (img.size().width * h) / img.size().height;
 	}
-	cv::resize(img, intermediateImg, cv::Size(new_w, new_h));
+	cv::resize(img, intermediateImg, cv::Size(new_w, new_h),cv::INTER_AREA);
 	w_scale = w / (float)new_w;
 	h_scale = h / (float)new_h;
 	delta_w = w - new_w;
@@ -380,7 +389,7 @@ cv::Mat Detector::Preprocess(const cv::Mat& img,
 			resized_img = sample_resized;
 		}
 		else {
-			cv::resize(sample, sample_resized, input_geometry_);
+			cv::resize(sample, sample_resized, input_geometry_,cv::INTER_AREA);
 		}
 		
 	}
@@ -432,7 +441,7 @@ cv::Mat Detector::Preprocess(const cv::Mat& img,
 		  resized_img = sample_resized;
 	  }
 	  else {
-		  cv::resize(sample, sample_resized, input_geometry_);
+		  cv::resize(sample, sample_resized, input_geometry_,cv::INTER_AREA);
 	  }
   }
   else
@@ -460,7 +469,7 @@ cv::Mat Detector::Preprocess(const cv::Mat& img,
   else
 	  return img;
 }
-void MatMul(cv::Mat img1, cv::Mat img2)
+void MatMul(cv::Mat img1, cv::Mat img2,int idx=0)
 {
 	int i, j;
 	int height = img1.rows;
@@ -473,9 +482,13 @@ void MatMul(cv::Mat img1, cv::Mat img2)
 		int img_index1 = 0;
 		int img_index2 = 0;
 		for (j = 0; j < width; j++) {
-			ptr1[img_index1] = (unsigned char) BOUND(ptr1[img_index1] + ptr2[img_index2] * 0.4,0,255);
+      if(ptr2[img_index2]>20) {
+        ptr1[img_index1+idx] = 127 + ptr1[img_index1]/2;
+      }
+			//ptr1[img_index1+idx] = (unsigned char) BOUND(ptr1[img_index1] + ptr2[img_index2] * 1.0,0,255);
 			//ptr1[img_index1+1] = (ptr2[img_index2]);
-			ptr1[img_index1+2] = (unsigned char) BOUND(ptr1[img_index1+2] + (255-ptr2[img_index2]) * 0.4,0,255);
+			//ptr1[img_index1+2] = (unsigned char) BOUND(ptr1[img_index1+2] + (255-ptr2[img_index2]) * 0.4,0,255);
+      //ptr1[img_index1+2] = (unsigned char) BOUND((ptr2[img_index2]) ,0,255);
 			img_index1+=3;
 			img_index2++;
 		}
@@ -568,7 +581,8 @@ int main(int argc, char** argv) {
 	  {
 		  //cv::Mat img = cv::imread("data//000166.jpg");
 		  cv::Mat img = cv::imread(fn[k]);
-      cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
+      std::vector<cv::Mat> seg_img;
+      //cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
 		  cv::Mat seg_img_resized;
 		  if (img.empty()) continue; //only proceed if sucsessful
 									// you probably want to do some preprocessing
@@ -578,8 +592,10 @@ int main(int argc, char** argv) {
       std::vector<vector<float> > detections;
       if (detect_mode) {
         detections = detector.DetectAndSegment(img, seg_img);
-        cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-        MatMul(img, seg_img_resized);
+        for(int i=0;i<seg_img.size();i++) {
+          cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+          MatMul(img, seg_img_resized,i+1);
+        }
       }
       else {
         detections = detector.Detect(img);
@@ -649,8 +665,8 @@ int main(int argc, char** argv) {
 			  LOG(FATAL) << "Failed to open video: " << file;
 		  }
 		  cv::Mat img;
-		  cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
-		  cv::Mat seg_img_resized;
+		  //cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
+		  //cv::Mat seg_img_resized;
 		  int frame_count = 0;
 		  while (true) {
 			  bool success = cap.read(img);
@@ -661,9 +677,9 @@ int main(int argc, char** argv) {
 			  CHECK(!img.empty()) << "Error when read frame";
 			  std::vector<vector<float> > detections;
 			  if (detect_mode) {
-				  detections = detector.DetectAndSegment(img, seg_img);
-				  cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-				  MatMul(img, seg_img_resized);
+				  //detections = detector.DetectAndSegment(img, seg_img);
+				  //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+				  //MatMul(img, seg_img_resized);
 			  }
 			  else {
 				  detections = detector.Detect(img);

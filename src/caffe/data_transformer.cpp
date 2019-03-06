@@ -604,50 +604,61 @@ void DataTransformer<Dtype>::Transform(const vector<cv::Mat> & mat_vector,
   }
 }
 template<typename Dtype>
-void DataTransformer<Dtype>::Transform2(const cv::Mat& cv_img,
+void DataTransformer<Dtype>::Transform2(const std::vector<cv::Mat> cv_imgs,
                                        Blob<Dtype>* transformed_blob,
                                        bool preserve_pixel_vals) {
-  const int img_channels = cv_img.channels();
-  const int img_height = cv_img.rows;
-  const int img_width = cv_img.cols;
+  for (int i=0;i<cv_imgs.size();i++) {
+    //LOG(INFO)<<i;
+    cv::Mat cv_img = cv_imgs[i];
+    const int img_channels = cv_img.channels();
+    const int img_height = cv_img.rows;
+    const int img_width = cv_img.cols;
 
-  // Check dimensions.
-  const int channels = transformed_blob->channels();
-  const int height = transformed_blob->height();
-  const int width = transformed_blob->width();
-  const int num = transformed_blob->num();
+    // Check dimensions.
+    const int channels = transformed_blob->channels();
+    const int height = transformed_blob->height();
+    const int width = transformed_blob->width();
+    const int num = transformed_blob->num();
+    //LOG(INFO) << img_channels;
+    //CHECK_EQ(channels, img_channels);
+    CHECK_LE(height, img_height);
+    CHECK_LE(width, img_width);
+    CHECK_GE(num, 1);
 
-  CHECK_EQ(channels, img_channels);
-  CHECK_LE(height, img_height);
-  CHECK_LE(width, img_width);
-  CHECK_GE(num, 1);
-
-  CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
-  const int crop_size = param_.crop_size();
-  const float scale = 1/255.0;
-  const bool do_mirror = param_.mirror() && Rand(2);
-  CHECK_GT(img_channels, 0);
-  //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
-  Dtype* transformed_data = transformed_blob->mutable_cpu_data();
-  int top_index;
-  //LOG(INFO) << do_mirror;
-  for (int h = 0; h < height; ++h) {
-    const uchar* ptr = cv_img.ptr<uchar>(h);
-    int img_index = 0;
-    for (int w = 0; w < width; ++w) {
-      for (int c = 0; c < img_channels; ++c) {
-        if (mirror_param_) {
-          top_index = (c * height + h) * width + (width - 1 - w);		  
-        } 
-        else {
-          top_index = (c * height + h) * width + w;
-        }
-        // int top_index = (c * height + h) * width + w;
-        Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
-        transformed_data[top_index] = pixel * scale;	
-        //LOG(INFO) << pixel * scale;
+    //CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
+    const int crop_size = param_.crop_size();
+    const float scale = 1/255.0;
+    const bool do_mirror = param_.mirror() && Rand(2);
+    CHECK_GT(img_channels, 0);
+    //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
+    Dtype* transformed_data = transformed_blob->mutable_cpu_data();
+    int top_index;
+    //LOG(INFO) << do_mirror;
+    int maxima = 0;
+    for (int h = 0; h < height; ++h) {
+      const uchar* ptr = cv_img.ptr<uchar>(h);
+      int img_index = 0;
+      for (int w = 0; w < width; ++w) {
+        //for (int c = 0; c < img_channels; ++c) {
+          int c = i;
+          if (mirror_param_) {
+            top_index = (c * height + h) * width + (width - 1 - w);		  
+          } 
+          else {
+            top_index = (c * height + h) * width + w;
+          }
+          //LOG(INFO) << top_index;
+          // int top_index = (c * height + h) * width + w;
+          Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
+          
+          transformed_data[top_index] = pixel * scale;	
+          //LOG(INFO) << transformed_data[top_index];
+          if(top_index>maxima)
+            maxima = top_index;
+        //}
       }
     }
+    //LOG(INFO)<<maxima;
   }
 }
 template<typename Dtype>

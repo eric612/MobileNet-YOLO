@@ -157,7 +157,7 @@ class DataTransformer {
    *    Use with dense label images to preserve the input pixel values
    *    which would be labels (and thus cannot be interpolated or scaled).
    */
-  void Transform2(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
+  void Transform2(const std::vector<cv::Mat> cv_imgs, Blob<Dtype>* transformed_blob,
                  bool preserve_pixel_vals = false);
 
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
