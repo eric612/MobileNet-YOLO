@@ -665,8 +665,8 @@ int main(int argc, char** argv) {
 			  LOG(FATAL) << "Failed to open video: " << file;
 		  }
 		  cv::Mat img;
-		  //cv::Mat seg_img(detector.input_geometry_.width/8, detector.input_geometry_.height/8, CV_8UC1);
-		  //cv::Mat seg_img_resized;
+      std::vector<cv::Mat> seg_img;
+      cv::Mat seg_img_resized;
 		  int frame_count = 0;
 		  while (true) {
 			  bool success = cap.read(img);
@@ -676,14 +676,20 @@ int main(int argc, char** argv) {
 			  }
 			  CHECK(!img.empty()) << "Error when read frame";
 			  std::vector<vector<float> > detections;
-			  if (detect_mode) {
-				  //detections = detector.DetectAndSegment(img, seg_img);
-				  //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-				  //MatMul(img, seg_img_resized);
-			  }
-			  else {
-				  detections = detector.Detect(img);
-			  }
+        
+        if (detect_mode) {
+          detections = detector.DetectAndSegment(img, seg_img);
+          //printf("%d\n",seg_img.size());
+          for(int i=0;i<seg_img.size();i++) {
+            cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+            MatMul(img, seg_img_resized,i+1);
+          }
+          //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+          //MatMul(img, seg_img_resized);
+        }
+        else {
+          detections = detector.Detect(img);
+        }
 			  /* Print the detection results. */
 			  for (int i = 0; i < detections.size(); ++i) {
 				  const vector<float>& d = detections[i];

@@ -3394,7 +3394,7 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 2 # channel = class 
+    num_output: 2 # channel = class number
     kernel_size: 1
     pad: 0
     stride: 1
@@ -3417,6 +3417,5 @@ layer {
   
   yolo_seg_param {
     object_scale: 0.25
-    num_class: 0
   }
 }
