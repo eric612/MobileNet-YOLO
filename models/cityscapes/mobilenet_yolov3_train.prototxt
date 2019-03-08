@@ -131,7 +131,7 @@ layer {
   }
   
   data_param {
-    source: "examples/cityscapes2/cityscapes2_train_lmdb"
+    source: "examples/cityscapes/cityscapes_train_lmdb"
     batch_size: 4
     backend: LMDB
   }
@@ -222,7 +222,7 @@ layer {
       max_trials: 50
     }
     
-    label_map_file:  "data/cityscapes2/labelmap_seg.prototxt"
+    label_map_file:  "data/cityscapes/labelmap_seg.prototxt"
   }
 }
 #layer {
