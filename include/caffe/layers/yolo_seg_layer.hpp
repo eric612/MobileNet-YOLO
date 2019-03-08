@@ -46,6 +46,7 @@ class YoloSegLayer : public LossLayer<Dtype> {
 
  protected:
   Blob<Dtype> diff_;  // cached for backward pass
+  Blob<Dtype> swap_;  // cached for backward pass
   bool use_logic_gradient_;
   bool use_hardsigmoid_;
   float object_scale_;
@@ -54,6 +55,7 @@ class YoloSegLayer : public LossLayer<Dtype> {
   int iter_;
   float obj_score_;
   float no_obj_score_;
+  float IOU_score_;
 };
 
 }  // namespace caffe
