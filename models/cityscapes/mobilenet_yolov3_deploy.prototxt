@@ -3,8 +3,8 @@ input: "data"
 input_shape {
   dim: 1
   dim: 3
-  dim: 416
-  dim: 416
+  dim: 608
+  dim: 608
 }
 
 
@@ -3067,7 +3067,7 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 2 # channel = class 
+    num_output: 3 # channel = class 
     kernel_size: 1
     pad: 0
     stride: 1

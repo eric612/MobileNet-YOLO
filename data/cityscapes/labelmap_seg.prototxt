@@ -131,40 +131,40 @@ item {
 item {
   name: "car"
   label: 26
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "truck"
   label: 27
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "bus"
   label: 28
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "caravan"
   label: 29
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "trailer"
   label: 30
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "train"
   label: 31
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "motorcycle"
   label: 32
-  label_id: 0 # background
+  label_id: 3
 }
 item {
   name: "bicycle"
   label: 33
-  label_id: 0 # background
+  label_id: 3
 }

@@ -159,7 +159,28 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
 	  this->transformed_label_.Reshape(seg_label_shape);
   }
 }
+string type2str(int type) {
+  string r;
 
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
+}
 
 // This function is called on prefetch thread
 template<typename Dtype>
@@ -171,7 +192,12 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   CPUTimer timer;
   CHECK(batch->data_.count());
   CHECK(this->transformed_data_.count());
-
+  /*if (this->output_seg_labels_) {
+    for(int i =0;i<label_map_.item().size();i++)
+    {
+      LOG(INFO)<<label_map_.item(i).name();
+    }
+  }*/
   // Reshape according to the first anno_datum of each batch
   // on single input batches allows for inputs of varying dimension.
   const int batch_size = this->layer_param_.data_param().batch_size();
@@ -263,7 +289,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         // Randomly pick a sampled bbox and crop the expand_datum.
         int rand_idx = caffe_rng_rand() % sampled_bboxes.size();
         sampled_datum = new AnnotatedDatum();
-		crop_box = sampled_bboxes[rand_idx];
+        crop_box = sampled_bboxes[rand_idx];
         this->data_transformer_->CropImage(*expand_datum,
                                            sampled_bboxes[rand_idx],
                                            sampled_datum);
@@ -371,8 +397,10 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       if (single_class_) {
         std::vector<cv::Mat> channels;
         cv::Mat resized;
+        //LOG(INFO)<<type2str(crop_img.type());
         cv::resize(crop_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]));
         cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+        //LOG(INFO)<<type2str(resized.type());
         this->transformed_label_.Reshape(seg_label_shape);
         int offset = batch->seg_label_.offset(item_id);
         this->transformed_label_.set_cpu_data(top_seg_label + offset);
@@ -381,13 +409,15 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         
       }
       else {
-        caffe_set<Dtype>(batch->seg_label_.count(), 0, batch->seg_label_.mutable_cpu_data());
+        //caffe_set<Dtype>(batch->seg_label_.count(), 0, batch->seg_label_.mutable_cpu_data());
         std::vector<cv::Mat> channels;
         channels.clear();
         //LOG(INFO)<<type2str(crop_img.type());
         //cv::Mat lut_mat = cv::CreateMatHeader(1, 256, CV_8UC1);
         int maxima = seg_label_maxima_;
+        
         for(int idx = 1;idx<=maxima;idx++) {
+          cv::Mat resized = cv::Mat();
           cv::Mat table = cv::Mat(1, 256, CV_8UC1);
           uchar *p = table.data;
           memset(p,0,256);
@@ -397,9 +427,11 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
               p[ori_idx] = 255;
             }           
           }
-          cv::Mat resized;
+          
           cv::Mat binary_img = cv::Mat(height, width, CV_8UC1);
+          
           cv::LUT(crop_img,table,binary_img);
+          //LOG(INFO)<<type2str(binary_img.type());
           cv::resize(binary_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]),cv::INTER_AREA);
           //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
 
@@ -416,6 +448,16 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
             cv::imwrite(filename, resized);
           }*/
         }
+        /*if(true) {
+            //cv::resize(binary_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]));
+          if (this->data_transformer_->get_mirror()) {
+            cv::flip(channels[0], channels[0], 1);
+          }
+          //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+          char filename[256];
+          sprintf(filename, "input//input_%05d_%02d_mask.png", iters_*batch_size + item_id,0);
+          cv::imwrite(filename, channels[0]);
+        }*/
         //cv::Mat merged;
         //cv::merge(channels, merged);
         
@@ -428,6 +470,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         //LOG(INFO)<<offset;
         this->transformed_label_.set_cpu_data(top_seg_label + offset);
         this->data_transformer_->Transform2(channels, &this->transformed_label_, true);
+
       }
 		
 	  }
