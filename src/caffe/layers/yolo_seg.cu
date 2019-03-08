@@ -43,10 +43,10 @@ void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   int nii_count = 0;
   int eval_count = 0;
   for (int i = 0; i < diff_.count(); ++i) {
-    if(label_data[i]>0.1) {
+    if(label_data[i]>0.5) {
       obj += swap_cpu[i];
       pos_count++;
-      if(swap_cpu[i]>0.1) {
+      if(swap_cpu[i]>0.5) {
         nii_count++;
       }
     }
@@ -54,7 +54,7 @@ void YoloSegLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       no_obj += swap_cpu[i];
       neg_count++;
     }
-    if(swap_cpu[i]>0.1) {
+    if(swap_cpu[i]>0.5) {
         eval_count++;
     }
     loss += diff[i] * diff[i];
