@@ -44,6 +44,9 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
   yolo_data_jitter_ = anno_data_param.yolo_data_jitter();
   train_diffcult_ = anno_data_param.train_diffcult();
   single_class_ = anno_data_param.single_class();
+  seg_scales_ = anno_data_param.seg_scales();
+  seg_resize_width_ = anno_data_param.seg_resize_width();
+  seg_resize_height_ = anno_data_param.seg_resize_height();
   // Make sure dimension is consistent within batch.
   const TransformationParameter& transform_param =
     this->layer_param_.transform_param();
@@ -150,8 +153,15 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
 	  vector<int> seg_label_shape(4, 1);
 	  seg_label_shape[0] = batch_size;
 	  seg_label_shape[1] = maxima;
-	  seg_label_shape[2] = top_shape[2] / 8;
-	  seg_label_shape[3] = top_shape[3] / 8;
+    if(seg_resize_width_==0 || seg_resize_height_==0) {
+      seg_label_shape[2] = top_shape[2] / seg_scales_;
+      seg_label_shape[3] = top_shape[3] / seg_scales_;
+    }      
+    else {
+      seg_label_shape[2] = seg_resize_width_;
+      seg_label_shape[3] = seg_resize_height_;  
+    }
+    LOG(INFO)<<seg_label_shape[0]<<","<<seg_label_shape[1]<<","<<seg_label_shape[2]<<","<<seg_label_shape[3];
 	  top[2]->Reshape(seg_label_shape);
 	  for (int i = 0; i < this->prefetch_.size(); ++i) {
 		  this->prefetch_[i]->seg_label_.Reshape(seg_label_shape);
@@ -362,15 +372,24 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
                                          &(this->transformed_data_));
     }
     if (this->output_seg_labels_) {
+      cv::Mat cv_lab = DecodeDatumToCVMatSeg(anno_datum.datum(), false);
       //LOG(INFO)<<iters_*batch_size + item_id;
       vector<int> seg_label_shape(4);
       seg_label_shape[0] = batch_size;
       seg_label_shape[1] = seg_label_maxima_;
-      seg_label_shape[2] = top_shape[2] / 8;
-      seg_label_shape[3] = top_shape[3] / 8;
+      
+      if(seg_resize_width_==0 || seg_resize_height_==0) {
+        seg_label_shape[2] = top_shape[2] / seg_scales_;
+        seg_label_shape[3] = top_shape[3] / seg_scales_;
+      }
+      else {
+        seg_label_shape[2] = seg_resize_height_;
+        seg_label_shape[3] = seg_resize_width_;        
+      }
+      //LOG(INFO)<<seg_resize_width_<<","<<seg_resize_height_;
       batch->seg_label_.Reshape(seg_label_shape);
       //caffe_set<Dtype>(8, 0, batch->seg_label_.mutable_cpu_data());
-      cv::Mat cv_lab = DecodeDatumToCVMatSeg(anno_datum.datum(), false);
+      
       
       cv::Mat crop_img;
       //LOG(INFO) << crop_box.xmin() << crop_box.xmax() << crop_box.ymin() << crop_box.ymax();
@@ -432,9 +451,9 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
           
           cv::LUT(crop_img,table,binary_img);
           //LOG(INFO)<<type2str(binary_img.type());
-          cv::resize(binary_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]),cv::INTER_AREA);
+          cv::resize(binary_img, resized, cv::Size(seg_label_shape[3], seg_label_shape[2]),cv::INTER_AREA);
           //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
-
+          //LOG(INFO)<<binary_img.cols<<","<<binary_img.rows;
           channels.push_back(resized);
           
           /*if(true) {
@@ -464,6 +483,9 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         //LOG(INFO)<<type2str(merged.type());
         //LOG(INFO)<<merged.channels()<<","<<merged.rows<<","<<merged.cols;
         this->transformed_label_.Reshape(seg_label_shape);
+        //LOG(INFO)<<batch->seg_label_.width()<<","<<batch->seg_label_.height();
+        //LOG(INFO)<<this->transformed_label_.width()<<","<<this->transformed_label_.height();
+        //LOG(INFO)<<cv_lab.cols<<","<<cv_lab.rows;
         //LOG(INFO)<<seg_label_shape[0]<<","<<seg_label_shape[1]<<","<<seg_label_shape[2]<<","<<seg_label_shape[3];
         //LOG(INFO)<<this->transformed_label_.num()<<","<<this->transformed_label_.channels()<<","<<this->transformed_label_.width()<<","<<this->transformed_label_.height();      
         int offset = batch->seg_label_.offset(item_id);

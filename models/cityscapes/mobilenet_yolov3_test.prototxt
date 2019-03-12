@@ -4,6 +4,7 @@ layer {
   type: "AnnotatedData"
   top: "data"
   top: "label"
+  top: "seg_label"
   include {
     phase: TEST
   }
@@ -22,14 +23,17 @@ layer {
     }
   }
   data_param {
-    source: "examples/bus/bus_test_lmdb"
+    source: "examples/cityscapes/cityscapes_val_lmdb"
     batch_size: 1
     backend: LMDB
   }
   annotated_data_param {
+    single_class : false
+    #seg_resize_width : 2048
+    #seg_resize_height : 1024
     batch_sampler {
     }
-    label_map_file: "data/VOC0712/labelmap_voc.prototxt"
+    label_map_file:  "data/cityscapes/labelmap_seg.prototxt"
   }
 }
 
@@ -2911,24 +2915,23 @@ layer {
 	#10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326
 	
     biases: 4
-    biases: 9
+    biases: 7
     biases: 6
-    biases: 15
+    biases: 13
     biases: 8
-    biases: 22
-    biases: 12
-    biases: 31
+    biases: 21
+    biases: 18
     biases: 16
-    biases: 42
-    biases: 22
-    biases: 57
-    biases: 32
-    biases: 81
-    biases: 50
-    biases: 124
-    biases: 82
-    biases: 207 
-	
+    biases: 12
+    biases: 33
+    biases: 20
+    biases: 47
+    biases: 30
+    biases: 71
+    biases: 46
+    biases: 112
+    biases: 78
+    biases: 193    
     mask:6
     mask:7
     mask:8
@@ -2944,7 +2947,6 @@ layer {
     mask_group_num:3
   }
 }
-
 layer {
   name: "detection_eval"
   type: "DetectionEvaluate"
@@ -2960,3 +2962,179 @@ layer {
   }
 }
 
+layer {
+  name: "conv25/dw"
+  type: "DepthwiseConvolution"
+  bottom: "conv20/sum"
+  top: "conv25/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    engine: CAFFE
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "conv25/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv25/dw"
+  top: "conv25/dw"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "conv25/dw/scale"
+  type: "Scale"
+  bottom: "conv25/dw"
+  top: "conv25/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv25/dw/relu"
+  type: "ReLU"
+  bottom: "conv25/dw"
+  top: "conv25/dw"
+}
+layer {
+  name: "conv25"
+  type: "Convolution"
+  bottom: "conv25/dw"
+  top: "conv25"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 256 
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "conv25/bn"
+  type: "BatchNorm"
+  bottom: "conv25"
+  top: "conv25"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "conv25/scale"
+  type: "Scale"
+  bottom: "conv25"
+  top: "conv25"
+  param {
+    lr_mult: 1.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv25/relu"
+  type: "ReLU"
+  bottom: "conv25"
+  top: "conv25"
+}
+layer {
+  name: "conv26"
+  type: "Convolution"
+  bottom: "conv25"
+  top: "conv26"
+    param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 3 # channel = class 
+    kernel_size: 1
+    pad: 0
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+	bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "sigmoid"
+  bottom: "conv26"
+  top: "sigmoid"
+  type: "Sigmoid"
+}
+layer {
+  name: "segmentation_eval"
+  type: "SegmentationEvaluate"
+  bottom: "sigmoid"
+  bottom: "seg_label"
+  top: "segmentation_eval"
+
+  segmentation_evaluate_param {
+    num_classes: 3
+  }
+}

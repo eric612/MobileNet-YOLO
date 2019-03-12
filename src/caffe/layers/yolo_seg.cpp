@@ -46,6 +46,7 @@ void YoloSegLayer<Dtype>::Reshape(
   CHECK_EQ(bottom[0]->count(), bottom[0]->count()) <<
       "YoloSeg layer inputs must have the same count.";
   diff_.ReshapeLike(*bottom[0]);
+  swap_.ReshapeLike(*bottom[0]);
 }
 template <typename Dtype>
 void YoloSegLayer<Dtype>::visualization(const vector<Blob<Dtype>*>& bottom,const vector<Blob<Dtype>*>& top)
@@ -56,13 +57,16 @@ void YoloSegLayer<Dtype>::visualization(const vector<Blob<Dtype>*>& bottom,const
   uchar* ptr2;
   int img_index1 = 0;
   const Dtype* bottom_data = bottom[0]->cpu_data();
+  const Dtype* label_data = bottom[1]->cpu_data(); 
   for (int y = 0; y < h; y++) {
     uchar* ptr2 = img2.ptr<uchar>(y);
     int img_index2 = 0;
     for (int j = 0; j < w; j++)
     {
-      ptr2[img_index2] = (unsigned char)(sigmoid(bottom_data[img_index1]) * 255);
-
+      //LOG(INFO)<<(int)(bottom_data[img_index1] * 255);
+      ptr2[img_index2] = (unsigned char)(sigmoid(bottom_data[img_index1+w*h]) * 255);
+      
+      //ptr2[img_index2] = (unsigned char)((label_data[img_index1+w*h]) * 255);
       img_index1++;
       img_index2++;
     }
@@ -76,14 +80,17 @@ void YoloSegLayer<Dtype>::visualization(const vector<Blob<Dtype>*>& bottom,const
 template <typename Dtype>
 void YoloSegLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
+  //LOG(INFO)<<bottom[1]->channels()<<","<<bottom[1]->num()<<","<<bottom[1]->width()<<","<<bottom[1]->height();
   const Dtype* bottom_data = bottom[0]->cpu_data();
   Dtype* top_data = top[0]->mutable_cpu_data();
   const int count = bottom[0]->count();
   const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
   if (diff_.width() != bottom[0]->width()) {
     diff_.ReshapeLike(*bottom[0]);
+    swap_.ReshapeLike(*bottom[0]);
   }
   Dtype* diff = diff_.mutable_cpu_data();
+  Dtype* swap = swap_.mutable_cpu_data();
   caffe_set(diff_.count(), Dtype(0.0), diff);
   Dtype loss(0.0);
   //LOG(INFO) << object_scale_;

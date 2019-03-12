@@ -584,6 +584,7 @@ message LayerParameter {
   optional CropParameter crop_param = 144;
   optional DataParameter data_param = 107;
   optional DetectionEvaluateParameter detection_evaluate_param = 205;
+  optional SegmentationEvaluateParameter segmentation_evaluate_param = 605;
   optional YoloDetectionOutputParameter yolo_detection_output_param = 601;
   optional Yolov3DetectionOutputParameter yolov3_detection_output_param = 602;
   optional DropoutParameter dropout_param = 108;
@@ -852,6 +853,10 @@ message AnnotatedDataParameter {
   optional int32 yolo_data_type = 4 [default = 0];
   optional float yolo_data_jitter = 5 [default = 0.3];
   optional bool train_diffcult = 6 [default = false];
+  optional bool single_class =7 [default = true]; // for yolo segementation
+  optional int32 seg_scales = 8 [default = 8]; // for yolo segementation
+  optional int32 seg_resize_width = 9 [default = 0]; // for yolo segementation
+  optional int32 seg_resize_height = 10 [default = 0]; // for yolo segementation
 }
 
 message ArgMaxParameter {

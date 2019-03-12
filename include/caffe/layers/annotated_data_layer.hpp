@@ -44,6 +44,9 @@ class AnnotatedDataLayer : public BasePrefetchingDataLayer<Dtype> {
   bool single_class_; //for yolo segementation
   YoloSegLabel label_map_;
   int seg_label_maxima_;
+  int seg_scales_;
+  int seg_resize_width_;
+  int seg_resize_height_;
 };
 
 }  // namespace caffe

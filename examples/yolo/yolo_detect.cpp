@@ -482,7 +482,7 @@ void MatMul(cv::Mat img1, cv::Mat img2,int idx=0)
 		int img_index1 = 0;
 		int img_index2 = 0;
 		for (j = 0; j < width; j++) {
-      if(ptr2[img_index2]>20) {
+      if(ptr2[img_index2]>120) {
         ptr1[img_index1+idx] = 127 + ptr1[img_index1]/2;
       }
 			//ptr1[img_index1+idx] = (unsigned char) BOUND(ptr1[img_index1] + ptr2[img_index2] * 1.0,0,255);
