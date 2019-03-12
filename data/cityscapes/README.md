@@ -17,7 +17,18 @@
   # and make soft links at examples/cityscapes/
   bash data/cityscapes/create_data.sh
   ```
+### Demo with pre-trained model 
 
+1. Download demo images  from [cityscapes](https://www.cityscapes-dataset.com/) , and extract file into $data/images
+
+2. Download [caffemodel](https://drive.google.com/open?id=1KghVSgH1FTsTOelHQdc-Y804RhjZSnWw) and save at models/cityscapes/
+
+3. 
+  ```Shell
+  cd $CAFFE_ROOT
+  sh demo_cityscapes.sh
+  ```
+  
 ### Reference 
 
 > https://github.com/dongdonghy/citypersons2voc
