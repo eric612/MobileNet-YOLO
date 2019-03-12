@@ -517,6 +517,7 @@ DEFINE_string(cpu_mode, "cpu",
 	"cpu , gpu");
 DEFINE_int32(detect_mode, 0,
 	"0: detect , 1:segementation");
+DEFINE_string(indir, "data//" , "demo images folder");
 int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -548,6 +549,7 @@ int main(int argc, char** argv) {
   const int& resize_mode = FLAGS_resize_mode;
   const string& cpu_mode = FLAGS_cpu_mode;
   const int& detect_mode = FLAGS_detect_mode;
+  const string& indir = FLAGS_indir;
   // Initialize the network.
   
   Detector detector(model_file, weights_file, mean_file, mean_value, confidence_threshold, normalize_value, cpu_mode, resize_mode);
@@ -565,13 +567,14 @@ int main(int argc, char** argv) {
 
   // Process image one by one.
   //std::ifstream infile(argv[3]);
-  const string &indir = "//data";
+  //const string &indir = "//data//images";
   std::string file;
   out << file_type <<"demo";
   if (file_type == "image")
   {
 	  char buf[1000];
-	  sprintf(buf, "%s/*.jpg", "data//");
+	  sprintf(buf, "%s/*.png", indir.c_str());
+    //sprintf(buf, "%s/*.png", "data//images");
 	  cv::String path(buf); //select only jpg
 
 	  vector<cv::String> fn;
