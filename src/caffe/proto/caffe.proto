@@ -1073,7 +1073,12 @@ message DetectionEvaluateParameter {
   // The resize parameter used in converting NormalizedBBox to original image.
   optional ResizeParameter resize_param = 6;
 }
-
+// Message that store parameters used by SegmentationEvaluateLayer
+message SegmentationEvaluateParameter {
+  // Number of classes that are actually predicted. Required!
+  optional uint32 num_classes = 1 [default=1];
+  optional float threshold = 2 [default=0.5];
+}
 message NonMaximumSuppressionParameter {
   // Threshold to be used in nms.
   optional float nms_threshold = 1 [default = 0.3];
