@@ -124,7 +124,7 @@ if __name__ == "__main__":
   # get caffe root directory
   caffe_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
   if anno_type == "detection" or anno_type == "detection_with_segmentation":
-    cmd = "{}/tools/convert_annoset" \
+    cmd = "{}/build/tools/convert_annoset" \
         " --anno_type={}" \
         " --label_type={}" \
         " --label_map_file={}" \
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             resize_width, backend, shuffle, check_size, encode_type, encoded,
             gray, root_dir, list_file, out_dir)
   elif anno_type == "detection_with_segmentation":
-    cmd = "{}/tools/convert_annoset" \
+    cmd = "{}/build/tools/convert_annoset" \
         " --anno_type={}" \
         " --label_type={}" \
         " --label_map_file={}" \
