@@ -68,7 +68,7 @@ namespace caffe {
   void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
   {
     if (diff[index]) {
-      diff[index + stride*class_label] = (-1.0) *(1 - input_data[index + stride*class_label]);
+      diff[index + stride*class_label] = (-1.0) * (1 - input_data[index + stride*class_label]);
       *avg_cat += input_data[index + stride*class_label];
       return;
     }

@@ -31,8 +31,8 @@
 #include <vector>
 #include "caffe/util/benchmark.hpp"
 #define BOUND(a,min_val,max_val)           ( (a < min_val) ? min_val : (a >= max_val) ? (max_val) : a )
-#define custom_class
-//#ifdef custom_class
+//#define custom_class
+#ifdef custom_class
 char* YOLO_CLASSES[2] = { "__background__", "pedestrian"};
 
 /*char* YOLO_CLASSES[81] = { "__background__",
