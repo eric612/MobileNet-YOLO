@@ -18,13 +18,11 @@ MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethere
 
 [TensorRT-Yolov3-models](https://github.com/eric612/TensorRT-Yolov3-models)
 
-### Knowledge Transfer
+### YOLO segmentation
 
-I use the following training path to improve accuracy , and decrease lite version trainning time
+See [demo](https://github.com/eric612/MobileNet-YOLO/pull/71)
 
-* First , train MobileNet-YOLOv3 on coco dataset (IOU_0.5 : [40.2 mAP](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing))
-* Second , train MobileNet-YOLOv3-Lite on coco dataset , pretrain weights use the first step output (IOU_0.5 : [38.9 mAP](https://drive.google.com/open?id=1O1dtD_wmcCM2pfi6CqEEdCmIT7JkHJXV))
-* Finally , train MobileNet-YOLOv3-Lite on voc dataset , pretrain weights use the second step output (76.3 mAP)
+[How to use](https://github.com/eric612/MobileNet-YOLO/tree/master/data/cityscapes)
 
 ## Windows Version
 
@@ -98,6 +96,10 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 > https://github.com/alexgkendall/caffe-segnet
 
 > https://github.com/BVLC/caffe/pull/6384/commits/4d2400e7ae692b25f034f02ff8e8cd3621725f5c
+
+> https://www.cityscapes-dataset.com/
+
+> https://github.com/TuSimple/tusimple-benchmark/wiki
 
 Cudnn convolution
 
