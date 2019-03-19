@@ -14,13 +14,15 @@ MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethere
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
 * bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 
 
-### Coverted tensorRT models
+### Coverted TensorRT models
 
 [TensorRT-Yolov3-models](https://github.com/eric612/TensorRT-Yolov3-models)
 
-### YOLO segmentation
+### YOLO Segmentation
 
-See [demo](https://github.com/eric612/MobileNet-YOLO/pull/71)
+#### Demo Video 
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/SE_0MeN2nTw/0.jpg)](https://www.youtube.com/watch?v=SE_0MeN2nTw)
 
 [How to use](https://github.com/eric612/MobileNet-YOLO/tree/master/data/cityscapes)
 
@@ -64,7 +66,7 @@ network|mAP|resolution|macc|param|
 PVA-YOLOv3|0.703|416|2.55G|4.72M|
 Pelee-YOLOv3|0.703|416|4.25G|3.85M|
 
-### Model visulization tool
+### Model VisulizationTool
 
 Supported on [Netron](https://github.com/lutzroeder/netron) , [browser](https://lutzroeder.github.io/netron/) version
 
