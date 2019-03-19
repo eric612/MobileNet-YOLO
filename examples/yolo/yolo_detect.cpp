@@ -516,7 +516,7 @@ void MatMul(cv::Mat img1 , vector<cv::Mat> img2 , vector<int> color , bool show_
       int maxima = -1;
       int index = -1;
       for (int c = 0; c < size; c++) {
-        if(ptr2[img_index2+c]>120) {
+        if(ptr2[img_index2+c]>100) {
           maxima = ptr2[img_index2+c];
           index = c;
         }
@@ -686,7 +686,6 @@ int main(int argc, char** argv) {
 
     int count = 0;
 	  vector<cv::String> fn;
-	  vector<cv::Mat> data;
 	  cv::glob(path, fn, true); // recurse
 	  for (size_t k = 0; k < fn.size(); ++k)
 	  {
@@ -761,7 +760,7 @@ int main(int argc, char** argv) {
 		  sprintf(buf, "out//%05d.jpg", k);
 		  cv::imwrite(buf, img);
 		  cv::waitKey(wait_time);
-		  data.push_back(img);
+		  /*
       if (count <= max)
       {
         cv::Size size;
@@ -782,7 +781,7 @@ int main(int argc, char** argv) {
 
         count++;
 
-      }
+      }*/
 	  }
   }
   else 
@@ -792,7 +791,6 @@ int main(int argc, char** argv) {
 	  cv::String path(buf); //select only jpg
 	  int count = 0;
 	  vector<cv::String> fn;
-	  vector<cv::Mat> data;
 	  cv::glob(path, fn, true); // recurse
 	  
 	  for (size_t k = 0; k < fn.size(); ++k)
