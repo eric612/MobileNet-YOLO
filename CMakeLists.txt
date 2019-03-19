@@ -45,7 +45,7 @@ caffe_option(USE_OPENMP "Link with OpenMP (when your BLAS wants OpenMP and you g
 
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
-
+SET( CMAKE_CXX_FLAGS "-std=c++11 -O3")
 # ---[ Flags
 if(UNIX OR APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall")

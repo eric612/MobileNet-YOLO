@@ -38,6 +38,7 @@ message Datum {
   repeated float float_data = 6;
   // If true data contains an encoded image that need to be decoded
   optional bool encoded = 7 [default = false];
+  optional bytes seg_label = 8;
 }
 
 // The label (display) name and label id.
@@ -53,6 +54,22 @@ message LabelMap {
   repeated LabelMapItem item = 1;
 }
 
+// The yolo segmentation required 
+message YoloSegItem {
+  optional string name = 1;
+  // lable value from annotation files
+  optional int32 label_id = 2;
+  // lable mapping
+  optional int32 label = 3;
+  // color 
+  optional int32 r = 4 [default =0]; // red
+  optional int32 g = 5 [default =0]; // green
+  optional int32 b = 6 [default =0]; // blue
+}
+
+message YoloSegLabel {
+  repeated YoloSegItem item = 1;
+}
 // Sample a bbox in the normalized space [0, 1] with provided constraints.
 message Sampler {
   // Minimum scale of the sampled bbox.
@@ -116,6 +133,13 @@ message EmitConstraint {
   optional float emit_overlap = 2;
 }
 
+// The detection lane coordinate [0, 1] w.r.t. the input image size.
+message LaneInfo {
+  optional float x = 1;
+  optional float y = 2;
+  optional int32 id = 3;
+}
+
 // The normalized bounding box [0, 1] w.r.t. the input image size.
 message NormalizedBBox {
   optional float xmin = 1;
@@ -132,6 +156,7 @@ message NormalizedBBox {
 message Annotation {
   optional int32 instance_id = 1 [default = 0];
   optional NormalizedBBox bbox = 2;
+  optional LaneInfo lanes = 3;
 }
 
 // Group of annotations for a particular label.
@@ -144,6 +169,7 @@ message AnnotationGroup {
 message AnnotatedDatum {
   enum AnnotationType {
     BBOX = 0;
+    BBOXandSeg = 1;
   }
   optional Datum datum = 1;
   // If there are "rich" annotations, specify the type of annotation.
@@ -451,7 +477,14 @@ message ParamSpec {
   // The multiplier on the global weight decay for this parameter.
   optional float decay_mult = 4 [default = 1.0];
 }
-
+message YoloSegParameter{
+  //YoloSeg
+  optional uint32 num_class = 1 [default = 0];
+  optional float object_scale = 2 [default = 5.0];
+  optional float class_scale = 3 [default = 1.0];
+  optional bool use_logic_gradient = 4 [default = false];
+  optional bool use_hardsigmoid = 5 [default = false];
+}
 message Yolov3Parameter{
   //Yolov3
   optional uint32 side = 1 [default = 13];
@@ -545,6 +578,7 @@ message LayerParameter {
 
   optional RegionLossParameter region_loss_param = 600;
   optional Yolov3Parameter yolov3_param = 603;
+  optional YoloSegParameter yolo_seg_param = 604;
   // Layer type-specific parameters.
   //
   // Note: certain layers may have more than one computational engine
@@ -562,6 +596,7 @@ message LayerParameter {
   optional CropParameter crop_param = 144;
   optional DataParameter data_param = 107;
   optional DetectionEvaluateParameter detection_evaluate_param = 205;
+  optional SegmentationEvaluateParameter segmentation_evaluate_param = 605;
   optional YoloDetectionOutputParameter yolo_detection_output_param = 601;
   optional Yolov3DetectionOutputParameter yolov3_detection_output_param = 602;
   optional DropoutParameter dropout_param = 108;
@@ -830,6 +865,10 @@ message AnnotatedDataParameter {
   optional int32 yolo_data_type = 4 [default = 0];
   optional float yolo_data_jitter = 5 [default = 0.3];
   optional bool train_diffcult = 6 [default = false];
+  optional bool single_class =7 [default = true]; // for yolo segementation
+  optional int32 seg_scales = 8 [default = 8]; // for yolo segementation
+  optional int32 seg_resize_width = 9 [default = 0]; // for yolo segementation
+  optional int32 seg_resize_height = 10 [default = 0]; // for yolo segementation
 }
 
 message ArgMaxParameter {
@@ -1046,7 +1085,12 @@ message DetectionEvaluateParameter {
   // The resize parameter used in converting NormalizedBBox to original image.
   optional ResizeParameter resize_param = 6;
 }
-
+// Message that store parameters used by SegmentationEvaluateLayer
+message SegmentationEvaluateParameter {
+  // Number of classes that are actually predicted. Required!
+  optional uint32 num_classes = 1 [default=1];
+  optional float threshold = 2 [default=0.5];
+}
 message NonMaximumSuppressionParameter {
   // Threshold to be used in nms.
   optional float nms_threshold = 1 [default = 0.3];

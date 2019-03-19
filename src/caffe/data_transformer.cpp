@@ -13,7 +13,7 @@
 #include "caffe/util/rng.hpp"
 const double prob_eps = 0.01;
 
-
+int iter_count = 0;
 
 
 namespace caffe {
@@ -300,7 +300,7 @@ void DataTransformer<Dtype>::TransformAnnotation(
   const int num_resize_policies = param_.resize_param_size();
   //LOG(INFO) << policy_num;
   //LOG(INFO) << img_width << "," << img_height;
-  if (anno_datum.type() == AnnotatedDatum_AnnotationType_BBOX) {
+  if (anno_datum.type() == AnnotatedDatum_AnnotationType_BBOX || anno_datum.type() == AnnotatedDatum_AnnotationType_BBOXandSeg) {
     // Go through each AnnotationGroup.
     for (int g = 0; g < anno_datum.annotation_group_size(); ++g) {
       const AnnotationGroup& anno_group = anno_datum.annotation_group(g);
@@ -376,6 +376,7 @@ void DataTransformer<Dtype>::CropImage(const Datum& datum,
     // Save the image into datum.
     EncodeCVMatToDatum(crop_img, "jpg", crop_datum);
     crop_datum->set_label(datum.label());
+
     return;
 #else
     LOG(FATAL) << "Encoded datum requires OpenCV; compile with USE_OPENCV.";
@@ -602,7 +603,64 @@ void DataTransformer<Dtype>::Transform(const vector<cv::Mat> & mat_vector,
     Transform(mat_vector[item_id], &uni_blob);
   }
 }
+template<typename Dtype>
+void DataTransformer<Dtype>::Transform2(const std::vector<cv::Mat> cv_imgs,
+                                       Blob<Dtype>* transformed_blob,
+                                       bool preserve_pixel_vals) {
+  for (int i=0;i<cv_imgs.size();i++) {
+    //LOG(INFO)<<i;
+    cv::Mat cv_img = cv_imgs[i];
+    const int img_channels = cv_img.channels();
+    const int img_height = cv_img.rows;
+    const int img_width = cv_img.cols;
 
+    // Check dimensions.
+    const int channels = transformed_blob->channels();
+    const int height = transformed_blob->height();
+    const int width = transformed_blob->width();
+    const int num = transformed_blob->num();
+    //LOG(INFO) << img_channels;
+    //CHECK_EQ(channels, img_channels);
+    CHECK_LE(height, img_height);
+    CHECK_LE(width, img_width);
+    CHECK_GE(num, 1);
+
+    //CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
+    const int crop_size = param_.crop_size();
+    const float scale = 1/255.0;
+    const bool do_mirror = param_.mirror() && Rand(2);
+    CHECK_GT(img_channels, 0);
+    //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
+    Dtype* transformed_data = transformed_blob->mutable_cpu_data();
+    int top_index;
+    //LOG(INFO) << do_mirror;
+    int maxima = 0;
+    for (int h = 0; h < height; ++h) {
+      const uchar* ptr = cv_img.ptr<uchar>(h);
+      int img_index = 0;
+      for (int w = 0; w < width; ++w) {
+        //for (int c = 0; c < img_channels; ++c) {
+          int c = i;
+          if (mirror_param_) {
+            top_index = (c * height + h) * width + (width - 1 - w);		  
+          } 
+          else {
+            top_index = (c * height + h) * width + w;
+          }
+          //LOG(INFO) << top_index;
+          // int top_index = (c * height + h) * width + w;
+          Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
+          
+          transformed_data[top_index] = pixel * scale;	
+          //LOG(INFO) << transformed_data[top_index];
+          if(top_index>maxima)
+            maxima = top_index;
+        //}
+      }
+    }
+    //LOG(INFO)<<maxima;
+  }
+}
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
                                        Blob<Dtype>* transformed_blob,
@@ -624,6 +682,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const int crop_size = param_.crop_size();
   const Dtype scale = param_.scale();
   *do_mirror = param_.mirror() && Rand(2);
+  mirror_param_ = *do_mirror;
   const bool has_mean_file = param_.has_mean_file();
   const bool has_mean_values = mean_values_.size() > 0;
 
@@ -654,6 +713,13 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   cv::Mat cv_resized_image, cv_noised_image, cv_cropped_image;
   if (param_.resize_param_size()) {
     cv_resized_image = ApplyResize(cv_img, param_.resize_param(policy_num));
+	/*char buf[1000];
+	sprintf(buf, "input/input_%05d.jpg",iter_count++);
+	if (*do_mirror) {
+		cv::flip(cv_resized_image, cv_resized_image, 1);
+	}
+	cv::imwrite(buf,cv_resized_image);*/
+	//LOG(INFO) << *do_mirror << ",data";
   } else {
     cv_resized_image = cv_img;
   }

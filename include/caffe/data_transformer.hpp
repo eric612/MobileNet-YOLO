@@ -153,7 +153,13 @@ class DataTransformer {
    * @param transformed_blob
    *    This is destination blob. It can be part of top blob's data if
    *    set_cpu_data() is used. See image_data_layer.cpp for an example.
+   * @param preserve_pixel_vals
+   *    Use with dense label images to preserve the input pixel values
+   *    which would be labels (and thus cannot be interpolated or scaled).
    */
+  void Transform2(const std::vector<cv::Mat> cv_imgs, Blob<Dtype>* transformed_blob,
+                 bool preserve_pixel_vals = false);
+
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
                  NormalizedBBox* crop_bbox, bool* do_mirror, int policy_num = 0);
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
@@ -224,7 +230,8 @@ class DataTransformer {
    */
   vector<int> InferBlobShape(const cv::Mat& cv_img, int policy_num = 0);
 #endif  // USE_OPENCV
-
+  bool mirror_param_;
+  bool get_mirror() { return mirror_param_; }
  protected:
    /**
    * @brief Generates a random integer from Uniform({0, 1, ..., n-1}).
