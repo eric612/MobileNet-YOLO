@@ -32,14 +32,9 @@
 #include "caffe/util/benchmark.hpp"
 #define BOUND(a,min_val,max_val)           ( (a < min_val) ? min_val : (a >= max_val) ? (max_val) : a )
 #define custom_class
-#ifdef custom_class
+//#ifdef custom_class
 char* YOLO_CLASSES[2] = { "__background__", "pedestrian"};
-//char* YOLO_CLASSES[6] = { "__background__",
-//"bicyle", "car", "motorbike", "person","cones"
-//};
-//char* YOLO_CLASSES[11] = { "__background__",
-//"big car","car", "motorbike","bicycle","person","cones","motor rider","bike rider","animal","object"
-//};
+
 /*char* YOLO_CLASSES[81] = { "__background__",
 "person", "bicycle", "car", "motorcycle",
 "airplane", "bus", "train", "truck", "boat",
@@ -117,6 +112,7 @@ class Detector {
 public:
   float w_scale = 1;
   float h_scale = 1;
+  YoloSegLabel label_map_;
 };
 
 Detector::Detector(const string& model_file,
@@ -469,13 +465,93 @@ cv::Mat Detector::Preprocess(const cv::Mat& img,
   else
 	  return img;
 }
-void MatMul(cv::Mat img1, cv::Mat img2,int idx=0)
+string type2str(int type) {
+  string r;
+
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
+}
+void MatMul(cv::Mat img1 , vector<cv::Mat> img2 , vector<int> color , bool show_mode = false)
+{
+  int i, j;
+	int height = img1.rows;
+	int width = img1.cols;
+	//LOG(INFO) << width << "," << height << "," << img1.rows << "," << img1.cols;
+  //LOG(INFO) <<  "-------------------------------------";
+	//#pragma omp parallel for
+  int size = img2.size();
+
+  //LOG(INFO)<<type2str(img1.type());
+  vector<cv::Mat> resized;
+  for(i=0;i<img2.size();i++) {
+    cv::Mat tmp = cv::Mat();
+    cv::resize(img2[i], tmp, cv::Size(img1.cols, img1.rows),cv::INTER_AREA);
+    resized.push_back(tmp);
+  }
+  cv::Mat out ;
+  cv::merge(resized,out);
+  LOG(INFO)<<resized.size();
+  for (i = 0; i < height; i++) {
+    unsigned char* ptr1 = img1.ptr<unsigned char>(i);
+    const unsigned char* ptr2 = out.ptr<unsigned char>(i);
+    int img_index1 = 0;
+    int img_index2 = 0;
+		for (j = 0; j < width; j++) {
+      int maxima = -1;
+      int index = -1;
+      for (int c = 0; c < size; c++) {
+        if(ptr2[img_index2+c]>120) {
+          maxima = ptr2[img_index2+c];
+          index = c;
+        }
+      }
+      //LOG(INFO) << index;
+      if(index > -1) {
+        int color_index = (index+1)*3;
+        int b = color[color_index];
+        int g = color[color_index+1];
+        int r = color[color_index+2];
+        if(show_mode) {
+          ptr1[img_index1] = b;
+          ptr1[img_index1+1] = g;
+          ptr1[img_index1+2] = r;
+        }
+        else {
+          ptr1[img_index1] = b/2 + ptr1[img_index1]/2;
+          ptr1[img_index1+1] = g/2 + ptr1[img_index1]/2;
+          ptr1[img_index1+2] = r/2 + ptr1[img_index1]/2;
+        }
+      }
+      img_index1+=3;
+			img_index2+=size;
+    }
+  }
+  resized.clear();
+}
+void MatMul(cv::Mat img1, cv::Mat img2,int r,int g,int b , bool show_mode = false)
 {
 	int i, j;
 	int height = img1.rows;
 	int width = img1.cols;
 	//LOG(INFO) << width << "," << height << "," << img2.rows << "," << img2.cols;
 	//#pragma omp parallel for
+
 	for (i = 0; i < height; i++) {
 		unsigned char* ptr1 = img1.ptr<unsigned char>(i);
 		const unsigned char* ptr2 = img2.ptr<unsigned char>(i);
@@ -483,7 +559,17 @@ void MatMul(cv::Mat img1, cv::Mat img2,int idx=0)
 		int img_index2 = 0;
 		for (j = 0; j < width; j++) {
       if(ptr2[img_index2]>120) {
-        ptr1[img_index1+idx] = 127 + ptr1[img_index1]/2;
+        if(show_mode) {
+          ptr1[img_index1] = b;
+          ptr1[img_index1+1] = g;
+          ptr1[img_index1+2] = r;
+        }
+        else {
+          ptr1[img_index1] = b/2 + ptr1[img_index1]/2;
+          ptr1[img_index1+1] = g/2 + ptr1[img_index1]/2;
+          ptr1[img_index1+2] = r/2 + ptr1[img_index1]/2;
+        }
+
       }
 			//ptr1[img_index1+idx] = (unsigned char) BOUND(ptr1[img_index1] + ptr2[img_index2] * 1.0,0,255);
 			//ptr1[img_index1+1] = (ptr2[img_index2]);
@@ -519,6 +605,7 @@ DEFINE_int32(detect_mode, 0,
 	"0: detect , 1:segementation");
 DEFINE_string(indir, "data//" , "demo images folder");
 DEFINE_string(ext, "jpg" , "demo images extension");
+DEFINE_string(seg_label_map, "data/cityscapes/labelmap_seg.prototxt" , "label map");
 int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -552,6 +639,8 @@ int main(int argc, char** argv) {
   const int& detect_mode = FLAGS_detect_mode;
   const string& indir = FLAGS_indir;
   const string& ext = FLAGS_ext;
+  const string& seg_label_map = FLAGS_seg_label_map;
+  
   // Initialize the network.
   
   Detector detector(model_file, weights_file, mean_file, mean_value, confidence_threshold, normalize_value, cpu_mode, resize_mode);
@@ -572,6 +661,22 @@ int main(int argc, char** argv) {
   //const string &indir = "//data//images";
   std::string file;
   out << file_type <<"demo";
+  
+  int max = 3000;
+  vector<int> color;
+  if (detect_mode) {
+    CHECK(ReadProtoFromTextFile(seg_label_map.c_str(), &detector.label_map_));
+    for(int i =0;i<detector.label_map_.item().size();i++)
+    {
+      if(detector.label_map_.item(i).label_id()) {            
+        //LOG(INFO)<<detector.label_map_.item(i).name() << "," <<detector.label_map_.item(i).label_id()<< "," <<detector.label_map_.item(i).label() 
+        //<< " , RGB :" << detector.label_map_.item(i).r()<< ","<< detector.label_map_.item(i).g()<< ","<< detector.label_map_.item(i).b();
+        color.push_back(detector.label_map_.item(i).r());
+        color.push_back(detector.label_map_.item(i).g());
+        color.push_back(detector.label_map_.item(i).b());
+      }
+    }
+  }
   if (file_type == "image")
   {
 	  char buf[1000];
@@ -579,6 +684,7 @@ int main(int argc, char** argv) {
     //sprintf(buf, "%s/*.png", "data//images");
 	  cv::String path(buf); //select only jpg
 
+    int count = 0;
 	  vector<cv::String> fn;
 	  vector<cv::Mat> data;
 	  cv::glob(path, fn, true); // recurse
@@ -596,11 +702,18 @@ int main(int argc, char** argv) {
 		  batch_timer.Start();
       std::vector<vector<float> > detections;
       if (detect_mode) {
+
         detections = detector.DetectAndSegment(img, seg_img);
+        
+        //MatMul(img, seg_img,color);
+        //printf("%d\n",seg_img.size());
         for(int i=0;i<seg_img.size();i++) {
           cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-          MatMul(img, seg_img_resized,i+1);
+          int color_index = (i+1)*3;
+          MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
         }
+        //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+        //MatMul(img, seg_img_resized);
       }
       else {
         detections = detector.Detect(img);
@@ -649,6 +762,27 @@ int main(int argc, char** argv) {
 		  cv::imwrite(buf, img);
 		  cv::waitKey(wait_time);
 		  data.push_back(img);
+      if (count <= max)
+      {
+        cv::Size size;
+        size.width = img.cols;
+        size.height = img.rows;
+        static cv::VideoWriter writer;    // cv::VideoWriter output_video;
+        if (count == 0) {
+          writer.open("VideoTest.mp4", CV_FOURCC('M', 'P', '4', 'V'), 10, size);
+        }
+        else if (count == max) {
+          writer << img;
+          writer.release();
+        }
+        else {
+          writer << img;
+        }
+
+
+        count++;
+
+      }
 	  }
   }
   else 
@@ -660,7 +794,7 @@ int main(int argc, char** argv) {
 	  vector<cv::String> fn;
 	  vector<cv::Mat> data;
 	  cv::glob(path, fn, true); // recurse
-	  int max = 2500;
+	  
 	  for (size_t k = 0; k < fn.size(); ++k)
 	  {
 		  out << fn[k] << std::endl;
@@ -683,11 +817,12 @@ int main(int argc, char** argv) {
 			  std::vector<vector<float> > detections;
         
         if (detect_mode) {
+          seg_img.clear();
           detections = detector.DetectAndSegment(img, seg_img);
-          //printf("%d\n",seg_img.size());
           for(int i=0;i<seg_img.size();i++) {
             cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-            MatMul(img, seg_img_resized,i+1);
+            int color_index = (i+1)*3;
+            MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
           }
           //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
           //MatMul(img, seg_img_resized);

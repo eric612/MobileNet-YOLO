@@ -61,6 +61,10 @@ message YoloSegItem {
   optional int32 label_id = 2;
   // lable mapping
   optional int32 label = 3;
+  // color 
+  optional int32 r = 4 [default =0]; // red
+  optional int32 g = 5 [default =0]; // green
+  optional int32 b = 6 [default =0]; // blue
 }
 
 message YoloSegLabel {
@@ -129,6 +133,13 @@ message EmitConstraint {
   optional float emit_overlap = 2;
 }
 
+// The detection lane coordinate [0, 1] w.r.t. the input image size.
+message LaneInfo {
+  optional float x = 1;
+  optional float y = 2;
+  optional int32 id = 3;
+}
+
 // The normalized bounding box [0, 1] w.r.t. the input image size.
 message NormalizedBBox {
   optional float xmin = 1;
@@ -145,6 +156,7 @@ message NormalizedBBox {
 message Annotation {
   optional int32 instance_id = 1 [default = 0];
   optional NormalizedBBox bbox = 2;
+  optional LaneInfo lanes = 3;
 }
 
 // Group of annotations for a particular label.

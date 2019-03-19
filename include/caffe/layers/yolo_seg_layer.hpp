@@ -29,7 +29,7 @@ class YoloSegLayer : public LossLayer<Dtype> {
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   virtual inline const char* type() const { return "YoloSeg"; }
-
+  inline int ExactNumBottomBlobs() const { return 3; } // bottom[2] give the weighting of each classes
  protected:
  
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,

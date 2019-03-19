@@ -139,6 +139,7 @@ layer {
     yolo_data_type : 1
     train_diffcult : true
     single_class : false
+    seg_scales : 8
     batch_sampler {
       max_sample: 1
       max_trials: 1
@@ -3407,15 +3408,36 @@ layer {
   }
 }
 
+
+layer {
+  name: "reduction_h"
+  type: "Reduction"
+  bottom: "seg_label"
+  top: "reduction_h"
+  reduction_param{
+    axis : 3
+  }
+}
+layer {
+  name: "reduction_w"
+  type: "Reduction"
+  bottom: "reduction_h"
+  top: "reduction_w"
+  reduction_param{
+    axis : 2
+  }
+}
+
 layer {
   name: "YoloSegLoss"
   type: "YoloSeg"
   bottom: "conv26"
   bottom: "seg_label"
+  bottom: "reduction_w"
   top: "Seg_loss"
   loss_weight: 1
   
   yolo_seg_param {
-    object_scale: 0.25
+    object_scale: 0.2
   }
 }

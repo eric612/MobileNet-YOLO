@@ -37,11 +37,17 @@ item {
   name: "road"
   label: 7
   label_id: 1
+  r : 128
+  g : 64
+  b : 128
 }
 item {
   name: "sidewalk"
   label: 8
   label_id: 0 # background
+  r : 244
+  g : 35
+  b : 232
 }
 item {
   name: "parking"
@@ -57,16 +63,25 @@ item {
   name: "building"
   label: 11
   label_id: 0 # background
+  r : 70
+  g : 70
+  b : 70
 }
 item {
   name: "wall"
   label: 12
   label_id: 0 # background
+  r : 102
+  g : 102
+  b : 156
 }
 item {
   name: "fence"
   label: 13
   label_id: 0 # background
+  r : 190
+  g : 153
+  b : 153
 }
 item {
   name: "guard rail"
@@ -87,6 +102,9 @@ item {
   name: "pole"
   label: 17
   label_id: 0 # background
+  r : 153
+  g : 153
+  b : 153
 }
 item {
   name: "polegroup"
@@ -97,51 +115,81 @@ item {
   name: "traffic light"
   label: 19
   label_id: 0 # background
+  r : 250
+  g : 170
+  b : 30
 }
 item {
   name: "traffic sign"
   label: 20
   label_id: 0 # background
+  r : 220
+  g : 220
+  b : 0
 }
 item {
   name: "vegetation"
   label: 21
   label_id: 0 # background
+  r : 107
+  g : 142
+  b : 35
 }
 item {
   name: "terrain"
   label: 22
   label_id: 0 # background
+  r : 152
+  g : 251
+  b : 152
 }
 item {
   name: "sky"
   label: 23
   label_id: 0 # background
+  r : 70
+  g : 130
+  b : 180
 }
 item {
   name: "person"
   label: 24
   label_id: 2
+  r : 220
+  g : 20
+  b : 60
 }
 item {
   name: "rider"
   label: 25
   label_id: 2
+  r : 255
+  g : 0
+  b : 0
 }
 item {
   name: "car"
   label: 26
   label_id: 3
+  r : 0
+  g : 0
+  b : 142
 }
 item {
   name: "truck"
   label: 27
   label_id: 3
+  r : 0
+  g : 0
+  b : 70
 }
 item {
   name: "bus"
   label: 28
   label_id: 3
+  r : 0
+  g : 60
+  b : 100
 }
 item {
   name: "caravan"
@@ -157,14 +205,23 @@ item {
   name: "train"
   label: 31
   label_id: 3
+  r : 0
+  g : 80
+  b : 100
 }
 item {
   name: "motorcycle"
   label: 32
   label_id: 3
+  r : 0
+  g : 0
+  b : 230
 }
 item {
   name: "bicycle"
   label: 33
   label_id: 3
+  r : 119
+  g : 11
+  b : 32
 }

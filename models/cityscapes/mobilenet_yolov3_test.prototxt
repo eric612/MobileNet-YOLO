@@ -3136,5 +3136,6 @@ layer {
 
   segmentation_evaluate_param {
     num_classes: 3
+    threshold : 0.3
   }
 }
