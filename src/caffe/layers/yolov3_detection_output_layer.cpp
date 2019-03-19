@@ -330,11 +330,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
   }
 
 }
-template <typename Dtype>
-void Yolov3DetectionOutputLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
-	const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-	return;
-}
+
 #ifdef CPU_ONLY
   STUB_GPU_FORWARD(Yolov3DetectionOutputLayer, Forward);
 #endif
