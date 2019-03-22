@@ -39,7 +39,7 @@ class DataTransformer {
    *    This is destination blob. It can be part of top blob's data if
    *    set_cpu_data() is used. See data_layer.cpp for an example.
    */
-  void Transform(const Datum& datum, Blob<Dtype>* transformed_blob);
+  void Transform(const Datum& datum, Blob<Dtype>* transformed_blob, int policy_num=0);
 
   /**
    * @brief Applies the transformation defined in the data layer's
@@ -111,7 +111,7 @@ class DataTransformer {
    * @brief Crops the datum and AnnotationGroup according to bbox.
    */
   void CropImage(const AnnotatedDatum& anno_datum, const NormalizedBBox& bbox,
-                 AnnotatedDatum* cropped_anno_datum);
+                 AnnotatedDatum* cropped_anno_datum , bool has_anno = true);
 
   /**
    * @brief Expand the datum.

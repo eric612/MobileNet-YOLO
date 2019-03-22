@@ -56,7 +56,8 @@ void DataTransformer<Dtype>::Transform(const Datum& datum,
                                        Dtype* transformed_data,
                                        NormalizedBBox* crop_bbox,
                                        bool* do_mirror) {
-	//LOG(INFO) << "test";
+                                         
+	
   const string& data = datum.data();
   const int datum_channels = datum.channels();
   const int datum_height = datum.height();
@@ -151,6 +152,7 @@ void DataTransformer<Dtype>::Transform(const Datum& datum,
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const Datum& datum,
                                        Dtype* transformed_data) {
+  
   NormalizedBBox crop_bbox;
   bool do_mirror;
   Transform(datum, transformed_data, &crop_bbox, &do_mirror);
@@ -174,6 +176,7 @@ void DataTransformer<Dtype>::Transform(const Datum& datum,
     } else {
       cv_img = DecodeDatumToCVMatNative(datum);
     }
+
     // Transform the cv::image into blob.
     return Transform(cv_img, transformed_blob, crop_bbox, do_mirror, policy_num);
 #else
@@ -214,11 +217,11 @@ void DataTransformer<Dtype>::Transform(const Datum& datum,
 }
 
 template<typename Dtype>
-void DataTransformer<Dtype>::Transform(const Datum& datum,
-                                       Blob<Dtype>* transformed_blob) {
+void DataTransformer<Dtype>::Transform(const Datum& datum,Blob<Dtype>* transformed_blob, int policy_num) {
   NormalizedBBox crop_bbox;
   bool do_mirror;
-  Transform(datum, transformed_blob, &crop_bbox, &do_mirror);
+  Transform(datum, transformed_blob, &crop_bbox, &do_mirror,policy_num);
+  // entry point 1
 }
 
 template<typename Dtype>
@@ -229,7 +232,7 @@ void DataTransformer<Dtype>::Transform(const vector<Datum> & datum_vector,
   const int channels = transformed_blob->channels();
   const int height = transformed_blob->height();
   const int width = transformed_blob->width();
-  LOG(INFO) << "test";
+  
   CHECK_GT(datum_num, 0) << "There is no datum to add";
   CHECK_LE(datum_num, num) <<
     "The size of datum_vector must be no greater than transformed_blob->num()";
@@ -427,18 +430,21 @@ void DataTransformer<Dtype>::CropImage(const Datum& datum,
 template<typename Dtype>
 void DataTransformer<Dtype>::CropImage(const AnnotatedDatum& anno_datum,
                                        const NormalizedBBox& bbox,
-                                       AnnotatedDatum* cropped_anno_datum) {
+                                       AnnotatedDatum* cropped_anno_datum , bool has_anno) {
   // Crop the datum.
   CropImage(anno_datum.datum(), bbox, cropped_anno_datum->mutable_datum());
-  cropped_anno_datum->set_type(anno_datum.type());
+  if(has_anno) {
+    cropped_anno_datum->set_type(anno_datum.type());
 
-  // Transform the annotation according to crop_bbox.
-  const bool do_resize = false;
-  const bool do_mirror = false;
-  NormalizedBBox crop_bbox;
-  ClipBBox(bbox, &crop_bbox);
-  TransformAnnotation(anno_datum, do_resize, crop_bbox, do_mirror,
-                      cropped_anno_datum->mutable_annotation_group());
+    // Transform the annotation according to crop_bbox.
+    const bool do_resize = false;
+    const bool do_mirror = false;
+    NormalizedBBox crop_bbox;
+    ClipBBox(bbox, &crop_bbox);
+    TransformAnnotation(anno_datum, do_resize, crop_bbox, do_mirror,
+                        cropped_anno_datum->mutable_annotation_group());
+  }
+
 }
 
 template<typename Dtype>
@@ -607,31 +613,34 @@ template<typename Dtype>
 void DataTransformer<Dtype>::Transform2(const std::vector<cv::Mat> cv_imgs,
                                        Blob<Dtype>* transformed_blob,
                                        bool preserve_pixel_vals) {
+
+
+  // Check dimensions.
+  const int channels = transformed_blob->channels();
+  const int height = transformed_blob->height();
+  const int width = transformed_blob->width();
+  const int num = transformed_blob->num();
+  //LOG(INFO) << img_channels;
+  //CHECK_EQ(channels, img_channels);
+
+
+  //CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
+  const int crop_size = param_.crop_size();
+  const float scale = 1/255.0;
+  const bool do_mirror = param_.mirror() && Rand(2);
+  
+  //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
+  Dtype* transformed_data = transformed_blob->mutable_cpu_data();
   for (int i=0;i<cv_imgs.size();i++) {
     //LOG(INFO)<<i;
     cv::Mat cv_img = cv_imgs[i];
     const int img_channels = cv_img.channels();
     const int img_height = cv_img.rows;
     const int img_width = cv_img.cols;
-
-    // Check dimensions.
-    const int channels = transformed_blob->channels();
-    const int height = transformed_blob->height();
-    const int width = transformed_blob->width();
-    const int num = transformed_blob->num();
-    //LOG(INFO) << img_channels;
-    //CHECK_EQ(channels, img_channels);
     CHECK_LE(height, img_height);
     CHECK_LE(width, img_width);
     CHECK_GE(num, 1);
-
-    //CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
-    const int crop_size = param_.crop_size();
-    const float scale = 1/255.0;
-    const bool do_mirror = param_.mirror() && Rand(2);
     CHECK_GT(img_channels, 0);
-    //LOG(INFO) << scale << ","<< mean_values_[0] << ","<< mean_values_[1];
-    Dtype* transformed_data = transformed_blob->mutable_cpu_data();
     int top_index;
     //LOG(INFO) << do_mirror;
     int maxima = 0;
@@ -650,7 +659,8 @@ void DataTransformer<Dtype>::Transform2(const std::vector<cv::Mat> cv_imgs,
           //LOG(INFO) << top_index;
           // int top_index = (c * height + h) * width + w;
           Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
-          
+          //if(pixel>0)
+          //  LOG(INFO) << pixel;
           transformed_data[top_index] = pixel * scale;	
           //LOG(INFO) << transformed_data[top_index];
           if(top_index>maxima)
@@ -709,11 +719,12 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
     crop_h = crop_size;
     crop_w = crop_size;
   }
-
+  
   cv::Mat cv_resized_image, cv_noised_image, cv_cropped_image;
   if (param_.resize_param_size()) {
     cv_resized_image = ApplyResize(cv_img, param_.resize_param(policy_num));
 	/*char buf[1000];
+
 	sprintf(buf, "input/input_%05d.jpg",iter_count++);
 	if (*do_mirror) {
 		cv::flip(cv_resized_image, cv_resized_image, 1);
@@ -730,6 +741,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   }
   int img_height = cv_noised_image.rows;
   int img_width = cv_noised_image.cols;
+  
   CHECK_GE(img_height, crop_h);
   CHECK_GE(img_width, crop_w);
   //LOG(INFO)<<img_width<<","<<img_height;

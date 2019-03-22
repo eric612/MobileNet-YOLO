@@ -170,6 +170,7 @@ message AnnotatedDatum {
   enum AnnotationType {
     BBOX = 0;
     BBOXandSeg = 1;
+    LANE = 2;
   }
   optional Datum datum = 1;
   // If there are "rich" annotations, specify the type of annotation.

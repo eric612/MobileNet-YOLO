@@ -29,7 +29,7 @@ class YoloSegLayer : public LossLayer<Dtype> {
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   virtual inline const char* type() const { return "YoloSeg"; }
-  inline int ExactNumBottomBlobs() const { return 3; } // bottom[2] give the weighting of each classes
+  virtual inline int ExactNumBottomBlobs() const { return 3; }
  protected:
  
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
@@ -47,6 +47,7 @@ class YoloSegLayer : public LossLayer<Dtype> {
  protected:
   Blob<Dtype> diff_;  // cached for backward pass
   Blob<Dtype> swap_;  // cached for backward pass
+  bool enable_weighting_;
   bool use_logic_gradient_;
   bool use_hardsigmoid_;
   float object_scale_;

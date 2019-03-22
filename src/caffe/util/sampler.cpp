@@ -3,7 +3,7 @@
 
 #include "caffe/util/bbox_util.hpp"
 #include "caffe/util/sampler.hpp"
-
+#include "caffe/util/im_transforms.hpp"
 namespace caffe {
 
 void GroupObjectBBoxes(const AnnotatedDatum& anno_datum,
@@ -143,22 +143,41 @@ void GenerateSamples(const NormalizedBBox& source_bbox,
 void GenerateJitterSamples(float jitter, vector<NormalizedBBox>* sampled_bboxes , bool keep_aspec_ratio)
 {
 	float img_w,img_h,off_x,off_y;
+  std::vector<float> probabilities;
+  probabilities.push_back(0.334);
+  probabilities.push_back(0.333);
+  probabilities.push_back(0.333);
+  int change = roll_weighted_die(probabilities);
+  if(change) {
+    float jitter_use = jitter;
+    if(change == 1) {
+      jitter_use = jitter/2;
+    }
+    caffe_rng_uniform(1, 1.0f - jitter_use, 1.0f, &img_w);
+    if(keep_aspec_ratio)
+      img_h = img_w;
+    else
+      caffe_rng_uniform(1, 1.0f - jitter_use, 1.0f, &img_h);
+    
+    caffe_rng_uniform(1, 0.0f, 1.0f - img_w, &off_x);
+    caffe_rng_uniform(1, 0.0f, 1.0f - img_h, &off_y);
 
-	caffe_rng_uniform(1, 1.0f - jitter, 1.0f, &img_w);
-	if(keep_aspec_ratio)
-	  img_h = img_w;
-	else
-	  caffe_rng_uniform(1, 1.0f - jitter, 1.0f, &img_h);
-	
-	caffe_rng_uniform(1, 0.0f, 1.0f - img_w, &off_x);
-	caffe_rng_uniform(1, 0.0f, 1.0f - img_h, &off_y);
+    NormalizedBBox sampled_bbox;
+    sampled_bbox.set_xmin(off_x);
+    sampled_bbox.set_ymin(off_y);
+    sampled_bbox.set_xmax(off_x + img_w);
+    sampled_bbox.set_ymax(off_y + img_h);
+    sampled_bboxes->push_back(sampled_bbox);
+  }
+  else {
+    NormalizedBBox sampled_bbox;
+    sampled_bbox.set_xmin(0);
+    sampled_bbox.set_ymin(0);
+    sampled_bbox.set_xmax(1);
+    sampled_bbox.set_ymax(1);
+    sampled_bboxes->push_back(sampled_bbox);
+  }
 
-	NormalizedBBox sampled_bbox;
-	sampled_bbox.set_xmin(off_x);
-	sampled_bbox.set_ymin(off_y);
-	sampled_bbox.set_xmax(off_x + img_w);
-	sampled_bbox.set_ymax(off_y + img_h);
-	sampled_bboxes->push_back(sampled_bbox);
 
 }
 void GenerateBatchSamples(const AnnotatedDatum& anno_datum,

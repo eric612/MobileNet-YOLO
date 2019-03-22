@@ -71,7 +71,6 @@ int main(int argc, char** argv) {
 #ifndef GFLAGS_GFLAGS_H_
   namespace gflags = google;
 #endif
-
   gflags::SetUsageMessage("Convert a set of images and annotations to the "
         "leveldb/lmdb format used as input for Caffe.\n"
         "Usage:\n"
@@ -107,7 +106,7 @@ int main(int argc, char** argv) {
     while (infile >> filename >> label) {
       lines.push_back(std::make_pair(filename, label));
     }
-  } else if (anno_type == "detection") {
+  } else if (anno_type == "detection" ) {
     type = AnnotatedDatum_AnnotationType_BBOX;
     
     LabelMap label_map;
@@ -115,6 +114,13 @@ int main(int argc, char** argv) {
         << "Failed to read label map file.";
     CHECK(MapNameToLabel(label_map, check_label, &name_to_label))
         << "Failed to convert name to label.";
+    while (infile >> filename >> labelname) {
+      lines.push_back(std::make_pair(filename, labelname));
+    }
+  } else if (anno_type == "lane_detection") {
+
+    type = AnnotatedDatum_AnnotationType_LANE;
+    
     while (infile >> filename >> labelname) {
       lines.push_back(std::make_pair(filename, labelname));
     }
@@ -221,6 +227,13 @@ int main(int argc, char** argv) {
           resize_width, min_dim, max_dim, is_color, enc, type, label_type,
           name_to_label, &anno_datum);
       anno_datum.set_type(AnnotatedDatum_AnnotationType_BBOXandSeg);
+    } else if (anno_type == "lane_detection") {
+      
+      labelname = root_folder + boost::get<std::string>(lines[line_id].second);
+      status = ReadRichImageToAnnotatedDatum(filename, labelname, resize_height,
+          resize_width, min_dim, max_dim, is_color, enc, type, label_type,
+          name_to_label, &anno_datum);
+      anno_datum.set_type(AnnotatedDatum_AnnotationType_LANE);
     }
     
     if (status == false) {

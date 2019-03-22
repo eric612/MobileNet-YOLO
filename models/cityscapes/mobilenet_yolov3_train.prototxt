@@ -3395,7 +3395,7 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 3 # channel = class number
+    num_output: 19 # channel = class number
     kernel_size: 1
     pad: 0
     stride: 1

@@ -246,7 +246,6 @@ bool ReadRichImageToAnnotatedDatumWithSeg(const string& filename,
     const string& labeltype, const std::map<string, int>& name_to_label,
     AnnotatedDatum* anno_datum) {
   // Read image to datum.
-  //LOG(INFO)<<"ttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
   bool status = ReadImageToDatum(filename, -1, height, width,
                                  min_dim, max_dim, is_color, encoding,
                                  anno_datum->mutable_datum());    
@@ -291,8 +290,8 @@ bool ReadRichImageToAnnotatedDatumWithSeg(const string& filename,
         LOG(FATAL) << "Unknown label file type.";
         return false;
       }
-	  //LOG(INFO) << "ttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
-	  status = ReadImageToDatumSeg(seg_filename, -1, height, width,
+      //LOG(INFO) << "ttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
+      status = ReadImageToDatumSeg(seg_filename, -1, height, width,
 		  min_dim, max_dim, is_color, "png",
 		  anno_datum->mutable_datum());
       //cv_img = ReadImageToCVMat(seg_filename, height, width, min_dim, max_dim,is_color);
@@ -341,6 +340,13 @@ bool ReadRichImageToAnnotatedDatum(const string& filename,
         return false;
       }
       break;
+    case AnnotatedDatum_AnnotationType_LANE:
+      //LOG(INFO)<<labeltype;
+      GetImageSize(filename, &ori_height, &ori_width);
+      if (labeltype == "json") {
+        return ReadJSONToAnnotatedDatum(labelfile, ori_height, ori_width, anno_datum);
+      }
+      return false;
     default:
       LOG(FATAL) << "Unknown annotation type.";
       return false;
@@ -490,7 +496,73 @@ bool ReadXMLToAnnotatedDatum(const string& labelfile, const int img_height,
   }
   return true;
 }
+// Parse tusimple lane detection annotation.
+bool ReadJSONToAnnotatedDatum(const string& labelfile, const int img_height,
+    const int img_width,AnnotatedDatum* anno_datum) {
+  ptree pt;
+  read_json(labelfile, pt);
+  
+  // Get image info.
+  int width = 0, height = 0;
+  try {
+    height = pt.get<int>("image.height");
+    width = pt.get<int>("image.width");
+  } catch (const ptree_error &e) {
+    //LOG(WARNING) << "When parsing " << labelfile << ": " << e.what();
+    height = img_height;
+    width = img_width;
+  }
 
+  LOG_IF(WARNING, height != img_height) << labelfile <<
+      " inconsistent image height.";
+  LOG_IF(WARNING, width != img_width) << labelfile <<
+      " inconsistent image width.";
+  CHECK(width != 0 && height != 0) << labelfile <<
+      " no valid image width/height.";
+  int instance_id = 0;
+  std::vector<int> h_samples;
+  BOOST_FOREACH(ptree::value_type& v1, pt.get_child("h_samples")) { //h_samples
+    Annotation* anno = NULL;
+    ptree object = v1.second;
+    h_samples.push_back(object.get_value<int>());
+  } 
+  //int count = 0;
+  BOOST_FOREACH(ptree::value_type& v1, pt.get_child("lanes")) { 
+    Annotation* anno = NULL;
+    ptree object = v1.second;
+    //LOG(INFO) << object.get_value<int>();
+    //object.get_value<std::vector>;
+    std::vector<int> lane;
+    lane.clear();
+    BOOST_FOREACH(ptree::value_type& v2, object.get_child("")) {
+      ptree object2 = v2.second;
+      //LOG(INFO) << object2.get_value<int>();
+      lane.push_back(object2.get_value<int>());
+    }
+    CHECK_EQ(h_samples.size(), lane.size());
+    //anno = anno_group->add_annotation();
+    //LOG(INFO)<<h_samples.size();
+    AnnotationGroup* anno_group = anno_datum->add_annotation_group();
+    for(int i=0;i<h_samples.size();i++) {
+      
+      anno = anno_group->add_annotation();
+      instance_id = i;
+      
+      LaneInfo* LaneXY = anno->mutable_lanes();
+      
+      LaneXY->set_x(lane[i] / (float)width);
+      LaneXY->set_y(h_samples[i] / (float)height);
+      
+      anno->set_instance_id(instance_id);
+      
+    }  
+    //count++;
+  }    
+  //LOG(INFO)<<count;
+  //LOG(INFO)<<lanes.size();
+ 
+  return true;
+}
 // Parse MSCOCO detection annotation.
 bool ReadJSONToAnnotatedDatum(const string& labelfile, const int img_height,
     const int img_width, const std::map<string, int>& name_to_label,
