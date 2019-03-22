@@ -160,10 +160,15 @@ void SegmentationEvaluateLayer<Dtype>::Forward_cpu(
           img_index++;
         }
       }
-      if(match_pixel_num)
+      if(match_pixel_num) {
         iou = (float) match_pixel_num / (float)(gt_pixel_num + eval_pixel_num - match_pixel_num);
-      else
+      }
+      else if (gt_pixel_num==0) {
+        iou = -1;
+      }
+      else {
         iou = 0;
+      }
       top_data[c] = iou;
       //LOG(INFO)  <<"gt_pixel : " << gt_pixel_num<< " , match_pixel : " << match_pixel_num<< " , eval_pixel : " << eval_pixel_num;
     }

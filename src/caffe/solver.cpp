@@ -569,7 +569,7 @@ void Solver<Dtype>::TestDetectionSeg(const int test_net_id) {
   const shared_ptr<Net<Dtype> >& test_net = test_nets_[test_net_id];
   Dtype loss = 0;
   float *iou = NULL;
-  int count = 0;
+  int *count = NULL;
   int classes = 1;
   for (int i = 0; i < param_.test_iter(test_net_id); ++i) {
     SolverAction::Enum request = GetRequestedAction();
@@ -630,23 +630,33 @@ void Solver<Dtype>::TestDetectionSeg(const int test_net_id) {
         if(!iou) {
           iou = new float[classes];
           memset(iou,0,4*classes);
+          count = new int[classes];
+          memset(count,0,4*classes);
         }
         for(int i=0;i<classes;i++) {
-          iou[i] += iou_data[i];
+          if(iou[i]>=0) {
+            iou[i] += iou_data[i];
+            count[i]++;
+          }
         }
-        count++;
         //LOG(INFO)<< iou_data[0];
       }
     }    
   }
   float mIOU = 0;
   for(int i=0;i<classes;i++) {
-    float eval_iou = iou[i] / (float)count;
+    float eval_iou;
+    if(count[i]>0) {
+      eval_iou = iou[i] / (float)count[i];
+    }
+    else {
+      eval_iou = 0;
+    }
     LOG(INFO)<< "Seg Classes " << i << " IOU : " << eval_iou;
     mIOU += eval_iou;
   }
   LOG(INFO)<< "Seg mIOU : " << mIOU/(float)classes;
-  delete[] iou;
+  delete[] iou,count;
   if (requested_early_exit_) {
     LOG(INFO)     << "Test interrupted.";
     return;
