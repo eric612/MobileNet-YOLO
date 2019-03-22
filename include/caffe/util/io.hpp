@@ -220,7 +220,10 @@ bool ReadRichImageToAnnotatedDatumWithSeg(const string& filename,
 bool ReadXMLToAnnotatedDatum(const string& labelname, const int img_height,
     const int img_width, const std::map<string, int>& name_to_label,
     AnnotatedDatum* anno_datum);
-
+    
+bool ReadJSONToAnnotatedDatum(const string& labelname, const int img_height,
+    const int img_width,AnnotatedDatum* anno_datum);
+    
 bool ReadJSONToAnnotatedDatum(const string& labelname, const int img_height,
     const int img_width, const std::map<string, int>& name_to_label,
     AnnotatedDatum* anno_datum);
