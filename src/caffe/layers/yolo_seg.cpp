@@ -226,7 +226,7 @@ void YoloSegLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   }
   iter_++;
   top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
-  visualization(bottom,top);	
+  //visualization(bottom,top);	
 }
 
 template <typename Dtype>
