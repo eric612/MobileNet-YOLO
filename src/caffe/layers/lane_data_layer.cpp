@@ -324,7 +324,7 @@ void LaneDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
             int iy = y*cv_lab.rows;
             int ipx = px*cv_lab.cols;
             int ipy = py*cv_lab.rows;
-            cv::line(cv_lab,cv::Point(ix,iy),cv::Point(ipx,ipy),cv::Scalar(255,255,255),2); //test draw           
+            cv::line(cv_lab,cv::Point(ix,iy),cv::Point(ipx,ipy),cv::Scalar(255,255,255),1); //test draw           
 #ifdef draw
             cv::line(cv_img,cv::Point(ix,iy),cv::Point(ipx,ipy),cv::Scalar(128,255,128),2); //test draw
             cv::circle(cv_img,cv::Point(ix,iy),3,cv::Scalar(128,128,255),4);

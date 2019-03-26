@@ -417,8 +417,8 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         std::vector<cv::Mat> channels;
         cv::Mat resized;
         //LOG(INFO)<<type2str(crop_img.type());
-        cv::resize(crop_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]));
-        cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+        cv::resize(crop_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]),cv::INTER_AREA);
+        //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
         //LOG(INFO)<<type2str(resized.type());
         this->transformed_label_.Reshape(seg_label_shape);
         int offset = batch->seg_label_.offset(item_id);
