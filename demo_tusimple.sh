@@ -1,0 +1,1 @@
+./examples/yolo/yolo_detect models/tusimple/mobilenet_yolov3_lite_deploy.prototxt models/tusimple/mobilenet_yolov3_lite_deploy_iter_50000.caffemodel -detect_mode 2 -cpu_mode gpu -file_type image -wait_time 1 -mean_value 1.0,1.0,1.0 -normalize_value 0.007843 -confidence_threshold 0.3 -indir data/tusimple_images 
