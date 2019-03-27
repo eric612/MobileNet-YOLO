@@ -91,6 +91,7 @@ class Detector {
 
   std::vector<vector<float> > Detect(cv::Mat& img);
   std::vector<vector<float> > DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img);
+  std::vector<vector<float> > Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img);
   cv::Size input_geometry_;
  private:
   void SetMean(const string& mean_file, const string& mean_value);
@@ -188,6 +189,56 @@ std::vector<vector<float> > Detector::Detect(cv::Mat& img) {
     vector<float> detection(result, result + 7);
     detections.push_back(detection);
     result += 7;
+  }
+
+  return detections;
+}
+std::vector<vector<float> > Detector::Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img) {
+  Blob<float>* input_layer = net_->input_blobs()[0];
+  input_layer->Reshape(1, num_channels_,
+    input_geometry_.height, input_geometry_.width);
+  /* Forward dimension change to all layers. */
+  net_->Reshape();
+
+  std::vector<cv::Mat> input_channels;
+  WrapInputLayer(&input_channels);
+  if (nor_val != 1.0) {
+    img = Preprocess(img, &input_channels, nor_val);
+  }
+  else {
+    img = Preprocess(img, &input_channels);
+  }
+  clock_t time;
+  time = clock();
+  net_->Forward();
+  printf("Predicted in %f seconds.\n", sec(clock() - time));
+  
+  Blob<float>* result_blob = net_->output_blobs()[0];
+  const float* result = result_blob->cpu_data();
+  int size = result_blob->channels();
+  vector<vector<float> > detections;
+  //
+  //seg_img = cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1);
+  int img_index1 = 0;
+  int w = input_geometry_.width / 4;
+  int h = input_geometry_.height / 4;
+  for(int i = 0; i<size;i++) {   
+    seg_img.push_back(cv::Mat(input_geometry_.width / 4, input_geometry_.height / 4, CV_8UC1));
+  }
+  //printf("%d\n",seg_img.size());
+  for(int c = 0; c<seg_img.size();c++) {   
+    img_index1=0;
+    for (int y = 0; y < h; y++) {
+      uchar* ptr2 = seg_img[c].ptr<uchar>(y);
+      int img_index2 = 0;
+      for (int j = 0; j < w; j++) {
+        ptr2[img_index2] = (unsigned char)BOUND((result[img_index1+c*w*h]) * 255,0,255);
+        //if(c==1)
+        //  printf("%f\n",result2[img_index1+c*w*h]);
+        img_index1++;
+        img_index2++;
+      }
+    }
   }
 
   return detections;
@@ -516,7 +567,7 @@ void MatMul(cv::Mat img1 , vector<cv::Mat> img2 , vector<int> color , bool show_
       int maxima = -1;
       int index = -1;
       for (int c = 0; c < size; c++) {
-        if(ptr2[img_index2+c]>100) {
+        if(ptr2[img_index2+c]>120) {
           maxima = ptr2[img_index2+c];
           index = c;
         }
@@ -558,7 +609,7 @@ void MatMul(cv::Mat img1, cv::Mat img2,int r,int g,int b , bool show_mode = fals
     int img_index1 = 0;
     int img_index2 = 0;
     for (j = 0; j < width; j++) {
-      if(ptr2[img_index2]>120) {
+      if(ptr2[img_index2]>90) {
         if(show_mode) {
           ptr1[img_index1] = b;
           ptr1[img_index1+1] = g;
@@ -686,6 +737,7 @@ int main(int argc, char** argv) {
 
     int count = 0;
     vector<cv::String> fn;
+    vector<cv::Mat> data;
     cv::glob(path, fn, true); // recurse
     for (size_t k = 0; k < fn.size(); ++k)
     {
@@ -700,7 +752,16 @@ int main(int argc, char** argv) {
       CPUTimer batch_timer;
       batch_timer.Start();
       std::vector<vector<float> > detections;
-      if (detect_mode) {
+      if (detect_mode == 2) {
+        detections = detector.Segment(img, seg_img);
+
+        for(int i=0;i<seg_img.size();i++) {
+          cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
+          int color_index = (i+1)*3;
+          MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
+        }
+      }
+      else if (detect_mode) {
 
         detections = detector.DetectAndSegment(img, seg_img);
         
@@ -719,38 +780,41 @@ int main(int argc, char** argv) {
       }
       LOG(INFO) << "Computing time: " << batch_timer.MilliSeconds() << " ms.";
       /* Print the detection results. */
-      for (int i = 0; i < detections.size(); ++i) {
-        const vector<float>& d = detections[i];
-        // Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
-        CHECK_EQ(d.size(), 7);
-        const float score = d[2];
-        if (score >= confidence_threshold) {
-          out << file << " ";
-          out << static_cast<int>(d[1]) << " ";
-          out << score << " ";
-          out << static_cast<int>(d[3] * img.cols) << " ";
-          out << static_cast<int>(d[4] * img.rows) << " ";
-          out << static_cast<int>(d[5] * img.cols) << " ";
-          out << static_cast<int>(d[6] * img.rows) << std::endl;
+      if(detect_mode < 2) {
+        for (int i = 0; i < detections.size(); ++i) {
+          
+          const vector<float>& d = detections[i];
+          // Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
+          CHECK_EQ(d.size(), 7);
+          const float score = d[2];
+          if (score >= confidence_threshold) {
+            out << file << " ";
+            out << static_cast<int>(d[1]) << " ";
+            out << score << " ";
+            out << static_cast<int>(d[3] * img.cols) << " ";
+            out << static_cast<int>(d[4] * img.rows) << " ";
+            out << static_cast<int>(d[5] * img.cols) << " ";
+            out << static_cast<int>(d[6] * img.rows) << std::endl;
 
-          cv::Point pt1, pt2;
-          pt1.x = (img.cols*d[3]);
-          pt1.y = (img.rows*d[4]);
-          pt2.x = (img.cols*d[5]);
-          pt2.y = (img.rows*d[6]);
+            cv::Point pt1, pt2;
+            pt1.x = (img.cols*d[3]);
+            pt1.y = (img.rows*d[4]);
+            pt2.x = (img.cols*d[5]);
+            pt2.y = (img.rows*d[6]);
 
-          cv::rectangle(img, pt1, pt2, cvScalar(0, 255, 0), 1, 8, 0);
+            cv::rectangle(img, pt1, pt2, cvScalar(0, 255, 0), 1, 8, 0);
 
-          char label[100];
-          sprintf(label, "%s,%f", YOLO_CLASSES[static_cast<int>(d[1])], score);
-          int baseline;
-          cv::Size size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 0, &baseline);
-          cv::Point pt3;
-          pt3.x = pt1.x + size.width;
-          pt3.y = pt1.y - size.height;
-          cv::rectangle(img, pt1, pt3, cvScalar(0, 255, 0), -1);
+            char label[100];
+            sprintf(label, "%s,%f", YOLO_CLASSES[static_cast<int>(d[1])], score);
+            int baseline;
+            cv::Size size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 0, &baseline);
+            cv::Point pt3;
+            pt3.x = pt1.x + size.width;
+            pt3.y = pt1.y - size.height;
+            cv::rectangle(img, pt1, pt3, cvScalar(0, 255, 0), -1);
 
-          cv::putText(img, label, pt1, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
+            cv::putText(img, label, pt1, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
+          }
         }
       }
       //cv::imshow("show", img);
@@ -760,7 +824,7 @@ int main(int argc, char** argv) {
       sprintf(buf, "out//%05d.jpg", k);
       cv::imwrite(buf, img);
       cv::waitKey(wait_time);
-      /*
+      data.push_back(img);
       if (count <= max)
       {
         cv::Size size;
@@ -781,16 +845,17 @@ int main(int argc, char** argv) {
 
         count++;
 
-      }*/
+      }
     }
   }
   else 
   {
     char buf[1000];
     sprintf(buf, "%s/*.avi", "data//");
-    cv::String path(buf); //select only jpg
+    cv::String path(buf); //select only avi
     int count = 0;
     vector<cv::String> fn;
+    vector<cv::Mat> data;
     cv::glob(path, fn, true); // recurse
     
     for (size_t k = 0; k < fn.size(); ++k)
@@ -875,32 +940,33 @@ int main(int argc, char** argv) {
         cv::imshow("show", img);
 
         cv::waitKey(1);
-        if (count <= max)
-        {
-          cv::Size size;
-          size.width = img.cols;
-          size.height = img.rows;
-          static cv::VideoWriter writer;    // cv::VideoWriter output_video;
-          if (count == 0) {
-            writer.open("VideoTest.mp4", CV_FOURCC('M', 'P', '4', 'V'), 30, size);
-          }
-          else if (count == max) {
-            writer << img;
-            writer.release();
-          }
-          else {
-            writer << img;
-          }
 
-
-          count++;
-
+        cv::Size size;
+        size.width = img.cols;
+        size.height = img.rows;
+        static cv::VideoWriter writer;    // cv::VideoWriter output_video;
+        if (count == 0) {
+          char fname[256];
+          sprintf(fname,"%s.mp4",fn[k].c_str());
+          printf(fname);
+          writer.open(fname, CV_FOURCC('M', 'P', '4', 'V'), 30, size);
         }
+        else if (count == max) {
+          writer << img;
+          writer.release();
+        }
+        else {
+          writer << img;
+        }
+        count++;
+
         
         ++frame_count;
+
       }
       if (cap.isOpened()) {
         cap.release();
+        count = 0;
       }
     }
   }
