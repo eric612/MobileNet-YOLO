@@ -940,29 +940,29 @@ int main(int argc, char** argv) {
         cv::imshow("show", img);
 
         cv::waitKey(1);
-
-        cv::Size size;
-        size.width = img.cols;
-        size.height = img.rows;
-        static cv::VideoWriter writer;    // cv::VideoWriter output_video;
-        if (count == 0) {
-          char fname[256];
-          sprintf(fname,"%s.mp4",fn[k].c_str());
-          printf(fname);
-          writer.open(fname, CV_FOURCC('M', 'P', '4', 'V'), 30, size);
-        }
-        else if (count == max) {
-          writer << img;
-          writer.release();
-        }
-        else {
-          writer << img;
-        }
-        count++;
-
-        
+        if (count <= max)
+        {
+          cv::Size size;
+          size.width = img.cols;
+          size.height = img.rows;
+          static cv::VideoWriter writer;    // cv::VideoWriter output_video;
+          if (count == 0) {
+            char fname[256];
+            sprintf(fname,"%s.mp4",fn[k].c_str());
+            printf(fname);
+            writer.open(fname, CV_FOURCC('M', 'P', '4', 'V'), 30, size);
+          }
+          else if (count == max) {
+            writer << img;
+            writer.release();
+            count = 0;
+          }
+          else {
+            writer << img;
+          }
+          count++;
+        }       
         ++frame_count;
-
       }
       if (cap.isOpened()) {
         cap.release();
