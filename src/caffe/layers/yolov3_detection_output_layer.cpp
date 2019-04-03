@@ -12,8 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "boost/filesystem.hpp"
-#include "boost/foreach.hpp"
 
 //#include "caffe/layers/region_loss_layer.hpp"
 #include "caffe/layers/yolov3_detection_output_layer.hpp"
@@ -336,11 +334,11 @@ void Yolov3DetectionOutputLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>&
 	return;
 }
 #ifdef CPU_ONLY
-	template <typename Dtype>
-	void Yolov3DetectionOutputLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
-		const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-		return;
-	}
+template <typename Dtype>
+void Yolov3DetectionOutputLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
+  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+  return;
+}
   STUB_GPU_FORWARD(Yolov3DetectionOutputLayer, Forward);
 #endif
 

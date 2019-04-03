@@ -596,6 +596,7 @@ message LayerParameter {
   optional ConvolutionParameter convolution_param = 106;
   optional CropParameter crop_param = 144;
   optional DataParameter data_param = 107;
+  optional DetectionOutputParameter detection_output_param = 204;
   optional DetectionEvaluateParameter detection_evaluate_param = 205;
   optional SegmentationEvaluateParameter segmentation_evaluate_param = 605;
   optional YoloDetectionOutputParameter yolo_detection_output_param = 601;
@@ -621,6 +622,7 @@ message LayerParameter {
   optional MVNParameter mvn_param = 120;
   optional NormalizeParameter norm_param = 206;
   optional ParameterParameter parameter_param = 145;
+  optional PermuteParameter permute_param = 202;
   optional PoolingParameter pooling_param = 121;
   optional PowerParameter power_param = 122;
   optional PReLUParameter prelu_param = 131;

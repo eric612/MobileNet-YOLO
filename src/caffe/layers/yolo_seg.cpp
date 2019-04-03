@@ -87,32 +87,31 @@ void YoloSegLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   //LOG(INFO)<<bottom[1]->channels()<<","<<bottom[1]->num()<<","<<bottom[1]->width()<<","<<bottom[1]->height();
 
   Dtype* diff;
-  
+  const Dtype* label_data;
+  Dtype loss(0.0);
 #ifdef CPU_ONLY
   const Dtype* bottom_data = bottom[0]->cpu_data();
   Dtype* top_data = top[0]->mutable_cpu_data();
   const int count = bottom[0]->count();
-  const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
+  label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
   if (diff_.width() != bottom[0]->width()) {
     diff_.ReshapeLike(*bottom[0]);
     swap_.ReshapeLike(*bottom[0]);
   }
   diff = diff_.mutable_cpu_data();
   //caffe_set(diff_.count(), Dtype(0.0), diff);
-  Dtype loss(0.0);
+  
   for (int i = 0; i < count; ++i) {
-    swap[i] = sigmoid(bottom_data[i]);
+    diff[i] = sigmoid(bottom_data[i]);
   }
-  caffe_copy(count,swap,diff);
+  //caffe_copy(count,swap,diff);
 #endif  
   diff = diff_.mutable_cpu_data();
   //caffe_gpu_set(diff_.count(), Dtype(0.0), diff);
-  Dtype loss(0.0);
   const Dtype alpha = object_scale_;
   int classes_num = bottom[1]->channels();
   const Dtype* class_weighting_data; 
   vector<Dtype> scale_data ;
-  const Dtype* label_data ; 
   scale_data.clear();
   int image_size = bottom[0]->width()*bottom[0]->height();
   if(enable_weighting_){
