@@ -158,14 +158,40 @@ void class_index_and_score(Dtype* input, int classes, PredictionResult<Dtype>& p
   predict.classType = classIndex;
   predict.classScore = large;
 }
+template <typename Dtype>
+void Yolov3DetectionOutputLayer<Dtype>::correct_yolo_boxes(PredictionResult<Dtype> &det, int w, int h, int netw, int neth, int relative)
+{
+  int i;
+  int new_w=0;
+  int new_h=0;
+  if (((float)netw/w) < ((float)neth/h)) {
+      new_w = netw;
+      new_h = (h * netw)/w;
+  } else {
+      new_h = neth;
+      new_w = (w * neth)/h;
+  }
+  PredictionResult<Dtype> &b = det;
+  b.x =  (b.x - (netw - new_w)/2./netw) / ((float)new_w/netw); 
+  b.y =  (b.y - (neth - new_h)/2./neth) / ((float)new_h/neth); 
+  b.w *= (float)netw/new_w;
+  b.h *= (float)neth/new_h;
+  if(!relative){
+      b.x *= w;
+      b.w *= w;
+      b.y *= h;
+      b.h *= h;
+  }
 
+}
 template <typename Dtype>
 void Yolov3DetectionOutputLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   const Yolov3DetectionOutputParameter& yolov3_detection_output_param =
       this->layer_param_.yolov3_detection_output_param();
   CHECK(yolov3_detection_output_param.has_num_classes()) << "Must specify num_classes";
-  side_ = bottom[0]->width();
+  side_w_ = bottom[0]->width();
+  side_h_ = bottom[0]->height();
   num_class_ = yolov3_detection_output_param.num_classes();
   num_ = yolov3_detection_output_param.num_box();
   coords_ = 4;
@@ -212,7 +238,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
   const int num = bottom[0]->num();
   
   int len = 4 + num_class_ + 1;
-  int stride = side_*side_;
+  int stride = side_w_*side_h_;
 
 
   if (Caffe::mode() == Caffe::CPU) {
@@ -221,13 +247,16 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
     Dtype *class_score = new Dtype[num_class_];
 
     for (int t = 0; t < bottom.size(); t++) {
-      side_ = bottom[t]->width();
-      int stride = side_*side_;
+      side_w_ = bottom[t]->width();
+      side_h_ = bottom[t]->height();
+      int stride = side_w_*side_h_;
       swap_.ReshapeLike(*bottom[t]);
       Dtype* swap_data = swap_.mutable_cpu_data();
       const Dtype* input_data = bottom[t]->cpu_data();
+      int nw = side_w_*anchors_scale_[t];
+      int nh = side_w_*anchors_scale_[t];
       for (int b = 0; b < bottom[t]->num(); b++) {
-        for (int s = 0; s < side_*side_; s++) {
+        for (int s = 0; s < side_w_*side_h_; s++) {
           //LOG(INFO) << s;
           for (int n = 0; n < num_; n++) {
             //LOG(INFO) << bottom[t]->count(1);
@@ -251,8 +280,8 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
                 }
               }
             }
-            int y2 = s / side_;
-            int x2 = s % side_;
+            int y2 = s / side_w_;
+            int x2 = s % side_w_;
             Dtype obj_score = swap_data[index + 4 * stride];
             PredictionResult<Dtype> predict;
             for (int c = 0; c < num_class_; ++c) {
@@ -260,13 +289,14 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
               //LOG(INFO) << class_score[c];
               if (class_score[c] > confidence_threshold_)
               {
-                get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+                get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_w_, side_h_, nw, nh, stride);
                 predict.x = pred[0];
                 predict.y = pred[1];
                 predict.w = pred[2];
                 predict.h = pred[3];
                 predict.classType = c;
                 predict.confidence = class_score[c];
+                correct_yolo_boxes(predict,side_w_,side_h_,nw,nh,1);
                 predicts_.push_back(predict);
               }
             }
@@ -280,19 +310,20 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
     delete[] class_score;
   }
   std::sort(predicts_.begin(), predicts_.end(), BoxSortDecendScore<Dtype>);
-    vector<int> idxes;
-    int num_kept = 0;
-    if(predicts_.size() > 0){
+  vector<int> idxes;
+  int num_kept = 0;
+  if(predicts_.size() > 0){
     //LOG(INFO) << predicts.size();
     ApplyNms(predicts_, idxes, nms_threshold_);
     num_kept = idxes.size();
     //LOG(INFO) << num_kept;
-    }
-    vector<int> top_shape(2, 1);
-    top_shape.push_back(num_kept);
-    top_shape.push_back(7);
+    
+  }
+  vector<int> top_shape(2, 1);
+  top_shape.push_back(num_kept);
+  top_shape.push_back(7);
 
-    Dtype* top_data;
+  Dtype* top_data;
   
   if (num_kept == 0) {
     DLOG(INFO) << "Couldn't find any detections";

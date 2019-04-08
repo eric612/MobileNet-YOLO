@@ -12,19 +12,20 @@ void Yolov3Layer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   if(swap_.width()!=bottom[0]->width()) {
     swap_.ReshapeLike(*bottom[0]);
   }
-  side_ = bottom[0]->width();
+  side_w_ = bottom[0]->width();
+  side_h_ = bottom[0]->height();
   int len = 4 + num_class_ + 1;
-  int stride = side_*side_;
+  int stride = side_w_*side_h_;
   Dtype* swap_data = swap_.mutable_gpu_data();
   //caffe_copy(count, input_data, swap_data);
   for (int b = 0; b < bottom[0]->num(); ++b) {
     for (int n = 0; n < num_; ++n) {
       int index = n*len*stride  + b*bottom[0]->count(1);
-      caffe_gpu_logistic_activate(2 * side_*side_,input_data + index,swap_data +index );
+      caffe_gpu_logistic_activate(2 * side_w_*side_h_,input_data + index,swap_data +index );
       index = n*len*stride  + b*bottom[0]->count(1) + 2 * stride;
-      caffe_copy(2 * side_*side_, input_data + index, swap_data + index);
+      caffe_copy(2 * side_w_*side_h_, input_data + index, swap_data + index);
       index = n*len*stride  + b*bottom[0]->count(1) + 4 * stride;
-      caffe_gpu_logistic_activate((num_class_+1) * side_*side_,input_data + index,swap_data +index );
+      caffe_gpu_logistic_activate((num_class_+1) * side_w_*side_h_,input_data + index,swap_data +index );
     }
   }
     

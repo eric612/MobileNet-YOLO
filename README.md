@@ -43,8 +43,6 @@ Network|mAP|Resolution|Download|NetScope|
 yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1nYgjOg8o48qQ3Cw47CamERgJVgLlo-Cu/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
 yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWtmS6zTsPkAQgW0VFkt7/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
 
-* I haven't implement [correct_yolo_boxes](https://github.com/pjreddie/darknet/blob/master/src/yolo_layer.c) and relative function , so here only support square input resolution
-
 ## Performance
 
 Train on  COCO trainval35k (2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
@@ -104,6 +102,8 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 > https://www.cityscapes-dataset.com/
 
 > https://github.com/TuSimple/tusimple-benchmark/wiki
+
+> https://github.com/Robert-JunWang/Pelee
 
 Cudnn convolution
 

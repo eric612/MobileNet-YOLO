@@ -1,9 +1,7 @@
 #ifndef CAFFE_YOLOV3_DETECTION_OUTPUT_LAYER_HPP_
 #define CAFFE_YOLOV3_DETECTION_OUTPUT_LAYER_HPP_
 
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/regex.hpp>
+
 
 #include <map>
 #include <string>
@@ -15,7 +13,7 @@
 #include "caffe/layer.hpp"
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/bbox_util.hpp"
-using namespace boost::property_tree;  // NOLINT(build/namespaces)
+
 
 namespace caffe {
 template <typename Dtype>
@@ -52,7 +50,7 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   virtual inline int MinBottomBlobs() const { return 1; }
   //virtual inline int MaxBottomBlobs() const { return 4; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
-  
+  void correct_yolo_boxes(PredictionResult<Dtype> &det, int w, int h, int netw, int neth, int relative);
  protected:
   /**
    * @brief Do non maximum suppression (nms) on prediction results.
@@ -78,7 +76,8 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
 	  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
 	  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-  int side_;
+  int side_w_;
+  int side_h_;
   int num_class_;
   int num_;
   int coords_;

@@ -16,22 +16,25 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
   Dtype *class_score = new Dtype[num_class_];
   
   for (int t = 0; t < bottom.size(); t++) {
-    side_ = bottom[t]->width();
-    int stride = side_*side_;
+    side_w_ = bottom[t]->width();
+    side_h_ = bottom[t]->height();
+    int stride = side_w_*side_h_;
     swap_.ReshapeLike(*bottom[t]);
     Dtype* swap_data = swap_.mutable_gpu_data();
     const Dtype* input_data = bottom[t]->gpu_data();
+    int nw = side_w_*anchors_scale_[t];
+    int nh = side_h_*anchors_scale_[t];
     for (int b = 0; b < bottom[t]->num(); b++) {
       for (int n = 0; n < num_; ++n) {
         int index = n*len*stride + b*bottom[t]->count(1);
-        caffe_gpu_logistic_activate(2 * side_*side_,input_data + index,swap_data +index );
+        caffe_gpu_logistic_activate(2 * side_w_*side_h_,input_data + index,swap_data +index );
         index = n*len*stride  + b*bottom[0]->count(1) + 2 * stride;
-        caffe_copy(2 * side_*side_, input_data + index, swap_data + index);
+        caffe_copy(2 * side_w_*side_h_, input_data + index, swap_data + index);
         index = n*len*stride  + b*bottom[0]->count(1) + 4 * stride;
-        caffe_gpu_logistic_activate((num_class_+1) * side_*side_,input_data + index,swap_data +index );
+        caffe_gpu_logistic_activate((num_class_+1) * side_w_*side_h_,input_data + index,swap_data +index );
       }
       Dtype* swap_data = swap_.mutable_cpu_data();
-      for (int s = 0; s < side_*side_; s++) {				
+      for (int s = 0; s < side_w_*side_h_; s++) {				
         for (int n = 0; n < num_; n++) {
           //LOG(INFO) << bottom[t]->count(1);
           int index = n*len*stride + s + b*bottom[t]->count(1);
@@ -41,8 +44,8 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
             int index2 = c*stride + index;
             class_score[c - 5] = (swap_data[index2 + 0]);
           }
-          int y2 = s / side_;
-          int x2 = s % side_;
+          int y2 = s / side_w_;
+          int x2 = s % side_w_;
           Dtype obj_score = swap_data[index + 4 * stride];
           
           PredictionResult<Dtype> predict;
@@ -50,13 +53,14 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& 
             class_score[c] *= obj_score;
             if (class_score[c] > confidence_threshold_)
             {						
-              get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_, side_, side_*anchors_scale_[t], side_*anchors_scale_[t], stride);
+              get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_w_, side_h_, nw, nh, stride);
               predict.x = pred[0];
               predict.y = pred[1];
               predict.w = pred[2];
               predict.h = pred[3];
               predict.classType = c ;
               predict.confidence = class_score[c];
+              correct_yolo_boxes(predict,side_w_,side_h_,nw,nh,1);
               predicts_.push_back(predict);							
 
               //LOG(INFO) << predict.x << "," << predict.y << "," << predict.w << "," << predict.h;

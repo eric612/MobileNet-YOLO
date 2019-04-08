@@ -144,9 +144,9 @@ void GenerateJitterSamples(float jitter, vector<NormalizedBBox>* sampled_bboxes 
 {
 	float img_w,img_h,off_x,off_y;
   std::vector<float> probabilities;
-  probabilities.push_back(0.334);
-  probabilities.push_back(0.333);
-  probabilities.push_back(0.333);
+  probabilities.push_back(0.2);
+  probabilities.push_back(0.2);
+  probabilities.push_back(0.6);
   int change = roll_weighted_die(probabilities);
   if(change) {
     float jitter_use = jitter;

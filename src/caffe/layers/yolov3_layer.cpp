@@ -70,6 +70,7 @@ namespace caffe {
     if (diff[index]) {
       diff[index + stride*class_label] = (-1.0) * (1 - input_data[index + stride*class_label]);
       *avg_cat += input_data[index + stride*class_label];
+      //LOG(INFO)<<"test";
       return;
     }
     if (use_focal_loss) {
@@ -137,7 +138,8 @@ namespace caffe {
     iter_ = 0;
     num_class_ = param.num_class(); //20
     num_ = param.num(); //5
-    side_ = bottom[0]->width();
+    side_w_ = bottom[0]->width();
+    side_h_ = bottom[0]->height();
     anchors_scale_ = param.anchors_scale();
     object_scale_ = param.object_scale(); //5.0
     noobject_scale_ = param.noobject_scale(); //1.0
@@ -156,7 +158,7 @@ namespace caffe {
     int input_count = bottom[0]->count(1); //h*w*n*(classes+coords+1) = 13*13*5*(20+4+1)
     int label_count = bottom[1]->count(1); //30*5-
                          // outputs: classes, iou, coordinates
-    int tmp_input_count = side_ * side_ * num_ * (4 + num_class_ + 1); //13*13*5*(20+4+1) label: isobj, class_label, coordinates
+    int tmp_input_count = side_w_ * side_h_ * num_ * (4 + num_class_ + 1); //13*13*5*(20+4+1) label: isobj, class_label, coordinates
     int tmp_label_count = 300 * num_;
     CHECK_EQ(input_count, tmp_input_count);
     //CHECK_EQ(label_count, tmp_label_count);
@@ -185,7 +187,9 @@ namespace caffe {
   template <typename Dtype>
   void Yolov3Layer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-    side_ = bottom[0]->width();
+    side_w_ = bottom[0]->width();
+    side_h_ = bottom[0]->height();
+    //LOG(INFO) << side_*anchors_scale_;
     const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
     if (diff_.width() != bottom[0]->width()) {
       diff_.ReshapeLike(*bottom[0]);
@@ -203,9 +207,57 @@ namespace caffe {
     }
     Dtype* swap_data = swap_.mutable_cpu_data();
     int len = 4 + num_class_ + 1;
-    int stride = side_*side_;
+    int stride = side_w_*side_h_;
+    /*for (int i = 0; i < 81; i++) {
+      char label[100];
+      sprintf(label, "%d,%s\n",i, CLASSES[static_cast<int>(i )]);
+      printf(label);
+    }*/
     for (int b = 0; b < bottom[0]->num(); b++) {
-      for (int s = 0; s < side_*side_; s++) {
+      /*//if (b == 0) {
+        char buf[100];
+        int idx = iter_*bottom[0]->num() + b;
+        sprintf(buf, "input/input_%05d.jpg", idx+1 );
+        //int idx = (iter*swap.num() % 200) + b;
+        cv::Mat cv_img = cv::imread(buf);
+        for (int t = 0; t < 300; ++t) {
+          vector<Dtype> truth;
+          Dtype c = label_data[b * 300 * 5 + t * 5 + 0];
+          Dtype x = label_data[b * 300 * 5 + t * 5 + 1];
+
+          Dtype y = label_data[b * 300 * 5 + t * 5 + 2];
+          Dtype w = label_data[b * 300 * 5 + t * 5 + 3];
+          Dtype h = label_data[b * 300 * 5 + t * 5 + 4];
+          if (!x) break;
+          float left = (x - w / 2.);
+          float right = (x + w / 2.);
+          float top = (y - h / 2.);
+          float bot = (y + h / 2.);
+
+          cv::Point pt1, pt2;
+          pt1.x = left*cv_img.cols;
+          pt1.y = top*cv_img.rows;
+          pt2.x = right*cv_img.cols;
+          pt2.y = bot*cv_img.rows;
+
+          cv::rectangle(cv_img, pt1, pt2, cvScalar(0, 255, 0), 1, 8, 0);
+          char label[100];
+          sprintf(label, "%s", CLASSES[static_cast<int>(c + 1)]);
+          int baseline;
+          cv::Size size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 0, &baseline);
+          cv::Point pt3;
+          pt3.x = pt1.x + size.width;
+          pt3.y = pt1.y - size.height;
+          cv::rectangle(cv_img, pt1, pt3, cvScalar(0, 255, 0), -1);
+
+
+          cv::putText(cv_img, label, pt1, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
+          //LOG(INFO) << "Truth box" << "," << c << "," << x << "," << y << "," << w << "," << h;
+        }
+        sprintf(buf, "out/out_%05d.jpg", idx);
+        cv::imwrite(buf, cv_img);
+      //}*/
+      for (int s = 0; s < stride; s++) {
         for (int n = 0; n < num_; n++) {
           int index = n*len*stride + s + b*bottom[0]->count(1);
           //LOG(INFO)<<index;
@@ -225,9 +277,9 @@ namespace caffe {
             }
           }
 #endif
-          int y2 = s / side_;
-          int x2 = s % side_;
-          get_region_box(pred, swap_data, biases_, mask_[n], index, x2, y2, side_, side_, side_*anchors_scale_, side_*anchors_scale_, stride);
+          int y2 = s / side_w_;
+          int x2 = s % side_w_;
+          get_region_box(pred, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, stride);
           for (int t = 0; t < 300; ++t) {
             vector<Dtype> truth;
             Dtype x = label_data[b * 300 * 5 + t * 5 + 1];
@@ -261,11 +313,13 @@ namespace caffe {
             diff[index + 4 * stride] = (-1) * (1 - swap_data[index + 4 * stride]);
 
             delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
-            delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_, side_,
-              side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride);
+            delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
+              side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride);
           }
         }
       }
+      //vector<Dtype> used;
+      //used.clear();
       for (int t = 0; t < 300; ++t) {
         vector<Dtype> truth;
         truth.clear();
@@ -284,45 +338,40 @@ namespace caffe {
         float best_iou = 0;
         int best_index = 0;
         int best_n = -1;
-        int i = truth[0] * side_;
-        int j = truth[1] * side_;
-        int pos = j * side_ + i;
+        int i = truth[0] * side_w_;
+        int j = truth[1] * side_h_;
+        int pos = j * side_w_ + i;
         vector<Dtype> truth_shift;
         truth_shift.clear();
         truth_shift.push_back(0);
         truth_shift.push_back(0);
         truth_shift.push_back(w);
         truth_shift.push_back(h);
-        //int size = coords_ + num_class_ + 1;
-        //LOG(INFO) << biases_size_;
+
+        //LOG(INFO) << j << "," << i << "," << anchors_scale_;
+
         for (int n = 0; n < biases_size_; ++n) {
-          
-          //LOG(INFO) << index2;
           vector<Dtype> pred(4);
-          pred[2] = biases_[2 * n] / (float)(side_*anchors_scale_);
-          pred[3] = biases_[2 * n + 1] / (float)(side_*anchors_scale_);
+          pred[2] = biases_[2 * n] / (float)(side_w_*anchors_scale_);
+          pred[3] = biases_[2 * n + 1] / (float)(side_h_*anchors_scale_);
 
           pred[0] = 0;
           pred[1] = 0;
           float iou = box_iou(pred, truth_shift);
           if (iou > best_iou) {
-            //best_index = index2;
             best_n = n;
             best_iou = iou;
           }
         }
-        //LOG(INFO) << best_n;
-        int mask_n = int_index(mask_, best_n, num_);
-        
-        //LOG(INFO) << mask_n;
-        
+        int mask_n = int_index(mask_, best_n, num_);			
         if (mask_n >= 0) {
+          bool overlap = false;
           float iou;
           best_n = mask_n;
           //LOG(INFO) << best_n;
           best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
           
-          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_, side_, side_*anchors_scale_, side_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
+          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
 
           if (iou > 0.5)
             recall += 1;
@@ -348,7 +397,7 @@ namespace caffe {
 
       }
     }
-
+    //LOG(INFO) << " ===================================================== " ;
     for (int i = 0; i < diff_.count(); ++i) {
       loss += diff[i] * diff[i];
     }
@@ -368,7 +417,7 @@ namespace caffe {
       }
     }
     else {
-      score_.avg_anyobj += avg_anyobj / (side_*side_*num_*bottom[0]->num());
+      score_.avg_anyobj += avg_anyobj / (side_w_*side_h_*num_*bottom[0]->num());
       if (count > 0) {
         score_.avg_obj += avg_obj / count;
         score_.avg_iou += avg_iou / count;
@@ -392,12 +441,13 @@ namespace caffe {
       if (use_logic_gradient_) {
         const Dtype* top_data = swap_.cpu_data();
         Dtype* diff = diff_.mutable_cpu_data();
-        side_ = bottom[0]->width();
+        side_w_ = bottom[0]->width();
+        side_h_ = bottom[0]->height();
         int len = 4 + num_class_ + 1;
-        int stride = side_*side_;
+        int stride = side_w_*side_h_;
         //LOG(INFO)<<swap.count(1);
         for (int b = 0; b < bottom[0]->num(); b++) {
-          for (int s = 0; s < side_*side_; s++) {
+          for (int s = 0; s < stride; s++) {
             for (int n = 0; n < num_; n++) {
               int index = n*len*stride + s + b*bottom[0]->count(1);
               //LOG(INFO)<<index;
@@ -413,6 +463,7 @@ namespace caffe {
                 }
                 else {
                   diff[index2] = diff[index2 + 0] * logistic_gradient(top_data[index2 + 0]);
+
                 }
               }
             }
