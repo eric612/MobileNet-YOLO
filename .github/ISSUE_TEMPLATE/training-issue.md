@@ -1,6 +1,6 @@
 ---
 name: Training issue
-about: Describe this issue template's purpose here.
+about: Any problem about training
 title: "[Training Issue]"
 labels: ''
 assignees: ''
