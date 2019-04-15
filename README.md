@@ -6,6 +6,8 @@ This project also support ssd framework , and here lists the difference from ssd
 * Modified from last update caffe (2018)
 * Support multi-task model (currently support segmentation) 
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/nndFtIPMy20/0.jpg)](https://www.youtube.com/watch?v=nndFtIPMy20)
+
 ## MobileNet-YOLO 
 
 A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainval35k then fine-tune on 07+12 , test on VOC2007
