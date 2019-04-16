@@ -6,7 +6,7 @@ cd $root_dir
 redo=1
 data_root_dir="/media/data/"
 dataset_name="bdd100k"
-mapfile="$root_dir/data/$dataset_name/labelmap_fisheye.prototxt"
+mapfile="$root_dir/data/$dataset_name/labelmap_detection.prototxt"
 anno_type="detection_with_segmentation"
 db="lmdb"
 min_dim=0
