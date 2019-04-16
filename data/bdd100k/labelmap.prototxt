@@ -1,0 +1,21 @@
+item {
+  name: "unlabeled"
+  label: 0
+  label_id: 0 # background
+}
+item {
+  name: "Curlane"
+  label: 1
+  label_id: 1
+  r : 128
+  g : 255
+  b : 128
+}
+item {
+  name: "Sidelane"
+  label: 2
+  label_id: 2
+  r : 244
+  g : 35
+  b : 232
+}

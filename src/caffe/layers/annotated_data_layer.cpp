@@ -285,16 +285,16 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     }
     AnnotatedDatum* sampled_datum = NULL;
     bool has_sampled = false;
-    if (batch_samplers_.size() > 0 || yolo_data_type_== 1) {
+    if (batch_samplers_.size() > 0 || yolo_data_jitter_) {
       // Generate sampled bboxes from expand_datum.
       vector<NormalizedBBox> sampled_bboxes;
-	  if (batch_samplers_.size()>0) {
-	  	GenerateBatchSamples(*expand_datum, batch_samplers_, &sampled_bboxes);
-	  }
-	  else {
-	    bool keep = transform_param.resize_param(policy_num_).resize_mode() == ResizeParameter_Resize_mode_FIT_LARGE_SIZE_AND_PAD;
-	    GenerateJitterSamples(yolo_data_jitter_, &sampled_bboxes , keep);
-	  }
+      if (batch_samplers_.size()>0) {
+        GenerateBatchSamples(*expand_datum, batch_samplers_, &sampled_bboxes);
+      }
+      else {
+        bool keep = transform_param.resize_param(policy_num_).resize_mode() == ResizeParameter_Resize_mode_FIT_LARGE_SIZE_AND_PAD;
+        GenerateJitterSamples(yolo_data_jitter_, &sampled_bboxes , keep);
+      }
       if (sampled_bboxes.size() > 0) {
         // Randomly pick a sampled bbox and crop the expand_datum.
         int rand_idx = caffe_rng_rand() % sampled_bboxes.size();
@@ -347,7 +347,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         }
         // Transform datum and annotation_group at the same time
         transformed_anno_vec.clear();
-		//LOG(INFO) << "test";
+
         this->data_transformer_->Transform(*sampled_datum,
                                            &(this->transformed_data_),
                                            &transformed_anno_vec, policy_num_);
@@ -392,7 +392,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       
       
       cv::Mat crop_img;
-      //LOG(INFO) << crop_box.xmin() << crop_box.xmax() << crop_box.ymin() << crop_box.ymax();
+      //LOG(INFO) << crop_box.xmin()<<"," << crop_box.xmax() <<","<< crop_box.ymin() <<","<< crop_box.ymax();
       const int img_height = cv_lab.rows;
       const int img_width = cv_lab.cols;
 
@@ -540,7 +540,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       } 
       else {
         if (num_bboxes > 300) {
-          LOG(INFO) << num_bboxes;
+          //LOG(INFO) << num_bboxes;
         }
             // Reshape the label and store the annotation.
         if (yolo_data_type_ == 1) {

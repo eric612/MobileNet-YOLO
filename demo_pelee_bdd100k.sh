@@ -1,0 +1,1 @@
+./examples/yolo/yolo_detect models/pelee/deploy.prototxt models/pelee/pelee_SSD_304x304_iter_150000.caffemodel -detect_mode 1 -cpu_mode gpu -file_type video -indir data/bdd100k -ext mov -wait_time 1 -mean_value 1.751,1.983,2.10 -normalize_value 0.017 -confidence_threshold 0.3 -seg_resize_scales 4 -seg_label_map data/bdd100k/labelmap.prototxt

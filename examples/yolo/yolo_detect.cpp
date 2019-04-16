@@ -90,8 +90,8 @@ class Detector {
        const int resize);
 
   std::vector<vector<float> > Detect(cv::Mat& img);
-  std::vector<vector<float> > DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img);
-  std::vector<vector<float> > Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img);
+  std::vector<vector<float> > DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img,int scale = 4);
+  std::vector<vector<float> > Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img,int scale = 4);
   cv::Size input_geometry_;
  private:
   void SetMean(const string& mean_file, const string& mean_value);
@@ -193,7 +193,7 @@ std::vector<vector<float> > Detector::Detect(cv::Mat& img) {
 
   return detections;
 }
-std::vector<vector<float> > Detector::Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img) {
+std::vector<vector<float> > Detector::Segment(cv::Mat& img, std::vector<cv::Mat> &seg_img,int scale) {
   Blob<float>* input_layer = net_->input_blobs()[0];
   input_layer->Reshape(1, num_channels_,
     input_geometry_.height, input_geometry_.width);
@@ -220,10 +220,10 @@ std::vector<vector<float> > Detector::Segment(cv::Mat& img, std::vector<cv::Mat>
   //
   //seg_img = cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1);
   int img_index1 = 0;
-  int w = input_geometry_.width / 4;
-  int h = input_geometry_.height / 4;
+  int w = input_geometry_.width / scale;
+  int h = input_geometry_.height / scale;
   for(int i = 0; i<size;i++) {   
-    seg_img.push_back(cv::Mat(input_geometry_.width / 4, input_geometry_.height / 4, CV_8UC1));
+    seg_img.push_back(cv::Mat(input_geometry_.width / scale, input_geometry_.height / scale, CV_8UC1));
   }
   //printf("%d\n",seg_img.size());
   for(int c = 0; c<seg_img.size();c++) {   
@@ -243,7 +243,7 @@ std::vector<vector<float> > Detector::Segment(cv::Mat& img, std::vector<cv::Mat>
 
   return detections;
 }
-std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img) {
+std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, std::vector<cv::Mat> &seg_img,int scale) {
   Blob<float>* input_layer = net_->input_blobs()[0];
   input_layer->Reshape(1, num_channels_,
     input_geometry_.height, input_geometry_.width);
@@ -283,10 +283,10 @@ std::vector<vector<float> > Detector::DetectAndSegment(cv::Mat& img, std::vector
   //
   //seg_img = cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1);
   int img_index1 = 0;
-  int w = input_geometry_.width / 8;
-  int h = input_geometry_.height / 8;
+  int w = input_geometry_.width / scale;
+  int h = input_geometry_.height / scale;
   for(int i = 0; i<size;i++) {   
-    seg_img.push_back(cv::Mat(input_geometry_.width / 8, input_geometry_.height / 8, CV_8UC1));
+    seg_img.push_back(cv::Mat(input_geometry_.width / scale, input_geometry_.height / scale, CV_8UC1));
   }
   //printf("%d\n",seg_img.size());
   for(int c = 0; c<seg_img.size();c++) {   
@@ -657,6 +657,8 @@ DEFINE_int32(detect_mode, 0,
 DEFINE_string(indir, "data//" , "demo images folder");
 DEFINE_string(ext, "jpg" , "demo images extension");
 DEFINE_string(seg_label_map, "data/cityscapes/labelmap_seg.prototxt" , "label map");
+DEFINE_int32(seg_resize_scales, 4,
+  "segmentation output image size scale");
 int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -691,7 +693,7 @@ int main(int argc, char** argv) {
   const string& indir = FLAGS_indir;
   const string& ext = FLAGS_ext;
   const string& seg_label_map = FLAGS_seg_label_map;
-  
+  const int& seg_resize_scales = FLAGS_seg_resize_scales;
   // Initialize the network.
   
   Detector detector(model_file, weights_file, mean_file, mean_value, confidence_threshold, normalize_value, cpu_mode, resize_mode);
@@ -753,7 +755,7 @@ int main(int argc, char** argv) {
       batch_timer.Start();
       std::vector<vector<float> > detections;
       if (detect_mode == 2) {
-        detections = detector.Segment(img, seg_img);
+        detections = detector.Segment(img, seg_img,seg_resize_scales);
 
         for(int i=0;i<seg_img.size();i++) {
           cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
@@ -763,14 +765,20 @@ int main(int argc, char** argv) {
       }
       else if (detect_mode) {
 
-        detections = detector.DetectAndSegment(img, seg_img);
+        detections = detector.DetectAndSegment(img, seg_img,seg_resize_scales);
         
         //MatMul(img, seg_img,color);
         //printf("%d\n",seg_img.size());
         for(int i=0;i<seg_img.size();i++) {
+          sprintf(buf, "data//tommy_out//net_out.png", k);
+          cv::imwrite(buf, seg_img[i]);
           cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-          int color_index = (i+1)*3;
+          sprintf(buf, "data//tommy_out//net_resize.png", k);
+          cv::imwrite(buf, seg_img_resized);
+          int color_index = (i)*3;
           MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
+          sprintf(buf, "data//tommy_out//net_resize_paint.png", k);
+          cv::imwrite(buf, img);
         }
         //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
         //MatMul(img, seg_img_resized);
@@ -851,8 +859,8 @@ int main(int argc, char** argv) {
   else 
   {
     char buf[1000];
-    sprintf(buf, "%s/*.avi", "data//");
-    cv::String path(buf); //select only avi
+    sprintf(buf, "%s/*.%s", indir.c_str(),ext.c_str());
+    cv::String path(buf); //select only jpg
     int count = 0;
     vector<cv::String> fn;
     vector<cv::Mat> data;
@@ -866,7 +874,7 @@ int main(int argc, char** argv) {
       if (!cap.isOpened()) {
         LOG(FATAL) << "Failed to open video: " << file;
       }
-      cv::Mat img;
+      cv::Mat img,img2;
       std::vector<cv::Mat> seg_img;
       cv::Mat seg_img_resized;
       int frame_count = 0;
@@ -881,10 +889,10 @@ int main(int argc, char** argv) {
         
         if (detect_mode) {
           seg_img.clear();
-          detections = detector.DetectAndSegment(img, seg_img);
+          detections = detector.DetectAndSegment(img, seg_img ,seg_resize_scales);
           for(int i=0;i<seg_img.size();i++) {
             cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-            int color_index = (i+1)*3;
+            int color_index = (i)*3;
             MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
           }
           //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
