@@ -6,4 +6,6 @@
 
 ## Weighting file
 
-[google drive](https://drive.google.com/open?id=1Yp3WfA1MV0KHjRqESsAsxxkQAxXqet6d)
+[bn-model](https://drive.google.com/open?id=1Yp3WfA1MV0KHjRqESsAsxxkQAxXqet6d)
+
+[merged-bn-model](https://drive.google.com/open?id=1Wt6jKv13sBRMHgrGAJYlOlRF-o80pC0g)
