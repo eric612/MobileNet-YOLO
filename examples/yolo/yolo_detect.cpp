@@ -770,15 +770,9 @@ int main(int argc, char** argv) {
         //MatMul(img, seg_img,color);
         //printf("%d\n",seg_img.size());
         for(int i=0;i<seg_img.size();i++) {
-          sprintf(buf, "data//tommy_out//net_out.png", k);
-          cv::imwrite(buf, seg_img[i]);
           cv::resize(seg_img[i], seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
-          sprintf(buf, "data//tommy_out//net_resize.png", k);
-          cv::imwrite(buf, seg_img_resized);
           int color_index = (i)*3;
           MatMul(img, seg_img_resized,color[color_index],color[color_index+1],color[color_index+2]);
-          sprintf(buf, "data//tommy_out//net_resize_paint.png", k);
-          cv::imwrite(buf, img);
         }
         //cv::resize(seg_img, seg_img_resized, cv::Size(img.cols, img.rows),cv::INTER_AREA);
         //MatMul(img, seg_img_resized);
