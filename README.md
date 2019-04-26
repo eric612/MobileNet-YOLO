@@ -25,6 +25,8 @@ MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethere
 
 [TensorRT-Yolov3-models](https://github.com/eric612/TensorRT-Yolov3-models)
 
+[Pelee-Driverable_Maps](https://github.com/eric612/Pelee-Seg-TensorRT), run 89 ms on [jetson nano](https://github.com/eric612/Jetson-nano-benchmark)
+
 ### YOLO Segmentation
 
 [How to use](https://github.com/eric612/MobileNet-YOLO/tree/master/data/cityscapes)
