@@ -108,6 +108,8 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 
 > https://github.com/Robert-JunWang/Pelee
 
+> https://github.com/hujie-frank/SENet
+
 Cudnn convolution
 
 > https://github.com/chuanqi305/MobileNetv2-SSDLite/tree/master/src
