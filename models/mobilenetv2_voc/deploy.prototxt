@@ -1,96 +1,15 @@
 name: "MobileNetV2"
 layer {
   name: "data"
-  type: "AnnotatedData"
+  type: "Input"
   top: "data"
-  top: "label"
-  include {
-    phase: TRAIN
-  }
-  
-  transform_param {
-    scale: 0.007843
-    mirror: true
-    mean_value: 127.5
-    mean_value: 127.5
-    mean_value: 127.5
-
-
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 384
-      width: 384
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 320
+      dim: 320
     }
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 352
-      width: 352
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 320
-      width: 320
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 288
-      width: 288
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 256
-      width: 256
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
-    }
-    emit_constraint {
-      emit_type: CENTER
-    }
-    distort_param {
-      brightness_prob: 0.5
-      brightness_delta: 32.0
-      contrast_prob: 0.5
-      contrast_lower: 0.5
-      contrast_upper: 1.5
-      hue_prob: 0.5
-      hue_delta: 18.0
-      saturation_prob: 0.5
-      saturation_lower: 0.5
-      saturation_upper: 1.5
-      random_order_prob: 0.0
-    }
-    expand_param {
-      prob: 0.5
-      max_expand_ratio: 2.5
-    }
-  }
-  data_param {
-    source: "examples/VOC0712/VOC0712_trainval_lmdb"
-    batch_size: 8
-    backend: LMDB
-  }
-  annotated_data_param {
-    yolo_data_type : 1
-    yolo_data_jitter : 0.7
-    label_map_file:  "data/VOC0712/labelmap_voc.prototxt"
   }
 }
 layer {
@@ -2818,23 +2737,20 @@ layer {
   }
 }
 layer {
-  name: "Yolov3Loss1"
-  type: "Yolov3"
+  name: "detection_out"
+  type: "Yolov3DetectionOutput"
   bottom: "yolo/conv4"
-  bottom: "label"
-  top: "det_loss1"
-  loss_weight: 1
-  yolov3_param {
-    side: 13
-    num_class: 20
-    num: 3  
-    object_scale: 5.0
-    noobject_scale: 1.0
-    class_scale: 1.0
-    coord_scale: 1.0
-    thresh: 0.6
-    anchors_scale : 32
-    use_logic_gradient : false
+  bottom: "yolo/conv5"
+  top: "detection_out"
+  include {
+    phase: TEST
+  }
+  yolov3_detection_output_param {
+    confidence_threshold: 0.01
+    nms_threshold: 0.45
+    num_classes: 20
+	
+	
     #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
     biases: 18
     biases: 34
@@ -2851,43 +2767,13 @@ layer {
 	
     mask:3
     mask:4
-    mask:5
-  }
-}
-layer {
-  name: "Yolov3Loss2"
-  type: "Yolov3"
-  bottom: "yolo/conv5"
-  bottom: "label"
-  top: "det_loss2"
-  loss_weight: 1
-  yolov3_param {
-    side: 26
-    num_class: 20
-    num: 3  
-    object_scale: 5.0
-    noobject_scale: 1.0
-    class_scale: 1.0
-    coord_scale: 1.0
-    thresh: 0.6
-    anchors_scale : 16
-    use_logic_gradient : false
-    #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    biases: 18
-    biases: 34
-    biases: 45
-    biases: 84
-    biases: 65
-    biases: 181
-    biases: 141
-    biases: 111
-    biases: 129
-    biases: 241
-    biases: 254
-    biases: 254
-	
+    mask:5	
     mask:0
     mask:1
     mask:2
+    anchors_scale:32
+    anchors_scale:16
+    mask_group_num:2
   }
 }
+

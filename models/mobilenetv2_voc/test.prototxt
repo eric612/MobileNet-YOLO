@@ -2224,12 +2224,12 @@ layer {
   }
 }
 layer {
-  name: "conv52"
+  name: "conv52_new"
   type: "Convolution"
   bottom: "batch_norm_blob51"
-  top: "conv_blob52"
+  top: "conv_blob52_new"
   convolution_param {
-    num_output: 1280
+    num_output: 576
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2242,45 +2242,45 @@ layer {
   }
 }
 layer {
-  name: "batch_norm52"
+  name: "batch_norm52_new"
   type: "BatchNorm"
-  bottom: "conv_blob52"
-  top: "batch_norm_blob52"
+  bottom: "conv_blob52_new"
+  top: "batch_norm_blob52_new"
   batch_norm_param {
     
     eps: 9.999999747378752e-06
   }
 }
 layer {
-  name: "bn_scale52"
+  name: "bn_scale52_new"
   type: "Scale"
-  bottom: "batch_norm_blob52"
-  top: "batch_norm_blob52"
+  bottom: "batch_norm_blob52_new"
+  top: "batch_norm_blob52_new"
   scale_param {
     bias_term: true
   }
 }
 layer {
-  name: "relu35"
+  name: "relu35_new"
   type: "ReLU"
-  bottom: "batch_norm_blob52"
-  top: "relu_blob35"
+  bottom: "batch_norm_blob52_new"
+  top: "relu_blob35_new"
 }
 layer {
   name: "yolo/conv1/dw"
   type: "DepthwiseConvolution"
-  bottom: "relu_blob35"
+  bottom: "relu_blob35_new"
   top: "yolo/conv1/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 1280
+    num_output: 576
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 1280
+    group: 576
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2344,7 +2344,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 1024
+    num_output: 576
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2406,8 +2406,8 @@ layer {
   top: "upsample"
   param { lr_mult: 0  decay_mult: 0 }
   convolution_param {
-    num_output: 512
-    group: 512
+    num_output: 576
+    group: 576
     kernel_size: 1  stride: 2  pad: 0
     weight_filler: { 
       type: "constant"
@@ -2432,7 +2432,7 @@ layer {
 layer {
   name: "yolo/conv2/dw"
   type: "DepthwiseConvolution"
-  bottom: "batch_norm_blob40"
+  bottom: "relu_blob27"
   top: "yolo/conv2/dw"
   param {
     lr_mult: 1
@@ -2507,7 +2507,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 512
+    num_output: 576
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2580,11 +2580,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 512
+    num_output: 576
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 512
+    group: 576
     engine: CAFFE
     weight_filler {
       type: "xavier"
@@ -2648,7 +2648,7 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 512
+    num_output: 576
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2708,7 +2708,7 @@ layer {
   type: "Convolution"
   bottom: "yolo/conv1"
   top: "yolo/conv4"
-    param {
+  param {
     lr_mult: 1
     decay_mult: 1
   }
@@ -2763,15 +2763,15 @@ layer {
   bottom: "yolo/conv5"
   top: "detection_out"
   include {
-	phase: TEST
+    phase: TEST
   }
   yolov3_detection_output_param {
     confidence_threshold: 0.01
-	nms_threshold: 0.45
+    nms_threshold: 0.45
     num_classes: 20
 	
 	
-	#10,14,  23,27,  37,58,  81,82,  135,169,  344,319
+    #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
     biases: 18
     biases: 34
     biases: 45
