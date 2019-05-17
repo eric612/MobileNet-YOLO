@@ -1,5 +1,5 @@
-train_net: "models/mobilenetv2_voc/train.prototxt"
-test_net: "models/mobilenetv2_voc/test.prototxt"
+train_net: "models/mobilenetv2_voc/yolo_lite/train.prototxt"
+test_net: "models/mobilenetv2_voc/yolo_lite/test.prototxt"
 test_iter: 4952
 test_interval: 1000
 base_lr: 0.005
@@ -10,7 +10,7 @@ gamma: 0.1
 momentum: 0.9
 weight_decay: 0.00004
 snapshot: 1000
-snapshot_prefix: "models/mobilenetv2_voc/yolov3_lite_deploy"
+snapshot_prefix: "models/mobilenetv2_voc/yolo_lite/yolov3_lite_deploy"
 solver_mode: GPU
 debug_info: false
 snapshot_after_train: true
