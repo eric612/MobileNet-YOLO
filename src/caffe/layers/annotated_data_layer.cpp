@@ -418,7 +418,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         cv::Mat resized;
         //LOG(INFO)<<type2str(crop_img.type());
         cv::resize(crop_img, resized, cv::Size(seg_label_shape[2], seg_label_shape[3]),cv::INTER_AREA);
-        //cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
+        cv::threshold(resized, resized, 100, 255, cv::THRESH_BINARY);
         //LOG(INFO)<<type2str(resized.type());
         this->transformed_label_.Reshape(seg_label_shape);
         int offset = batch->seg_label_.offset(item_id);
@@ -539,9 +539,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
       } 
       else {
-        if (num_bboxes > 300) {
-          //LOG(INFO) << num_bboxes;
-        }
+
             // Reshape the label and store the annotation.
         if (yolo_data_type_ == 1) {
           label_shape[2] = 300;
@@ -567,6 +565,9 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
           for (int g = 0; g < anno_vec.size(); ++g) {
             const AnnotationGroup& anno_group = anno_vec[g];
             for (int a = 0; a < anno_group.annotation_size(); ++a) {
+              if (anno_group.annotation_size() > 300) {
+                LOG(INFO) << "WARNING : gt box > 300 , "<< anno_group.annotation_size();
+              }
               const Annotation& anno = anno_group.annotation(a);
               const NormalizedBBox& bbox = anno.bbox();
               if (yolo_data_type_ == 1) {  
