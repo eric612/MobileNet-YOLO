@@ -10,8 +10,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#if (!defined(CV_VERSION_EPOCH) && CV_VERSION_MAJOR >= 3)
 #include <opencv2/videoio.hpp>
 #include <opencv2/video.hpp>
+#endif
 #endif  // USE_OPENCV
 
 #include <cmath>
