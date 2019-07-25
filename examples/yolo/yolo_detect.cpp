@@ -952,7 +952,7 @@ int main(int argc, char** argv) {
             char fname[256];
             sprintf(fname,"%s.mp4",fn[k].c_str());
             printf(fname);
-            writer.open(fname, CV_FOURCC('M', 'P', '4', 'V'), 30, size);
+            writer.open(fname, cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 30, size);
           }
           else if (count == max) {
             writer << img;
