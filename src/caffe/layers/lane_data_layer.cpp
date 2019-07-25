@@ -288,7 +288,7 @@ void LaneDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
           seg_label_shape[2] = seg_resize_height_;
           seg_label_shape[3] = seg_resize_width_;        
         }
-        cv_lab = cv::Mat(seg_label_shape[2],seg_label_shape[3], CV_8UC1, cvScalar(0));
+        cv_lab = cv::Mat(seg_label_shape[2],seg_label_shape[3], CV_8UC1, cv::Scalar(0));
         batch->seg_label_.Reshape(seg_label_shape);
         
       }
