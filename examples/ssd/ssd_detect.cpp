@@ -599,7 +599,7 @@ int main(int argc, char** argv) {
 				  size.height = img.rows;
 				  static cv::VideoWriter writer;    // cv::VideoWriter output_video;
 				  if (count == 0) {
-					  writer.open("VideoTest.avi", CV_FOURCC('D', 'I', 'V', 'X'), 30, size);
+					  writer.open("VideoTest.avi", cv::VideoWriter::fourcc('D', 'I', 'V', 'X'), 30, size);
 				  }
 				  else if (count == max) {
 					  writer << img;
