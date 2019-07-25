@@ -1,3 +1,5 @@
+# CODE UPDATED FOR OPENCV 3
+
 # MobileNet-YOLO Caffe
 
 This project also support ssd framework , and here lists the difference from ssd caffe
