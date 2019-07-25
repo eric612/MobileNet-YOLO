@@ -834,7 +834,7 @@ int main(int argc, char** argv) {
         size.height = img.rows;
         static cv::VideoWriter writer;    // cv::VideoWriter output_video;
         if (count == 0) {
-          writer.open("VideoTest.mp4", CV_FOURCC('M', 'P', '4', 'V'), 10, size);
+          writer.open("VideoTest.mp4", cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 10, size);
         }
         else if (count == max) {
           writer << img;
