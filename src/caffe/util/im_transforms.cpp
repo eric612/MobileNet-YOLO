@@ -1,6 +1,5 @@
 #ifdef USE_OPENCV
 #include <opencv2/highgui/highgui.hpp>
-#define CV_VERSION_MAJOR 3
 
 #if CV_VERSION_MAJOR == 3
 #include <opencv2/imgcodecs/imgcodecs.hpp>
