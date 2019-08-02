@@ -30,6 +30,7 @@ network|mAP|resolution|macc|param|
 :---:|:---:|:---:|:---:|:---:|
 MobileNetV2-YOLOv3|0.704|352|1.22G|4.05M|
 [Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|
+[Mobilenet-SSD](https://github.com/chuanqi305/MobileNet-SSD)|0.68|300|1.21G|5.43M|
 
 ### Coverted TensorRT models
 
