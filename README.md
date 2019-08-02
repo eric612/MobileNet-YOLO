@@ -13,13 +13,13 @@ This project also support ssd framework , and here lists the difference from ssd
 
 A caffe implementation of MobileNet-YOLO detection network , train on 07+12 , test on VOC2007
 
-Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
+Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-7500)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNetV2-YOLOv3|70.4|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[graph](http://ethereon.github.io/netscope/#/gist/495618dacbfca0ed2256cce9bf221b1f)|[6.09 ms](benchmark/test.log)|170 ms
+MobileNetV2-YOLOv3|70.4|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[graph](http://ethereon.github.io/netscope/#/gist/495618dacbfca0ed2256cce9bf221b1f)|[6.65 ms](benchmark/test.log)|217 ms
 
 * inference time was log from [script](benchmark/test_yolov3_lite.sh) , does not include pre-processing 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
-* the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
+* the deploy model was made by [merge_bn.py](https://github.com/Robert-JunWang/Pelee/blob/master/tools/gen_merged_model.py), set eps = your prototxt batchnorme layer eps
 * old models please see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
 
 ### CNN Analyzer
