@@ -11,17 +11,24 @@ This project also support ssd framework , and here lists the difference from ssd
  
 ## MobileNet-YOLO 
 
-A caffe implementation of MobileNet-YOLO detection network , first train on COCO trainval35k then fine-tune on 07+12 , test on VOC2007
+A caffe implementation of MobileNet-YOLO detection network , train on 07+12 , test on VOC2007
 
 Network|mAP|Resolution|Download|NetScope|Inference time (GTX 1080)|Inference time (i5-4440)
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-MobileNet-YOLOv3-Lite|74.6|320|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[4.79 ms](benchmark/test-320.log)|150 ms
-MobileNet-YOLOv3-Lite|76.3|416|[caffemodel](models/yolov3)|[graph](http://ethereon.github.io/netscope/#/gist/8f218ac764fd14c74c5eac1549a088af)|[6.52 ms](benchmark/test-416.log)|280 ms
+MobileNetV2-YOLOv3|70.4|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[graph](http://ethereon.github.io/netscope/#/gist/495618dacbfca0ed2256cce9bf221b1f)|[6.09 ms](benchmark/test.log)|170 ms
 
 * inference time was log from [script](benchmark/test_yolov3_lite.sh) , does not include pre-processing 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
-* bn_model download [here](https://drive.google.com/open?id=15vMupzg4GDATUuNWDQQI1GFQUR8_5puo) 
+
+### CNN Analyzer
+
+Use this [tool](https://dgschwend.github.io/netscope/quickstart.html) to compare macc and param , train on 07+12 , test on VOC2007
+
+network|mAP|resolution|macc|param|
+:---:|:---:|:---:|:---:|:---:|
+MobileNetV2-YOLOv3|0.704|352|1.22G|4.05M|
+[Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|
 
 ### Coverted TensorRT models
 
@@ -48,28 +55,6 @@ Network|mAP|Resolution|Download|NetScope|
 yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1nYgjOg8o48qQ3Cw47CamERgJVgLlo-Cu/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
 yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWtmS6zTsPkAQgW0VFkt7/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
 
-## Performance
-
-Train on  COCO trainval35k (2014) , and  compare with [YOLO](https://pjreddie.com/darknet/yolo/) , (IOU 0.5)
-
-Network|IOU 0.5:0.95|IOU 0.5|IOU 0.75|Weight size|Resolution|NetScope|Resize Mode
-:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|19.9|35.5|19.6|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|320|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
-[MobileNet-YOLOv3-Lite](models/yolov3_coco/)|21.5|38.9|21.2|[22.0 mb](https://drive.google.com/file/d/1rruY8BtS8WVdKPwU0LIT_6FyTnVxvHQl/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/110f5f5a2edad80c0c9074c7a532347b)|WARP
-[MobileNet-YOLOv3](models/yolov3_coco/)|22.7|40.2|22.6|[22.5 mb](https://drive.google.com/file/d/1tVdLzBA5T_HjDQkJv2ldr99X-T_s5UMn/view?usp=sharing)|416|[graph](http://ethereon.github.io/netscope/#/gist/ef69b621d69703be0327836ec9708634)|LetterBox
-YOLOv3-Tiny||33.1||33.8 mb|416
-[MobileNet-YOLOv3-Lite-trt](https://github.com/eric612/TensorRT-Yolov3-model)||37.5||[23.5 mb](https://github.com/eric612/TensorRT-Yolov3-model/blob/master/mobilenet_yolov3_lite_deploy_iter_21000.caffemodel)|416|[graph](http://ethereon.github.io/netscope/#/gist/cf22541c314a5896abd45b88d430ca1f)|WARP
-* (*) testdev-2015 server was closed , here use coco 2014 minival
-* MobileNet-YOLOv3-Lite-trt was the fastest model
-
-## Other Models
-
-You can find non-depthwise convolution network here , [Yolo-Model-Zoo](https://github.com/eric612/Yolo-Model-Zoo.git)
-
-network|mAP|resolution|macc|param|
-:---:|:---:|:---:|:---:|:---:|
-PVA-YOLOv3|0.703|416|2.55G|4.72M|
-Pelee-YOLOv3|0.703|416|4.25G|3.85M|
 
 ### Model VisulizationTool
 

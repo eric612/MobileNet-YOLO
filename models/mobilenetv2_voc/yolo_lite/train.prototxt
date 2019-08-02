@@ -15,7 +15,15 @@ layer {
     mean_value: 127.5
     mean_value: 127.5
 
-
+    resize_param {
+      prob: 0.2
+      resize_mode: WARP
+      height: 416
+      width: 416
+      interp_mode: LINEAR
+      interp_mode: AREA
+      interp_mode: LANCZOS4
+    }
     resize_param {
       prob: 0.2
       resize_mode: WARP
@@ -52,15 +60,7 @@ layer {
       interp_mode: AREA
       interp_mode: LANCZOS4
     }
-    resize_param {
-      prob: 0.2
-      resize_mode: WARP
-      height: 256
-      width: 256
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: LANCZOS4
-    }
+
     emit_constraint {
       emit_type: CENTER
     }
@@ -106,7 +106,7 @@ layer {
     group: 1
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -149,7 +149,7 @@ layer {
     group: 32
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -192,7 +192,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -229,7 +229,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -272,7 +272,7 @@ layer {
     group: 96
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -315,7 +315,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -352,7 +352,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -395,7 +395,7 @@ layer {
     group: 144
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -438,7 +438,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -485,7 +485,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -528,7 +528,7 @@ layer {
     group: 144
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -571,7 +571,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -608,7 +608,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -651,7 +651,7 @@ layer {
     group: 192
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -694,7 +694,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -741,7 +741,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -784,7 +784,7 @@ layer {
     group: 192
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -827,7 +827,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -874,7 +874,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -917,7 +917,7 @@ layer {
     group: 192
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -960,7 +960,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -997,7 +997,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1040,7 +1040,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1083,7 +1083,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1130,7 +1130,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1173,7 +1173,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1216,7 +1216,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1263,7 +1263,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1306,7 +1306,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1349,7 +1349,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1396,7 +1396,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1439,7 +1439,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1482,7 +1482,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1519,7 +1519,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1562,7 +1562,7 @@ layer {
     group: 576
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1605,7 +1605,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1652,7 +1652,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1695,7 +1695,7 @@ layer {
     group: 576
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1738,7 +1738,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1785,7 +1785,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1828,7 +1828,7 @@ layer {
     group: 576
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1871,7 +1871,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1908,7 +1908,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1951,7 +1951,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1994,7 +1994,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2041,7 +2041,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2084,7 +2084,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2127,7 +2127,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2174,7 +2174,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2217,7 +2217,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2260,7 +2260,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2297,7 +2297,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2327,64 +2327,22 @@ layer {
   bottom: "conv52"
   top: "conv52"
 }
-layer {
-  name: "conv53"
-  type: "Convolution"
-  bottom: "conv52"
-  top: "conv53"
-  convolution_param {
-    num_output: 576
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    group: 1
-    stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    dilation: 1
-  }
-}
-layer {
-  name: "batch_norm53"
-  type: "BatchNorm"
-  bottom: "conv53"
-  top: "conv53"
-  batch_norm_param {
-    
-    eps: 9.999999747378752e-06
-  }
-}
-layer {
-  name: "bn_scale53"
-  type: "Scale"
-  bottom: "conv53"
-  top: "conv53"
-  scale_param {
-    bias_term: true
-  }
-}
-layer {
-  name: "relu36"
-  type: "ReLU"
-  bottom: "conv53"
-  top: "conv53"
-}
+
 layer {
   name: "yolo/conv1/dw"
   type: "DepthwiseConvolution"
-  bottom: "conv53"
+  bottom: "conv52"
   top: "yolo/conv1/dw"
   param {
     lr_mult: 1
     decay_mult: 1
   }
   convolution_param {
-    num_output: 576
+    num_output: 1280
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 576
+    group: 1280
     engine: CAFFE
     weight_filler {
       type: "msra"
@@ -2550,7 +2508,7 @@ layer {
     group: 576
     engine: CAFFE
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
   }
 }
@@ -2615,7 +2573,7 @@ layer {
     bias_term: false
     kernel_size: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
   }
 }
@@ -2691,7 +2649,7 @@ layer {
     group: 576
     engine: CAFFE
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
   }
 }
@@ -2756,7 +2714,7 @@ layer {
     bias_term: false
     kernel_size: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
   }
 }
@@ -2826,7 +2784,7 @@ layer {
     pad: 0
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
 	bias_filler {
       value: 0
@@ -2853,7 +2811,7 @@ layer {
     pad: 0
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
 	bias_filler {
       value: 0
@@ -2879,18 +2837,18 @@ layer {
     anchors_scale : 32
     use_logic_gradient : false
     #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    biases: 18
-    biases: 34
-    biases: 45
-    biases: 84
-    biases: 65
-    biases: 181
-    biases: 141
-    biases: 111
-    biases: 129
-    biases: 241
-    biases: 254
-    biases: 254
+    biases: 20
+    biases: 37
+    biases: 49
+    biases: 94
+    biases: 73
+    biases: 201
+    biases: 143
+    biases: 265
+    biases: 153
+    biases: 121
+    biases: 280
+    biases: 279
 	
     mask:3
     mask:4
@@ -2916,18 +2874,18 @@ layer {
     anchors_scale : 16
     use_logic_gradient : false
     #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    biases: 18
-    biases: 34
-    biases: 45
-    biases: 84
-    biases: 65
-    biases: 181
-    biases: 141
-    biases: 111
-    biases: 129
-    biases: 241
-    biases: 254
-    biases: 254
+    biases: 20
+    biases: 37
+    biases: 49
+    biases: 94
+    biases: 73
+    biases: 201
+    biases: 143
+    biases: 265
+    biases: 153
+    biases: 121
+    biases: 280
+    biases: 279
 	
     mask:0
     mask:1
