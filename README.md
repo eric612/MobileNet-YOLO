@@ -19,7 +19,7 @@ MobileNetV2-YOLOv3|70.4|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[grap
 
 * inference time was log from [script](benchmark/test_yolov3_lite.sh) , does not include pre-processing 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
-* the deploy model was made by [merge_bn.py](https://github.com/Robert-JunWang/Pelee/blob/master/tools/gen_merged_model.py), set eps = your prototxt batchnorme layer eps
+* the deploy model was made by [merge_bn.py](https://github.com/Robert-JunWang/Pelee/blob/master/tools/gen_merged_model.py), set eps = your prototxt batchnorm eps
 * old models please see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
 
 ### CNN Analyzer
