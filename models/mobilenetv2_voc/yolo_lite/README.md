@@ -22,3 +22,5 @@ https://github.com/eric612/MobileNet-YOLO/issues/50
 # Pre-trained ilsvrc2012 weights
 
 [MobileNetV2](https://drive.google.com/open?id=1RgT7jrYFJ0Ub_CF5zdfP3ExwHKDftPik)
+
+Converted from [PytorchToCaffe](https://github.com/xxradon/PytorchToCaffe)
