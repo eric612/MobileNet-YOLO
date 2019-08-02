@@ -38,8 +38,10 @@ gpu_device = -1
     mobilenet_yolov3  min =   85.21  max =   90.68  avg =   86.62
   mobilenetv2_yolov3  min =   58.12  max =   60.43  avg =   58.91
 ```
-```
+
 1 thread
+
+```
 
 loop_count = 8
 num_threads = 1
