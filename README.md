@@ -34,7 +34,7 @@ MobileNetV2-YOLOv3|0.704|352|1.22G|4.05M|
 
 [TensorRT-Yolov3-models](https://github.com/eric612/TensorRT-Yolov3-models)
 
-[Pelee-Driverable_Maps](https://github.com/eric612/Pelee-Seg-TensorRT), run 89 ms on [jetson nano](https://github.com/eric612/Jetson-nano-benchmark)
+[Pelee-Driverable_Maps](https://youtu.be/nndFtIPMy20), run 89 ms on [jetson nano](https://github.com/eric612/Jetson-nano-benchmark) , [running project]((https://github.com/eric612/Pelee-Seg-TensorRT))
 
 ### YOLO Segmentation
 
