@@ -1,4 +1,4 @@
-name: "remove_bn"
+name: "MobileNetV2"
 layer {
   name: "data"
   type: "Input"
@@ -7,8 +7,8 @@ layer {
     shape {
       dim: 1
       dim: 3
-      dim: 320
-      dim: 320
+      dim: 352
+      dim: 352
     }
   }
 }
@@ -26,6 +26,10 @@ layer {
     stride: 2
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -51,6 +55,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -75,6 +83,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -92,6 +104,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -117,6 +133,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -141,6 +161,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -158,6 +182,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -183,6 +211,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -206,6 +238,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -235,6 +271,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -258,6 +298,10 @@ layer {
     stride: 2
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -283,6 +327,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -300,6 +348,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -325,6 +377,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -348,6 +404,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -377,6 +437,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -401,6 +465,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -424,6 +492,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -453,6 +525,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -476,6 +552,10 @@ layer {
     stride: 2
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -501,6 +581,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -518,6 +602,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -543,6 +631,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -566,6 +658,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -595,6 +691,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -619,6 +719,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -642,6 +746,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -671,6 +779,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -695,6 +807,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -718,6 +834,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -747,6 +867,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -770,6 +894,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -795,6 +923,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -812,6 +944,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -837,6 +973,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -860,6 +1000,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -889,6 +1033,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -913,6 +1061,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -936,6 +1088,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -965,6 +1121,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -988,6 +1148,10 @@ layer {
     stride: 2
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1013,6 +1177,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1030,6 +1198,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1055,6 +1227,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1078,6 +1254,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1107,6 +1287,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1131,6 +1315,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1154,6 +1342,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1183,6 +1375,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1206,6 +1402,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1231,6 +1431,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     dilation: 1
   }
 }
@@ -1248,6 +1452,10 @@ layer {
     stride: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
     dilation: 1
   }
@@ -1276,6 +1484,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     engine: CAFFE
   }
 }
@@ -1300,6 +1512,10 @@ layer {
     kernel_size: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
   }
 }
@@ -1361,6 +1577,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     engine: CAFFE
   }
 }
@@ -1385,6 +1605,10 @@ layer {
     kernel_size: 1
     weight_filler {
       type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
     }
   }
 }
@@ -1419,6 +1643,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
     engine: CAFFE
   }
 }
@@ -1444,6 +1672,10 @@ layer {
     weight_filler {
       type: "msra"
     }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
   }
 }
 layer {
@@ -1467,7 +1699,6 @@ layer {
   }
   convolution_param {
     num_output: 75
-    bias_term: true
     pad: 0
     kernel_size: 1
     stride: 1
@@ -1494,7 +1725,6 @@ layer {
   }
   convolution_param {
     num_output: 75
-    bias_term: true
     pad: 0
     kernel_size: 1
     stride: 1
@@ -1517,8 +1747,8 @@ layer {
   }
   yolov3_detection_output_param {
     num_classes: 20
-    confidence_threshold: 0.00999999977648
-    nms_threshold: 0.449999988079
+    confidence_threshold: 0.0099999998
+    nms_threshold: 0.44999999
     biases: 20.0
     biases: 37.0
     biases: 49.0
