@@ -15,7 +15,7 @@ https://github.com/eric612/MobileNet-YOLO/issues/50
 
 # Download weights
 
-[yolov3_m2](https://drive.google.com/open?id=1CbUZgaHZk4UhFWneglpCkOg2RHBn2l-f)
+[yolov3_m2](https://drive.google.com/open?id=1cGBfKUguNJUmlciJ-m26DrtkJ3-HlaLi)
 
 [yolov3_lite_deploy](https://drive.google.com/open?id=1rh6tbnDXRyoTWhhdm5NtjXuFST0PJHD1)
 
