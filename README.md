@@ -20,7 +20,7 @@ MobileNetV2-YOLOv3|70.4|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[grap
 * inference time was log from [script](benchmark/test_yolov3_lite.sh) , does not include pre-processing 
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/chuanqi305/MobileNet-SSD/blob/master/merge_bn.py) , or you can try my custom [version](examples/merge_bn/)
-* old modes see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
+* old models please see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
 
 ### CNN Analyzer
 
