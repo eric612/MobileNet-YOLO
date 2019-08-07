@@ -15,9 +15,9 @@ https://github.com/eric612/MobileNet-YOLO/issues/50
 
 # Download weights
 
-[yolov3_m2](https://drive.google.com/open?id=1cGBfKUguNJUmlciJ-m26DrtkJ3-HlaLi)
+[yolov3_m2](https://drive.google.com/open?id=18SL6tnGCUap6LCfqX2sT11cZnF6ECZ_j)
 
-[yolov3_lite_deploy](https://drive.google.com/open?id=1rh6tbnDXRyoTWhhdm5NtjXuFST0PJHD1)
+[yolov3_lite_deploy](https://drive.google.com/open?id=1FIoG2HSSuVQ-c4JOVZFvCTpp-CPPzJlJ)
 
 # Pre-trained ilsvrc2012 weights
 
