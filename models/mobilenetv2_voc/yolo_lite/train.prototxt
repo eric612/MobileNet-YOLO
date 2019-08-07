@@ -79,7 +79,7 @@ layer {
     }
     expand_param {
       prob: 0.5
-      max_expand_ratio: 2.5
+      max_expand_ratio: 4.0
     }
   }
   data_param {
