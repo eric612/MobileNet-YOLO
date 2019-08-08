@@ -517,7 +517,10 @@ namespace caffe {
         }
       }
       //LOG(INFO) << avg_iou_loss;
-      loss += iou_normalizer_*avg_iou_loss;
+      if (count > 0) {
+        loss += iou_normalizer_*avg_iou_loss/count;
+      }
+      
       top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
     }
     //LOG(INFO) << "avg_noobj: " << avg_anyobj / (side_ * side_ * num_ * bottom[0]->num());	

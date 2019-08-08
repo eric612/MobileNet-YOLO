@@ -506,7 +506,7 @@ message Yolov3Parameter{
     GIOU = 1;
     MSE = 2;
   }
-  optional IOU_LOSS iou_loss = 15 [default = GIOU];
+  optional IOU_LOSS iou_loss = 15 [default = MSE];
   optional float iou_normalizer = 16 [default = 0.25];
 }
 message RegionLossParameter{
