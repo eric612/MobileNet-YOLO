@@ -501,6 +501,13 @@ message Yolov3Parameter{
   repeated uint32 mask = 12;
   optional bool use_logic_gradient = 13 [default = false];
   optional bool use_focal_loss = 14 [default = false];
+  enum IOU_LOSS {
+    IOU = 0;
+    GIOU = 1;
+    MSE = 2;
+  }
+  optional IOU_LOSS iou_loss = 15 [default = GIOU];
+  optional float iou_normalizer = 16 [default = 0.25];
 }
 message RegionLossParameter{
   //Yolo 9000

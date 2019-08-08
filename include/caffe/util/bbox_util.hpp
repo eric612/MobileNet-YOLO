@@ -19,6 +19,40 @@
 #include "caffe/caffe.hpp"
 
 namespace caffe {
+typedef enum {
+  IOU, GIOU, MSE
+} IOU_LOSS;  
+// box.h
+
+typedef struct dxrep {
+    float dt, db, dl, dr;
+} dxrep;
+
+// box.h
+typedef struct ious {
+    float iou, giou;
+    dxrep dx_iou;
+    dxrep dx_giou;
+} ious;
+typedef struct boxabs {
+  float left, right, top, bot;
+} boxabs;
+
+template <typename Dtype>
+Dtype overlap(Dtype x1, Dtype w1, Dtype x2, Dtype w2);
+template <typename Dtype>
+Dtype box_intersection(vector<Dtype> a, vector<Dtype> b);
+template <typename Dtype>
+Dtype box_union(vector<Dtype> a, vector<Dtype> b);
+template <typename Dtype>
+Dtype box_iou(vector<Dtype> a, vector<Dtype> b);
+template <typename Dtype>
+boxabs box_c(vector<Dtype> a, vector<Dtype> b);
+template <typename Dtype>
+boxabs to_tblr(vector<Dtype> a);
+template <typename Dtype>
+Dtype box_giou(vector<Dtype> a, vector<Dtype> b);
+
 template <typename Dtype>
 void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
 

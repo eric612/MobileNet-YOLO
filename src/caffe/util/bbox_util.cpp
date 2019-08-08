@@ -13,6 +13,142 @@
 #include "caffe/util/bbox_util.hpp"
 
 namespace caffe {
+  
+template <typename Dtype>
+Dtype overlap(Dtype x1, Dtype w1, Dtype x2, Dtype w2)
+{
+  float l1 = x1 - w1 / 2;
+  float l2 = x2 - w2 / 2;
+  float left = l1 > l2 ? l1 : l2;
+  float r1 = x1 + w1 / 2;
+  float r2 = x2 + w2 / 2;
+  float right = r1 < r2 ? r1 : r2;
+  return right - left;
+}
+template <typename Dtype>
+Dtype box_intersection(vector<Dtype> a, vector<Dtype> b)
+{
+  float w = overlap(a[0], a[2], b[0], b[2]);
+  float h = overlap(a[1], a[3], b[1], b[3]);
+  if (w < 0 || h < 0) return 0;
+  float area = w*h;
+  return area;
+}
+template <typename Dtype>
+Dtype box_union(vector<Dtype> a, vector<Dtype> b)
+{
+  float i = box_intersection(a, b);
+  float u = a[2] * a[3] + b[2] * b[3] - i;
+  return u;
+}
+template <typename Dtype>
+Dtype box_iou(vector<Dtype> a, vector<Dtype> b)
+{
+  return box_intersection(a, b) / box_union(a, b);
+}
+
+template <typename Dtype>
+boxabs box_c(vector<Dtype> a, vector<Dtype> b) {
+  boxabs ba = { 0 };
+  ba.top = fmin(a[1] - a[3] / 2, b[1] - b[3] / 2);
+  ba.bot = fmax(a[1] + a[3] / 2, b[1] + b[3] / 2);
+  ba.left = fmin(a[0] - a[2] / 2, b[0] - b[2] / 2);
+  ba.right = fmax(a[0] + a[2] / 2, b[0] + b[2] / 2);
+  return ba;
+}
+
+
+// representation from x, y, w, h to top, left, bottom, right
+template <typename Dtype>
+boxabs to_tblr(vector<Dtype> a) {
+    boxabs tblr = { 0 };
+    float t = a[1] - (a[3] / 2);
+    float b = a[1] + (a[3] / 2);
+    float l = a[0] - (a[2] / 2);
+    float r = a[0] + (a[2] / 2);
+    tblr.top = t;
+    tblr.bot = b;
+    tblr.left = l;
+    tblr.right = r;
+    return tblr;
+}
+template <>
+boxabs to_tblr(vector<float> a) {
+    boxabs tblr = { 0 };
+    float t = a[1] - (a[3] / 2);
+    float b = a[1] + (a[3] / 2);
+    float l = a[0] - (a[2] / 2);
+    float r = a[0] + (a[2] / 2);
+    tblr.top = t;
+    tblr.bot = b;
+    tblr.left = l;
+    tblr.right = r;
+    return tblr;
+}
+template <>
+boxabs to_tblr(vector<double> a) {
+    boxabs tblr = { 0 };
+    float t = a[1] - (a[3] / 2);
+    float b = a[1] + (a[3] / 2);
+    float l = a[0] - (a[2] / 2);
+    float r = a[0] + (a[2] / 2);
+    tblr.top = t;
+    tblr.bot = b;
+    tblr.left = l;
+    tblr.right = r;
+    return tblr;
+}
+template <typename Dtype>
+Dtype box_giou(vector<Dtype> a, vector<Dtype> b)
+{
+  boxabs ba = box_c(a, b);
+  float w = ba.right - ba.left;
+  float h = ba.bot - ba.top;
+  float c = w*h;
+  float iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  float u = box_union(a, b);
+  float giou_term = (c - u) / c;
+
+  return iou - giou_term;
+}
+template <>
+float box_giou(vector<float> a, vector<float> b)
+{
+  boxabs ba = box_c(a, b);
+  float w = ba.right - ba.left;
+  float h = ba.bot - ba.top;
+  float c = w*h;
+  float iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  float u = box_union(a, b);
+  float giou_term = (c - u) / c;
+
+  return iou - giou_term;
+}
+template <>
+double box_giou(vector<double> a, vector<double> b)
+{
+  boxabs ba = box_c(a, b);
+  double w = ba.right - ba.left;
+  double h = ba.bot - ba.top;
+  double c = w*h;
+  double iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  double u = box_union(a, b);
+  double giou_term = (c - u) / c;
+
+  return iou - giou_term;
+}
+  
+
+
 template <typename Dtype>
 void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
 

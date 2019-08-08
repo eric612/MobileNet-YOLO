@@ -9,8 +9,10 @@
 #include "caffe/layers/loss_layer.hpp"
 #include "caffe/layers/region_loss_layer.hpp"
 #include <map>
-
+#include "caffe/util/bbox_util.hpp"
 namespace caffe {
+  
+
 
 
 template <typename Dtype>
@@ -69,6 +71,8 @@ public:
   Blob<Dtype> swap_;
   AvgRegionScore score_;
   bool use_focal_loss_;
+  IOU_LOSS iou_loss_;
+  float iou_normalizer_;
 };
 
 }  // namespace caffe

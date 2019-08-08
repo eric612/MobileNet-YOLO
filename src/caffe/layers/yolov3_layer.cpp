@@ -16,11 +16,11 @@
 #include "caffe/layers/yolov3_layer.hpp"
 #include "caffe/util/math_functions.hpp"
 #include "caffe/layers/sigmoid_layer.hpp"
-#include "caffe/util/bbox_util.hpp"
+
 #include <algorithm>
 #include <cfloat>
 #include <vector>
-#include "caffe/util/bbox_util.hpp"
+
 #ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -31,39 +31,88 @@
 namespace caffe {
   
 
+  template <typename Dtype>
+  dxrep dx_box_iou(vector<Dtype> pred, vector<Dtype> truth, IOU_LOSS iou_loss) {
+    boxabs pred_tblr = to_tblr(pred);
+    float pred_t = fmin(pred_tblr.top, pred_tblr.bot);
+    float pred_b = fmax(pred_tblr.top, pred_tblr.bot);
+    float pred_l = fmin(pred_tblr.left, pred_tblr.right);
+    float pred_r = fmax(pred_tblr.left, pred_tblr.right);
 
-  template <typename Dtype>
-  Dtype overlap(Dtype x1, Dtype w1, Dtype x2, Dtype w2)
-  {
-    float l1 = x1 - w1 / 2;
-    float l2 = x2 - w2 / 2;
-    float left = l1 > l2 ? l1 : l2;
-    float r1 = x1 + w1 / 2;
-    float r2 = x2 + w2 / 2;
-    float right = r1 < r2 ? r1 : r2;
-    return right - left;
+    boxabs truth_tblr = to_tblr(truth);
+  #ifdef DEBUG_PRINTS
+    printf("\niou: %f, giou: %f\n", box_iou(pred, truth), box_giou(pred, truth));
+    printf("pred: x,y,w,h: (%f, %f, %f, %f) -> t,b,l,r: (%f, %f, %f, %f)\n", pred.x, pred.y, pred.w, pred.h, pred_tblr.top, pred_tblr.bot, pred_tblr.left, pred_tblr.right);
+    printf("truth: x,y,w,h: (%f, %f, %f, %f) -> t,b,l,r: (%f, %f, %f, %f)\n", truth.x, truth.y, truth.w, truth.h, truth_tblr.top, truth_tblr.bot, truth_tblr.left, truth_tblr.right);
+  #endif
+    //printf("pred (t,b,l,r): (%f, %f, %f, %f)\n", pred_t, pred_b, pred_l, pred_r);
+    //printf("trut (t,b,l,r): (%f, %f, %f, %f)\n", truth_tblr.top, truth_tblr.bot, truth_tblr.left, truth_tblr.right);
+    dxrep dx = { 0 };
+    float X = (pred_b - pred_t) * (pred_r - pred_l);
+    float Xhat = (truth_tblr.bot - truth_tblr.top) * (truth_tblr.right - truth_tblr.left);
+    float Ih = fmin(pred_b, truth_tblr.bot) - fmax(pred_t, truth_tblr.top);
+    float Iw = fmin(pred_r, truth_tblr.right) - fmax(pred_l, truth_tblr.left);
+    float I = Iw * Ih;
+    float U = X + Xhat - I;
+
+    float Cw = fmax(pred_r, truth_tblr.right) - fmin(pred_l, truth_tblr.left);
+    float Ch = fmax(pred_b, truth_tblr.bot) - fmin(pred_t, truth_tblr.top);
+    float C = Cw * Ch;
+
+    // float IoU = I / U;
+    // Partial Derivatives, derivatives
+    float dX_wrt_t = -1 * (pred_r - pred_l);
+    float dX_wrt_b = pred_r - pred_l;
+    float dX_wrt_l = -1 * (pred_b - pred_t);
+    float dX_wrt_r = pred_b - pred_t;
+
+    // gradient of I min/max in IoU calc (prediction)
+    float dI_wrt_t = pred_t > truth_tblr.top ? (-1 * Iw) : 0;
+    float dI_wrt_b = pred_b < truth_tblr.bot ? Iw : 0;
+    float dI_wrt_l = pred_l > truth_tblr.left ? (-1 * Ih) : 0;
+    float dI_wrt_r = pred_r < truth_tblr.right ? Ih : 0;
+    // derivative of U with regard to x
+    float dU_wrt_t = dX_wrt_t - dI_wrt_t;
+    float dU_wrt_b = dX_wrt_b - dI_wrt_b;
+    float dU_wrt_l = dX_wrt_l - dI_wrt_l;
+    float dU_wrt_r = dX_wrt_r - dI_wrt_r;
+    // gradient of C min/max in IoU calc (prediction)
+    float dC_wrt_t = pred_t < truth_tblr.top ? (-1 * Cw) : 0;
+    float dC_wrt_b = pred_b > truth_tblr.bot ? Cw : 0;
+    float dC_wrt_l = pred_l < truth_tblr.left ? (-1 * Ch) : 0;
+    float dC_wrt_r = pred_r > truth_tblr.right ? Ch : 0;
+
+    // Final IOU loss (prediction) (negative of IOU gradient, we want the negative loss)
+    float p_dt = 0;
+    float p_db = 0;
+    float p_dl = 0;
+    float p_dr = 0;
+    if (U > 0) {
+        p_dt = ((U * dI_wrt_t) - (I * dU_wrt_t)) / (U * U);
+        p_db = ((U * dI_wrt_b) - (I * dU_wrt_b)) / (U * U);
+        p_dl = ((U * dI_wrt_l) - (I * dU_wrt_l)) / (U * U);
+        p_dr = ((U * dI_wrt_r) - (I * dU_wrt_r)) / (U * U);
+    }
+
+    if (iou_loss == GIOU) {
+        if (C > 0) {
+            // apply "C" term from gIOU
+            p_dt += ((C * dU_wrt_t) - (U * dC_wrt_t)) / (C * C);
+            p_db += ((C * dU_wrt_b) - (U * dC_wrt_b)) / (C * C);
+            p_dl += ((C * dU_wrt_l) - (U * dC_wrt_l)) / (C * C);
+            p_dr += ((C * dU_wrt_r) - (U * dC_wrt_r)) / (C * C);
+        }
+    }
+
+    // apply grad from prediction min/max for correct corner selection
+    dx.dt = pred_tblr.top < pred_tblr.bot ? p_dt : p_db;
+    dx.db = pred_tblr.top < pred_tblr.bot ? p_db : p_dt;
+    dx.dl = pred_tblr.left < pred_tblr.right ? p_dl : p_dr;
+    dx.dr = pred_tblr.left < pred_tblr.right ? p_dr : p_dl;
+
+    return dx;
   }
-  template <typename Dtype>
-  Dtype box_intersection(vector<Dtype> a, vector<Dtype> b)
-  {
-    float w = overlap(a[0], a[2], b[0], b[2]);
-    float h = overlap(a[1], a[3], b[1], b[3]);
-    if (w < 0 || h < 0) return 0;
-    float area = w*h;
-    return area;
-  }
-  template <typename Dtype>
-  Dtype box_union(vector<Dtype> a, vector<Dtype> b)
-  {
-    float i = box_intersection(a, b);
-    float u = a[2] * a[3] + b[2] * b[3] - i;
-    return u;
-  }
-  template <typename Dtype>
-  Dtype box_iou(vector<Dtype> a, vector<Dtype> b)
-  {
-    return box_intersection(a, b) / box_union(a, b);
-  }
+
   template <typename Dtype>
   void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
   {
@@ -109,26 +158,66 @@ namespace caffe {
   }
 
   template <typename Dtype>
-  Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, Dtype* delta, float scale, int stride) {
+  Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, Dtype* delta, float scale, int stride,IOU_LOSS iou_loss,float iou_normalizer) {
     vector<Dtype> pred;
     pred.clear();
+    
     get_region_box(pred, x, biases, n, index, i, j,lw,lh, w, h, stride);
 
-    float iou = box_iou(pred, truth);
-    //LOG(INFO) << pred[0] << "," << pred[1] << "," << pred[2] << "," << pred[3] << ";"<< truth[0] << "," << truth[1] << "," << truth[2] << "," << truth[3];
-    float tx = truth[0] * lw - i; //0.5
-    float ty = truth[1] * lh - j; //0.5
-    float tw = log(truth[2] * w / biases[2 * n]); //truth[2]=biases/w tw = 0
-    float th = log(truth[3] * h / biases[2 * n + 1]); //th = 0
+    if (iou_loss == MSE)    // old loss
+    {
+      float iou = box_iou(pred, truth);
+      //LOG(INFO) << pred[0] << "," << pred[1] << "," << pred[2] << "," << pred[3] << ";"<< truth[0] << "," << truth[1] << "," << truth[2] << "," << truth[3];
+      float tx = truth[0] * lw - i; //0.5
+      float ty = truth[1] * lh - j; //0.5
+      float tw = log(truth[2] * w / biases[2 * n]); //truth[2]=biases/w tw = 0
+      float th = log(truth[3] * h / biases[2 * n + 1]); //th = 0
 
-    //delta[index + 0] = (-1) * scale * (tx - sigmoid(x[index + 0 * stride])) * sigmoid(x[index + 0 * stride]) * (1 - sigmoid(x[index + 0 * stride]));
-    //delta[index + 1 * stride] = (-1) * scale * (ty - sigmoid(x[index + 1 * stride])) * sigmoid(x[index + 1 * stride]) * (1 - sigmoid(x[index + 1 * stride]));
-    delta[index + 0 * stride] = (-1) * scale * (tx - x[index + 0 * stride]);
-    delta[index + 1 * stride] = (-1) * scale * (ty - x[index + 1 * stride]);
-    delta[index + 2 * stride] = (-1) * scale * (tw - x[index + 2 * stride]);
-    delta[index + 3 * stride] = (-1) * scale * (th - x[index + 3 * stride]);
+      //delta[index + 0] = (-1) * scale * (tx - sigmoid(x[index + 0 * stride])) * sigmoid(x[index + 0 * stride]) * (1 - sigmoid(x[index + 0 * stride]));
+      //delta[index + 1 * stride] = (-1) * scale * (ty - sigmoid(x[index + 1 * stride])) * sigmoid(x[index + 1 * stride]) * (1 - sigmoid(x[index + 1 * stride]));
+      delta[index + 0 * stride] = (-1) * scale * (tx - x[index + 0 * stride]);
+      delta[index + 1 * stride] = (-1) * scale * (ty - x[index + 1 * stride]);
+      delta[index + 2 * stride] = (-1) * scale * (tw - x[index + 2 * stride]);
+      delta[index + 3 * stride] = (-1) * scale * (th - x[index + 3 * stride]);
+      return iou;
+    }
+    else {
+      // Reference code : https://github.com/AlexeyAB/darknet/blob/master/src/yolo_layer.c
+      
+      // https://github.com/generalized-iou/g-darknet
+      // https://arxiv.org/abs/1902.09630v2
+      // https://giou.stanford.edu/
+      float giou = box_giou(pred, truth);
+      ious all_ious = { 0 };
+      if (pred[2] == 0) { pred[2] = 1.0; }
+      if (pred[3] == 0) { pred[3] = 1.0; }
+      // i - step in layer width
+      // j - step in layer height
+      //  Returns a box in absolute coordinates
+      //box pred = get_yolo_box(x, biases, n, index, i, j, lw, lh, w, h, stride);
+      all_ious.iou = box_iou(pred, truth);
+      all_ious.giou = box_giou(pred, truth);
+    
+      all_ious.dx_iou = dx_box_iou(pred, truth, iou_loss);
 
-    return iou;
+      // jacobian^t (transpose)
+      delta[index + 0 * stride] = (-1) * (all_ious.dx_iou.dl + all_ious.dx_iou.dr);
+      delta[index + 1 * stride] = (-1) * (all_ious.dx_iou.dt + all_ious.dx_iou.db);
+      delta[index + 2 * stride] = (-1) * ((-0.5 * all_ious.dx_iou.dl) + (0.5 * all_ious.dx_iou.dr));
+      delta[index + 3 * stride] = (-1) * ((-0.5 * all_ious.dx_iou.dt) + (0.5 * all_ious.dx_iou.db));
+
+      // predict exponential, apply gradient of e^delta_t ONLY for w,h
+      delta[index + 2 * stride] *= exp(x[index + 2 * stride]);
+      delta[index + 3 * stride] *= exp(x[index + 3 * stride]);
+
+      // normalize iou weight
+      delta[index + 0 * stride] *= iou_normalizer;
+      delta[index + 1 * stride] *= iou_normalizer;
+      delta[index + 2 * stride] *= iou_normalizer;
+      delta[index + 3 * stride] *= iou_normalizer;
+      return giou;
+    }
+    
   }
   template <typename Dtype>
   void Yolov3Layer<Dtype>::LayerSetUp(
@@ -148,6 +237,9 @@ namespace caffe {
     thresh_ = param.thresh(); //0.6
     use_logic_gradient_ = param.use_logic_gradient();
     use_focal_loss_  = param.use_focal_loss();
+    iou_loss_ = (IOU_LOSS) param.iou_loss();
+    
+    iou_normalizer_ = param.iou_normalizer();
     for (int c = 0; c < param.biases_size(); ++c) {
       biases_.push_back(param.biases(c));
     } 
@@ -189,6 +281,7 @@ namespace caffe {
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
     side_w_ = bottom[0]->width();
     side_h_ = bottom[0]->height();
+    //LOG(INFO)<<"iou loss" << iou_loss_<<","<<GIOU;
     //LOG(INFO) << side_*anchors_scale_;
     const Dtype* label_data = bottom[1]->cpu_data(); //[label,x,y,w,h]
     if (diff_.width() != bottom[0]->width()) {
@@ -197,7 +290,7 @@ namespace caffe {
     Dtype* diff = diff_.mutable_cpu_data();
     caffe_set(diff_.count(), Dtype(0.0), diff);
 
-    Dtype avg_anyobj(0.0), avg_obj(0.0), avg_iou(0.0), avg_cat(0.0), recall(0.0), recall75(0.0), loss(0.0);
+    Dtype avg_anyobj(0.0), avg_obj(0.0), avg_iou(0.0), avg_cat(0.0), recall(0.0), recall75(0.0), loss(0.0), avg_iou_loss(0.0);
     int count = 0;
     
     const Dtype* input_data = bottom[0]->cpu_data();
@@ -314,7 +407,7 @@ namespace caffe {
 
             delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
             delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
-              side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride);
+              side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride,iou_loss_,iou_normalizer_);
           }
         }
       }
@@ -371,13 +464,14 @@ namespace caffe {
           //LOG(INFO) << best_n;
           best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
           
-          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
+          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_);
 
           if (iou > 0.5)
             recall += 1;
           if (iou > 0.75)
             recall75 += 1;
           avg_iou += iou;
+          avg_iou_loss += (1 - iou);
           avg_obj += swap_data[best_index + 4 * stride];
           if (use_logic_gradient_) {
             diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) * object_scale_;
@@ -398,10 +492,34 @@ namespace caffe {
       }
     }
     //LOG(INFO) << " ===================================================== " ;
-    for (int i = 0; i < diff_.count(); ++i) {
-      loss += diff[i] * diff[i];
+    if(iou_loss_ == MSE) {
+      for (int i = 0; i < diff_.count(); ++i) {
+        loss += diff[i] * diff[i];
+      }
+      top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
     }
-    top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
+    else {
+      for (int b = 0; b < bottom[0]->num(); b++) {
+        for (int s = 0; s < stride; s++) {
+          for (int n = 0; n < num_; n++) {
+            int index = n*len*stride + s + b*bottom[0]->count(1);
+            for (int c = 0; c < len; ++c) {
+              int index2 = c*stride + index;
+              //LOG(INFO)<<index2;
+              if (c < 4) {
+                swap_data[index2] = (input_data[index2 + 0]);
+              }
+              else {						
+                loss += diff[index2] * diff[index2];
+              }
+            }
+          }
+        }
+      }
+      //LOG(INFO) << avg_iou_loss;
+      loss += iou_normalizer_*avg_iou_loss;
+      top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
+    }
     //LOG(INFO) << "avg_noobj: " << avg_anyobj / (side_ * side_ * num_ * bottom[0]->num());	
     iter_++;
     //LOG(INFO) << "iter: " << iter <<" loss: " << loss;
