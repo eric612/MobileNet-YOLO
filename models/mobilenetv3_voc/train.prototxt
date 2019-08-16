@@ -141,15 +141,15 @@ layer {
   }
 }
 layer {
-  name: "relu1"
+  name: "relus1"
   type: "ReLU6"
   bottom: "power1"
-  top: "relu1"
+  top: "relus1"
 }
 layer {
   name: "power2"
   type: "Power"
-  bottom: "relu1"
+  bottom: "relus1"
   top: "power2"
   power_param {
     power: 1.0
@@ -204,15 +204,15 @@ layer {
   }
 }
 layer {
-  name: "relu2"
-  type: "ReLU6"
+  name: "relu1"
+  type: "ReLU"
   bottom: "conv2"
-  top: "relu2"
+  top: "relu1"
 }
 layer {
   name: "conv3"
   type: "Convolution"
-  bottom: "relu2"
+  bottom: "relu1"
   top: "conv3"
   convolution_param {
     num_output: 16
@@ -292,15 +292,15 @@ layer {
   }
 }
 layer {
-  name: "relu3"
-  type: "ReLU6"
+  name: "relu2"
+  type: "ReLU"
   bottom: "conv4"
-  top: "relu3"
+  top: "relu2"
 }
 layer {
   name: "conv5"
   type: "DepthwiseConvolution"
-  bottom: "relu3"
+  bottom: "relu2"
   top: "conv5"
   convolution_param {
     num_output: 64
@@ -334,15 +334,15 @@ layer {
   }
 }
 layer {
-  name: "relu4"
-  type: "ReLU6"
+  name: "relu3"
+  type: "ReLU"
   bottom: "conv5"
-  top: "relu4"
+  top: "relu3"
 }
 layer {
   name: "conv6"
   type: "Convolution"
-  bottom: "relu4"
+  bottom: "relu3"
   top: "conv6"
   convolution_param {
     num_output: 24
@@ -412,15 +412,15 @@ layer {
   }
 }
 layer {
-  name: "relu5"
-  type: "ReLU6"
+  name: "relu4"
+  type: "ReLU"
   bottom: "conv7"
-  top: "relu5"
+  top: "relu4"
 }
 layer {
   name: "conv8"
   type: "DepthwiseConvolution"
-  bottom: "relu5"
+  bottom: "relu4"
   top: "conv8"
   convolution_param {
     num_output: 72
@@ -454,15 +454,15 @@ layer {
   }
 }
 layer {
-  name: "relu6"
-  type: "ReLU6"
+  name: "relu5"
+  type: "ReLU"
   bottom: "conv8"
-  top: "relu6"
+  top: "relu5"
 }
 layer {
   name: "conv9"
   type: "Convolution"
-  bottom: "relu6"
+  bottom: "relu5"
   top: "conv9"
   convolution_param {
     num_output: 24
@@ -542,15 +542,15 @@ layer {
   }
 }
 layer {
-  name: "relu7"
-  type: "ReLU6"
+  name: "relu6"
+  type: "ReLU"
   bottom: "conv10"
-  top: "relu7"
+  top: "relu6"
 }
 layer {
   name: "conv11"
   type: "DepthwiseConvolution"
-  bottom: "relu7"
+  bottom: "relu6"
   top: "conv11"
   convolution_param {
     num_output: 72
@@ -616,15 +616,15 @@ layer {
   }
 }
 layer {
-  name: "relu8"
-  type: "ReLU6"
+  name: "relu7"
+  type: "ReLU"
   bottom: "fc1"
-  top: "relu8"
+  top: "relu7"
 }
 layer {
   name: "fc2"
   type: "InnerProduct"
-  bottom: "relu8"
+  bottom: "relu7"
   top: "fc2"
   inner_product_param {
     num_output: 72
@@ -649,15 +649,15 @@ layer {
   }
 }
 layer {
-  name: "relu9"
+  name: "relus2"
   type: "ReLU6"
   bottom: "power3"
-  top: "relu9"
+  top: "relus2"
 }
 layer {
   name: "power4"
   type: "Power"
-  bottom: "relu9"
+  bottom: "relus2"
   top: "power4"
   power_param {
     power: 1.0
@@ -682,15 +682,15 @@ layer {
   }
 }
 layer {
-  name: "relu10"
-  type: "ReLU6"
+  name: "relu8"
+  type: "ReLU"
   bottom: "scale1"
-  top: "relu10"
+  top: "relu8"
 }
 layer {
   name: "conv12"
   type: "Convolution"
-  bottom: "relu10"
+  bottom: "relu8"
   top: "conv12"
   convolution_param {
     num_output: 40
@@ -760,15 +760,15 @@ layer {
   }
 }
 layer {
-  name: "relu11"
-  type: "ReLU6"
+  name: "relu9"
+  type: "ReLU"
   bottom: "conv13"
-  top: "relu11"
+  top: "relu9"
 }
 layer {
   name: "conv14"
   type: "DepthwiseConvolution"
-  bottom: "relu11"
+  bottom: "relu9"
   top: "conv14"
   convolution_param {
     num_output: 120
@@ -834,15 +834,15 @@ layer {
   }
 }
 layer {
-  name: "relu12"
-  type: "ReLU6"
+  name: "relu10"
+  type: "ReLU"
   bottom: "fc3"
-  top: "relu12"
+  top: "relu10"
 }
 layer {
   name: "fc4"
   type: "InnerProduct"
-  bottom: "relu12"
+  bottom: "relu10"
   top: "fc4"
   inner_product_param {
     num_output: 120
@@ -867,15 +867,15 @@ layer {
   }
 }
 layer {
-  name: "relu13"
+  name: "relus3"
   type: "ReLU6"
   bottom: "power5"
-  top: "relu13"
+  top: "relus3"
 }
 layer {
   name: "power6"
   type: "Power"
-  bottom: "relu13"
+  bottom: "relus3"
   top: "power6"
   power_param {
     power: 1.0
@@ -900,15 +900,15 @@ layer {
   }
 }
 layer {
-  name: "relu14"
-  type: "ReLU6"
+  name: "relu11"
+  type: "ReLU"
   bottom: "scale2"
-  top: "relu14"
+  top: "relu11"
 }
 layer {
   name: "conv15"
   type: "Convolution"
-  bottom: "relu14"
+  bottom: "relu11"
   top: "conv15"
   convolution_param {
     num_output: 40
@@ -988,15 +988,15 @@ layer {
   }
 }
 layer {
-  name: "relu15"
-  type: "ReLU6"
+  name: "relu12"
+  type: "ReLU"
   bottom: "conv16"
-  top: "relu15"
+  top: "relu12"
 }
 layer {
   name: "conv17"
   type: "DepthwiseConvolution"
-  bottom: "relu15"
+  bottom: "relu12"
   top: "conv17"
   convolution_param {
     num_output: 120
@@ -1062,15 +1062,15 @@ layer {
   }
 }
 layer {
-  name: "relu16"
-  type: "ReLU6"
+  name: "relu13"
+  type: "ReLU"
   bottom: "fc5"
-  top: "relu16"
+  top: "relu13"
 }
 layer {
   name: "fc6"
   type: "InnerProduct"
-  bottom: "relu16"
+  bottom: "relu13"
   top: "fc6"
   inner_product_param {
     num_output: 120
@@ -1095,15 +1095,15 @@ layer {
   }
 }
 layer {
-  name: "relu17"
+  name: "relus4"
   type: "ReLU6"
   bottom: "power7"
-  top: "relu17"
+  top: "relus4"
 }
 layer {
   name: "power8"
   type: "Power"
-  bottom: "relu17"
+  bottom: "relus4"
   top: "power8"
   power_param {
     power: 1.0
@@ -1128,15 +1128,15 @@ layer {
   }
 }
 layer {
-  name: "relu18"
-  type: "ReLU6"
+  name: "relu14"
+  type: "ReLU"
   bottom: "scale3"
-  top: "relu18"
+  top: "relu14"
 }
 layer {
   name: "conv18"
   type: "Convolution"
-  bottom: "relu18"
+  bottom: "relu14"
   top: "conv18"
   convolution_param {
     num_output: 40
@@ -1227,15 +1227,15 @@ layer {
   }
 }
 layer {
-  name: "relu19"
+  name: "relus5"
   type: "ReLU6"
   bottom: "power9"
-  top: "relu19"
+  top: "relus5"
 }
 layer {
   name: "power10"
   type: "Power"
-  bottom: "relu19"
+  bottom: "relus5"
   top: "power10"
   power_param {
     power: 1.0
@@ -1301,15 +1301,15 @@ layer {
   }
 }
 layer {
-  name: "relu20"
+  name: "relus6"
   type: "ReLU6"
   bottom: "power11"
-  top: "relu20"
+  top: "relus6"
 }
 layer {
   name: "power12"
   type: "Power"
-  bottom: "relu20"
+  bottom: "relus6"
   top: "power12"
   power_param {
     power: 1.0
@@ -1411,15 +1411,15 @@ layer {
   }
 }
 layer {
-  name: "relu21"
+  name: "relus7"
   type: "ReLU6"
   bottom: "power13"
-  top: "relu21"
+  top: "relus7"
 }
 layer {
   name: "power14"
   type: "Power"
-  bottom: "relu21"
+  bottom: "relus7"
   top: "power14"
   power_param {
     power: 1.0
@@ -1485,15 +1485,15 @@ layer {
   }
 }
 layer {
-  name: "relu22"
+  name: "relus8"
   type: "ReLU6"
   bottom: "power15"
-  top: "relu22"
+  top: "relus8"
 }
 layer {
   name: "power16"
   type: "Power"
-  bottom: "relu22"
+  bottom: "relus8"
   top: "power16"
   power_param {
     power: 1.0
@@ -1605,15 +1605,15 @@ layer {
   }
 }
 layer {
-  name: "relu23"
+  name: "relus9"
   type: "ReLU6"
   bottom: "power17"
-  top: "relu23"
+  top: "relus9"
 }
 layer {
   name: "power18"
   type: "Power"
-  bottom: "relu23"
+  bottom: "relus9"
   top: "power18"
   power_param {
     power: 1.0
@@ -1679,15 +1679,15 @@ layer {
   }
 }
 layer {
-  name: "relu24"
+  name: "relus10"
   type: "ReLU6"
   bottom: "power19"
-  top: "relu24"
+  top: "relus10"
 }
 layer {
   name: "power20"
   type: "Power"
-  bottom: "relu24"
+  bottom: "relus10"
   top: "power20"
   power_param {
     power: 1.0
@@ -1799,15 +1799,15 @@ layer {
   }
 }
 layer {
-  name: "relu25"
+  name: "relus11"
   type: "ReLU6"
   bottom: "power21"
-  top: "relu25"
+  top: "relus11"
 }
 layer {
   name: "power22"
   type: "Power"
-  bottom: "relu25"
+  bottom: "relus11"
   top: "power22"
   power_param {
     power: 1.0
@@ -1873,15 +1873,15 @@ layer {
   }
 }
 layer {
-  name: "relu26"
+  name: "relus12"
   type: "ReLU6"
   bottom: "power23"
-  top: "relu26"
+  top: "relus12"
 }
 layer {
   name: "power24"
   type: "Power"
-  bottom: "relu26"
+  bottom: "relus12"
   top: "power24"
   power_param {
     power: 1.0
@@ -1993,15 +1993,15 @@ layer {
   }
 }
 layer {
-  name: "relu27"
+  name: "relus13"
   type: "ReLU6"
   bottom: "power25"
-  top: "relu27"
+  top: "relus13"
 }
 layer {
   name: "power26"
   type: "Power"
-  bottom: "relu27"
+  bottom: "relus13"
   top: "power26"
   power_param {
     power: 1.0
@@ -2088,15 +2088,15 @@ layer {
   }
 }
 layer {
-  name: "relu28"
-  type: "ReLU6"
+  name: "relu15"
+  type: "ReLU"
   bottom: "fc7"
-  top: "relu28"
+  top: "relu15"
 }
 layer {
   name: "fc8"
   type: "InnerProduct"
-  bottom: "relu28"
+  bottom: "relu15"
   top: "fc8"
   inner_product_param {
     num_output: 480
@@ -2121,15 +2121,15 @@ layer {
   }
 }
 layer {
-  name: "relu29"
+  name: "relus14"
   type: "ReLU6"
   bottom: "power27"
-  top: "relu29"
+  top: "relus14"
 }
 layer {
   name: "power28"
   type: "Power"
-  bottom: "relu29"
+  bottom: "relus14"
   top: "power28"
   power_param {
     power: 1.0
@@ -2165,15 +2165,15 @@ layer {
   }
 }
 layer {
-  name: "relu30"
+  name: "relus15"
   type: "ReLU6"
   bottom: "power29"
-  top: "relu30"
+  top: "relus15"
 }
 layer {
   name: "power30"
   type: "Power"
-  bottom: "relu30"
+  bottom: "relus15"
   top: "power30"
   power_param {
     power: 1.0
@@ -2275,15 +2275,15 @@ layer {
   }
 }
 layer {
-  name: "relu31"
+  name: "relus16"
   type: "ReLU6"
   bottom: "power31"
-  top: "relu31"
+  top: "relus16"
 }
 layer {
   name: "power32"
   type: "Power"
-  bottom: "relu31"
+  bottom: "relus16"
   top: "power32"
   power_param {
     power: 1.0
@@ -2370,15 +2370,15 @@ layer {
   }
 }
 layer {
-  name: "relu32"
-  type: "ReLU6"
+  name: "relu16"
+  type: "ReLU"
   bottom: "fc9"
-  top: "relu32"
+  top: "relu16"
 }
 layer {
   name: "fc10"
   type: "InnerProduct"
-  bottom: "relu32"
+  bottom: "relu16"
   top: "fc10"
   inner_product_param {
     num_output: 672
@@ -2403,15 +2403,15 @@ layer {
   }
 }
 layer {
-  name: "relu33"
+  name: "relus17"
   type: "ReLU6"
   bottom: "power33"
-  top: "relu33"
+  top: "relus17"
 }
 layer {
   name: "power34"
   type: "Power"
-  bottom: "relu33"
+  bottom: "relus17"
   top: "power34"
   power_param {
     power: 1.0
@@ -2447,15 +2447,15 @@ layer {
   }
 }
 layer {
-  name: "relu34"
+  name: "relus18"
   type: "ReLU6"
   bottom: "power35"
-  top: "relu34"
+  top: "relus18"
 }
 layer {
   name: "power36"
   type: "Power"
-  bottom: "relu34"
+  bottom: "relus18"
   top: "power36"
   power_param {
     power: 1.0
@@ -2567,15 +2567,15 @@ layer {
   }
 }
 layer {
-  name: "relu35"
+  name: "relus19"
   type: "ReLU6"
   bottom: "power37"
-  top: "relu35"
+  top: "relus19"
 }
 layer {
   name: "power38"
   type: "Power"
-  bottom: "relu35"
+  bottom: "relus19"
   top: "power38"
   power_param {
     power: 1.0
@@ -2662,15 +2662,15 @@ layer {
   }
 }
 layer {
-  name: "relu36"
-  type: "ReLU6"
+  name: "relu17"
+  type: "ReLU"
   bottom: "fc11"
-  top: "relu36"
+  top: "relu17"
 }
 layer {
   name: "fc12"
   type: "InnerProduct"
-  bottom: "relu36"
+  bottom: "relu17"
   top: "fc12"
   inner_product_param {
     num_output: 672
@@ -2695,15 +2695,15 @@ layer {
   }
 }
 layer {
-  name: "relu37"
+  name: "relus20"
   type: "ReLU6"
   bottom: "power39"
-  top: "relu37"
+  top: "relus20"
 }
 layer {
   name: "power40"
   type: "Power"
-  bottom: "relu37"
+  bottom: "relus20"
   top: "power40"
   power_param {
     power: 1.0
@@ -2739,15 +2739,15 @@ layer {
   }
 }
 layer {
-  name: "relu38"
+  name: "relus21"
   type: "ReLU6"
   bottom: "power41"
-  top: "relu38"
+  top: "relus21"
 }
 layer {
   name: "power42"
   type: "Power"
-  bottom: "relu38"
+  bottom: "relus21"
   top: "power42"
   power_param {
     power: 1.0
@@ -2849,15 +2849,15 @@ layer {
   }
 }
 layer {
-  name: "relu39"
+  name: "relus22"
   type: "ReLU6"
   bottom: "power43"
-  top: "relu39"
+  top: "relus22"
 }
 layer {
   name: "power44"
   type: "Power"
-  bottom: "relu39"
+  bottom: "relus22"
   top: "power44"
   power_param {
     power: 1.0
@@ -2944,15 +2944,15 @@ layer {
   }
 }
 layer {
-  name: "relu40"
-  type: "ReLU6"
+  name: "relu18"
+  type: "ReLU"
   bottom: "fc13"
-  top: "relu40"
+  top: "relu18"
 }
 layer {
   name: "fc14"
   type: "InnerProduct"
-  bottom: "relu40"
+  bottom: "relu18"
   top: "fc14"
   inner_product_param {
     num_output: 672
@@ -2977,15 +2977,15 @@ layer {
   }
 }
 layer {
-  name: "relu41"
+  name: "relus23"
   type: "ReLU6"
   bottom: "power45"
-  top: "relu41"
+  top: "relus23"
 }
 layer {
   name: "power46"
   type: "Power"
-  bottom: "relu41"
+  bottom: "relus23"
   top: "power46"
   power_param {
     power: 1.0
@@ -3021,15 +3021,15 @@ layer {
   }
 }
 layer {
-  name: "relu42"
+  name: "relus24"
   type: "ReLU6"
   bottom: "power47"
-  top: "relu42"
+  top: "relus24"
 }
 layer {
   name: "power48"
   type: "Power"
-  bottom: "relu42"
+  bottom: "relus24"
   top: "power48"
   power_param {
     power: 1.0
@@ -3131,15 +3131,15 @@ layer {
   }
 }
 layer {
-  name: "relu43"
+  name: "relus25"
   type: "ReLU6"
   bottom: "power49"
-  top: "relu43"
+  top: "relus25"
 }
 layer {
   name: "power50"
   type: "Power"
-  bottom: "relu43"
+  bottom: "relus25"
   top: "power50"
   power_param {
     power: 1.0
@@ -3226,15 +3226,15 @@ layer {
   }
 }
 layer {
-  name: "relu44"
-  type: "ReLU6"
+  name: "relu19"
+  type: "ReLU"
   bottom: "fc15"
-  top: "relu44"
+  top: "relu19"
 }
 layer {
   name: "fc16"
   type: "InnerProduct"
-  bottom: "relu44"
+  bottom: "relu19"
   top: "fc16"
   inner_product_param {
     num_output: 960
@@ -3259,15 +3259,15 @@ layer {
   }
 }
 layer {
-  name: "relu45"
+  name: "relus26"
   type: "ReLU6"
   bottom: "power51"
-  top: "relu45"
+  top: "relus26"
 }
 layer {
   name: "power52"
   type: "Power"
-  bottom: "relu45"
+  bottom: "relus26"
   top: "power52"
   power_param {
     power: 1.0
@@ -3303,15 +3303,15 @@ layer {
   }
 }
 layer {
-  name: "relu46"
+  name: "relus27"
   type: "ReLU6"
   bottom: "power53"
-  top: "relu46"
+  top: "relus27"
 }
 layer {
   name: "power54"
   type: "Power"
-  bottom: "relu46"
+  bottom: "relus27"
   top: "power54"
   power_param {
     power: 1.0
@@ -3423,15 +3423,15 @@ layer {
   }
 }
 layer {
-  name: "relu47"
+  name: "relus28"
   type: "ReLU6"
   bottom: "power55"
-  top: "relu47"
+  top: "relus28"
 }
 layer {
   name: "power56"
   type: "Power"
-  bottom: "relu47"
+  bottom: "relus28"
   top: "power56"
   power_param {
     power: 1.0
