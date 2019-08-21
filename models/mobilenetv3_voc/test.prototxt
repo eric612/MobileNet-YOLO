@@ -1,4 +1,4 @@
-name: "MobileNetV2"
+name: "MobileNetV3"
 layer {
   name: "data"
   type: "AnnotatedData"
@@ -16,8 +16,8 @@ layer {
     resize_param {
       prob: 1.0
       resize_mode: WARP
-      height: 320
-      width: 320
+      height: 352
+      width: 352
       interp_mode: LINEAR
     }
   }
