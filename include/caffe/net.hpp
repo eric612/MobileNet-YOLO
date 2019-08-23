@@ -251,7 +251,10 @@ class Net {
   void add_after_backward(Callback* value) {
     after_backward_.push_back(value);
   }
-
+  void set_iter(int iter,int max_iter) {
+    iter_ = iter;
+    max_iter_ = max_iter;
+  }
  protected:
   // Helpers for Init.
   /// @brief Append a new top blob to the net.
@@ -335,6 +338,8 @@ class Net {
   vector<Callback*> after_forward_;
   vector<Callback*> before_backward_;
   vector<Callback*> after_backward_;
+  int iter_;
+  int max_iter_;
 
 DISABLE_COPY_AND_ASSIGN(Net);
 };
