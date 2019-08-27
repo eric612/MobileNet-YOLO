@@ -98,10 +98,10 @@ void AssistedExcitationLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bot
       if (!x)
         break;
       
-      int lb_x = BOUND((int) ((x - w) * width + 0.5),0,width);
-      int lb_y = BOUND((int) ((y - h) * height + 0.5),0,height);
-      int rt_x = BOUND((int) ((x + w) * width + 0.5),0,width);
-      int rt_y = BOUND((int) ((y + h) * height + 0.5),0,height);
+      int lb_x = BOUND((int) ((x - w/2) * width + 0.5),0,width);
+      int lb_y = BOUND((int) ((y - h/2) * height + 0.5),0,height);
+      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),0,width);
+      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),0,height);
       //LOG(INFO) << lb_x << "," << lb_y<< ","<< rt_x << "," << rt_y;
       
       for (int i = lb_y;i < rt_y; i++) {
@@ -156,7 +156,7 @@ void AssistedExcitationLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& to
 }
 
 #ifdef CPU_ONLY
-#STUB_GPU(AssistedExcitationLayer);
+STUB_GPU(AssistedExcitationLayer);
 #endif
 
 INSTANTIATE_CLASS(AssistedExcitationLayer);
