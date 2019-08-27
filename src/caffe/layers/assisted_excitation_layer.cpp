@@ -73,6 +73,7 @@ void AssistedExcitationLayer<Dtype>::visualization(const vector<Blob<Dtype>*>& b
 template <typename Dtype>
 void AssistedExcitationLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
+    
   const Dtype* bottom_data = bottom[0]->cpu_data();
   Dtype* top_data = top[0]->mutable_cpu_data();
   const int count = bottom[0]->count();
@@ -98,10 +99,10 @@ void AssistedExcitationLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bot
       if (!x)
         break;
       
-      int lb_x = BOUND((int) ((x - w/2) * width + 0.5),0,width);
-      int lb_y = BOUND((int) ((y - h/2) * height + 0.5),0,height);
-      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),0,width);
-      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),0,height);
+      int lb_x = BOUND((int) ((x - w/2) * width + 0.5),0,width-1);
+      int lb_y = BOUND((int) ((y - h/2) * height + 0.5),0,height-1);
+      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),lb_x+1,width);
+      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),lb_y+1,height);
       //LOG(INFO) << lb_x << "," << lb_y<< ","<< rt_x << "," << rt_y;
       
       for (int i = lb_y;i < rt_y; i++) {
@@ -125,10 +126,12 @@ void AssistedExcitationLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bot
     }
     
     //caffe_axpy(bottom[2]->count(1), coeffs_[i], bottom[i]->cpu_data(), top_data);
-    //cv::namedWindow("show", cv::WINDOW_NORMAL);
-    //cv::resizeWindow("show", 600, 600);
-    //cv::imshow("show", img);
-    //cv::waitKey(1);
+    /*if(b==0) {
+      cv::namedWindow("show", cv::WINDOW_NORMAL);
+      cv::resizeWindow("show", 600, 600);
+      cv::imshow("show", img);
+      cv::waitKey(1);
+    }*/
   }
 
   //LOG(INFO)<<bottom[1]->channels()<<","<<bottom[1]->num()<<","<<bottom[1]->width()<<","<<bottom[1]->height();

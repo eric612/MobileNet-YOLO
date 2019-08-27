@@ -50,14 +50,15 @@ void AssistedExcitationLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bot
       if (!x)
         break;
       
-      int lb_x = BOUND((int) ((x - w/2) * width + 0.5),0,width);
-      int lb_y = BOUND((int) ((y - h/2) * height + 0.5),0,height);
-      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),0,width);
-      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),0,height);
+      int lb_x = BOUND((int) ((x - w/2) * width + 0.5),0,width-1);
+      int lb_y = BOUND((int) ((y - h/2) * height + 0.5),0,height-1);
+      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),lb_x+1,width);
+      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),lb_y+1,height);
       //LOG(INFO) << lb_x << "," << lb_y<< ","<< rt_x << "," << rt_y;
       
       for (int i = lb_y;i < rt_y; i++) {
-        
+        //uchar* ptr2 = img.ptr<uchar>(i);
+        //int img_index2 = 0;
         for (int j = lb_x; j < rt_x; j++)
         {
           int index = i * width + j + b*bottom[2]->count(1);
@@ -65,16 +66,21 @@ void AssistedExcitationLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bot
           //mask_data[index] = alpha;
           //LOG(INFO) << index;
           //caffe_set(count, alpha*mean_data[index], swap_data);
-          //ptr2[j] = (unsigned char) BOUND(fabs(mask_data[index])*255,0,255);
+          //ptr2[j] = (unsigned char) BOUND(255,0,255);
         }
       }
     }
-	mask_data = mask_.mutable_gpu_data();
+    mask_data = mask_.mutable_gpu_data();
     for (int c=0;c<bottom[0]->channels();c++) {
       int offset = bottom[0]->offset(b) + c*bottom[2]->count(1);
       caffe_gpu_axpy(width*height, Dtype(1) , mask_data, &top_data[offset]);
     }
-
+    /*if(b==0) {
+      cv::namedWindow("show", cv::WINDOW_NORMAL);
+      cv::resizeWindow("show", 600, 600);
+      cv::imshow("show", img);
+      cv::waitKey(1);
+    }*/
   }
 }
 
