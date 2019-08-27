@@ -52,8 +52,8 @@ void AssistedExcitationLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bot
       
       int lb_x = BOUND((int) ((x - w/2) * width),0,width-1);
       int lb_y = BOUND((int) ((y - h/2) * height),0,height-1);
-      int rt_x = BOUND((int) ((x + w/2) * width + 0.5),lb_x+1,width);
-      int rt_y = BOUND((int) ((y + h/2) * height + 0.5),lb_y+1,height);
+      int rt_x = BOUND((int) ((x + w/2) * width + 0.95),lb_x+1,width);
+      int rt_y = BOUND((int) ((y + h/2) * height + 0.95),lb_y+1,height);
       //LOG(INFO) << lb_x << "," << lb_y<< ","<< rt_x << "," << rt_y;
       
       for (int i = lb_y;i < rt_y; i++) {
