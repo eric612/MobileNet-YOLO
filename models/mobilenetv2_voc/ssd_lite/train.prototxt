@@ -98,10 +98,10 @@ layer {
       saturation_upper: 1.5
       random_order_prob: 0.0
     }
-    #expand_param {
-    #  prob: 0.5
-    #  max_expand_ratio: 2.5
-    #}
+    expand_param {
+      prob: 0.5
+      max_expand_ratio: 4.0
+    }
   }
   data_param {
     source: "examples/VOC0712/VOC0712_trainval_lmdb"
@@ -109,88 +109,7 @@ layer {
     backend: LMDB
   }
   annotated_data_param {
-    batch_sampler {
-      max_sample: 1
-      max_trials: 1
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        min_jaccard_overlap: 0.10000000149
-      }
-      max_sample: 1
-      max_trials: 50
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        min_jaccard_overlap: 0.300000011921
-      }
-      max_sample: 1
-      max_trials: 50
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        min_jaccard_overlap: 0.5
-      }
-      max_sample: 1
-      max_trials: 50
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        min_jaccard_overlap: 0.699999988079
-      }
-      max_sample: 1
-      max_trials: 50
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        min_jaccard_overlap: 0.899999976158
-      }
-      max_sample: 1
-      max_trials: 50
-    }
-    batch_sampler {
-      sampler {
-        min_scale: 0.300000011921
-        max_scale: 1.0
-        min_aspect_ratio: 0.5
-        max_aspect_ratio: 2.0
-      }
-      sample_constraint {
-        max_jaccard_overlap: 1.0
-      }
-      max_sample: 1
-      max_trials: 50
-    }
+	yolo_data_jitter : 0.7
     label_map_file: "data/VOC0712/labelmap_voc.prototxt"
   }
 }
@@ -207,7 +126,7 @@ layer {
     group: 1
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -250,7 +169,7 @@ layer {
     group: 32
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -293,7 +212,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -330,7 +249,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -373,7 +292,7 @@ layer {
     group: 96
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -416,7 +335,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -453,7 +372,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -496,7 +415,7 @@ layer {
     group: 144
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -539,7 +458,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -586,7 +505,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -629,7 +548,7 @@ layer {
     group: 144
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -672,7 +591,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -698,7 +617,7 @@ layer {
 }
 layer {
   name: "conv13"
-  type: "DepthwiseConvolution"
+  type: "Convolution"
   bottom: "conv12"
   top: "conv13"
   convolution_param {
@@ -709,7 +628,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -752,7 +671,7 @@ layer {
     group: 192
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -795,7 +714,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -842,7 +761,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -885,7 +804,7 @@ layer {
     group: 192
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -928,7 +847,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -975,7 +894,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1018,7 +937,7 @@ layer {
     group: 192
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1061,7 +980,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1098,7 +1017,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1141,7 +1060,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1184,7 +1103,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1231,7 +1150,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1274,7 +1193,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1317,7 +1236,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1364,7 +1283,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1407,7 +1326,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1450,7 +1369,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1497,7 +1416,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1540,7 +1459,7 @@ layer {
     group: 384
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1583,7 +1502,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1620,7 +1539,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1663,7 +1582,7 @@ layer {
     group: 576
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1706,7 +1625,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1753,7 +1672,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1796,7 +1715,7 @@ layer {
     group: 576
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1839,7 +1758,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1886,7 +1805,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1929,7 +1848,7 @@ layer {
     group: 576
     stride: 2
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -1972,7 +1891,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2009,7 +1928,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2052,7 +1971,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2095,7 +2014,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2142,7 +2061,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2185,7 +2104,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2228,7 +2147,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2275,7 +2194,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2318,7 +2237,7 @@ layer {
     group: 960
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2361,7 +2280,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2398,7 +2317,7 @@ layer {
     group: 1
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "msra"
     }
     dilation: 1
   }
@@ -2429,14 +2348,11 @@ layer {
   top: "conv52"
 }
 layer {
-  name: "layer_19_1_2"
+  name: "ssd/conv1"
   type: "Convolution"
   bottom: "conv52"
-  top: "layer_19_1_2"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  top: "ssd/conv1"
+
   convolution_param {
     num_output: 256
     bias_term: false
@@ -2447,40 +2363,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_1_2/bn"
+  name: "ssd/conv1/bn"
   type: "BatchNorm"
-  bottom: "layer_19_1_2"
-  top: "layer_19_1_2"
+  bottom: "ssd/conv1"
+  top: "ssd/conv1"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_1_2/scale"
+  name: "ssd/conv1/scale"
   type: "Scale"
-  bottom: "layer_19_1_2"
-  top: "layer_19_1_2"
+  bottom: "ssd/conv1"
+  top: "ssd/conv1"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_1_2/relu"
+  name: "ssd/conv1/relu"
   type: "ReLU"
-  bottom: "layer_19_1_2"
-  top: "layer_19_1_2"
+  bottom: "ssd/conv1"
+  top: "ssd/conv1"
 }
 layer {
-  name: "layer_19_2_2/depthwise"
+  name: "ssd/conv2/depthwise"
   type: "DepthwiseConvolution"
-  bottom: "layer_19_1_2"
-  top: "layer_19_2_2/depthwise"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv1"
+  top: "ssd/conv2/depthwise"
+
   convolution_param {
     num_output: 256
     bias_term: false
@@ -2496,40 +2409,37 @@ layer {
 }
 
 layer {
-  name: "layer_19_2_2/depthwise/bn"
+  name: "ssd/conv2/depthwise/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_2/depthwise"
-  top: "layer_19_2_2/depthwise"
+  bottom: "ssd/conv2/depthwise"
+  top: "ssd/conv2/depthwise"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_2/depthwise/scale"
+  name: "ssd/conv2/depthwise/scale"
   type: "Scale"
-  bottom: "layer_19_2_2/depthwise"
-  top: "layer_19_2_2/depthwise"
+  bottom: "ssd/conv2/depthwise"
+  top: "ssd/conv2/depthwise"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_2/depthwise/relu"
+  name: "ssd/conv2/depthwise/relu"
   type: "ReLU"
-  bottom: "layer_19_2_2/depthwise"
-  top: "layer_19_2_2/depthwise"
+  bottom: "ssd/conv2/depthwise"
+  top: "ssd/conv2/depthwise"
 }
 layer {
-  name: "layer_19_2_2"
+  name: "ssd/conv2"
   type: "Convolution"
-  bottom: "layer_19_2_2/depthwise"
-  top: "layer_19_2_2"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv2/depthwise"
+  top: "ssd/conv2"
+
   convolution_param {
     num_output: 512
     bias_term: false
@@ -2540,40 +2450,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2/bn"
+  name: "ssd/conv2/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_2"
-  top: "layer_19_2_2"
+  bottom: "ssd/conv2"
+  top: "ssd/conv2"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_2/scale"
+  name: "ssd/conv2/scale"
   type: "Scale"
-  bottom: "layer_19_2_2"
-  top: "layer_19_2_2"
+  bottom: "ssd/conv2"
+  top: "ssd/conv2"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_2/relu"
+  name: "ssd/conv2/relu"
   type: "ReLU"
-  bottom: "layer_19_2_2"
-  top: "layer_19_2_2"
+  bottom: "ssd/conv2"
+  top: "ssd/conv2"
 }
 layer {
-  name: "layer_19_1_3"
+  name: "ssd/conv3"
   type: "Convolution"
-  bottom: "layer_19_2_2"
-  top: "layer_19_1_3"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv2"
+  top: "ssd/conv3"
+
   convolution_param {
     num_output: 128
     bias_term: false
@@ -2584,40 +2491,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_1_3/bn"
+  name: "ssd/conv3/bn"
   type: "BatchNorm"
-  bottom: "layer_19_1_3"
-  top: "layer_19_1_3"
+  bottom: "ssd/conv3"
+  top: "ssd/conv3"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_1_3/scale"
+  name: "ssd/conv3/scale"
   type: "Scale"
-  bottom: "layer_19_1_3"
-  top: "layer_19_1_3"
+  bottom: "ssd/conv3"
+  top: "ssd/conv3"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_1_3/relu"
+  name: "ssd/conv3/relu"
   type: "ReLU"
-  bottom: "layer_19_1_3"
-  top: "layer_19_1_3"
+  bottom: "ssd/conv3"
+  top: "ssd/conv3"
 }
 layer {
-  name: "layer_19_2_3/depthwise"
+  name: "ssd/conv4/depthwise"
   type: "DepthwiseConvolution"
-  bottom: "layer_19_1_3"
-  top: "layer_19_2_3/depthwise"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv3"
+  top: "ssd/conv4/depthwise"
+
   convolution_param {
     num_output: 128
     bias_term: false
@@ -2632,40 +2536,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3/depthwise/bn"
+  name: "ssd/conv4/depthwise/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_3/depthwise"
-  top: "layer_19_2_3/depthwise"
+  bottom: "ssd/conv4/depthwise"
+  top: "ssd/conv4/depthwise"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_3/depthwise/scale"
+  name: "ssd/conv4/depthwise/scale"
   type: "Scale"
-  bottom: "layer_19_2_3/depthwise"
-  top: "layer_19_2_3/depthwise"
+  bottom: "ssd/conv4/depthwise"
+  top: "ssd/conv4/depthwise"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_3/depthwise/relu"
+  name: "ssd/conv4/depthwise/relu"
   type: "ReLU"
-  bottom: "layer_19_2_3/depthwise"
-  top: "layer_19_2_3/depthwise"
+  bottom: "ssd/conv4/depthwise"
+  top: "ssd/conv4/depthwise"
 }
 layer {
-  name: "layer_19_2_3"
+  name: "ssd/conv4"
   type: "Convolution"
-  bottom: "layer_19_2_3/depthwise"
-  top: "layer_19_2_3"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv4/depthwise"
+  top: "ssd/conv4"
+
   convolution_param {
     num_output: 256
     bias_term: false
@@ -2676,40 +2577,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3/bn"
+  name: "ssd/conv4/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_3"
-  top: "layer_19_2_3"
+  bottom: "ssd/conv4"
+  top: "ssd/conv4"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_3/scale"
+  name: "ssd/conv4/scale"
   type: "Scale"
-  bottom: "layer_19_2_3"
-  top: "layer_19_2_3"
+  bottom: "ssd/conv4"
+  top: "ssd/conv4"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_3/relu"
+  name: "ssd/conv4/relu"
   type: "ReLU"
-  bottom: "layer_19_2_3"
-  top: "layer_19_2_3"
+  bottom: "ssd/conv4"
+  top: "ssd/conv4"
 }
 layer {
-  name: "layer_19_1_4"
+  name: "ssd/conv5"
   type: "Convolution"
-  bottom: "layer_19_2_3"
-  top: "layer_19_1_4"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv4"
+  top: "ssd/conv5"
+
   convolution_param {
     num_output: 128
     bias_term: false
@@ -2720,40 +2618,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_1_4/bn"
+  name: "ssd/conv5/bn"
   type: "BatchNorm"
-  bottom: "layer_19_1_4"
-  top: "layer_19_1_4"
+  bottom: "ssd/conv5"
+  top: "ssd/conv5"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_1_4/scale"
+  name: "ssd/conv5/scale"
   type: "Scale"
-  bottom: "layer_19_1_4"
-  top: "layer_19_1_4"
+  bottom: "ssd/conv5"
+  top: "ssd/conv5"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_1_4/relu"
+  name: "ssd/conv5/relu"
   type: "ReLU"
-  bottom: "layer_19_1_4"
-  top: "layer_19_1_4"
+  bottom: "ssd/conv5"
+  top: "ssd/conv5"
 }
 layer {
-  name: "layer_19_2_4/depthwise"
+  name: "ssd/conv6/depthwise"
   type: "DepthwiseConvolution"
-  bottom: "layer_19_1_4"
-  top: "layer_19_2_4/depthwise"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv5"
+  top: "ssd/conv6/depthwise"
+
   convolution_param {
     num_output: 128
     bias_term: false
@@ -2768,40 +2663,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4/depthwise/bn"
+  name: "ssd/conv6/depthwise/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_4/depthwise"
-  top: "layer_19_2_4/depthwise"
+  bottom: "ssd/conv6/depthwise"
+  top: "ssd/conv6/depthwise"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_4/depthwise/scale"
+  name: "ssd/conv6/depthwise/scale"
   type: "Scale"
-  bottom: "layer_19_2_4/depthwise"
-  top: "layer_19_2_4/depthwise"
+  bottom: "ssd/conv6/depthwise"
+  top: "ssd/conv6/depthwise"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_4/depthwise/relu"
+  name: "ssd/conv6/depthwise/relu"
   type: "ReLU"
-  bottom: "layer_19_2_4/depthwise"
-  top: "layer_19_2_4/depthwise"
+  bottom: "ssd/conv6/depthwise"
+  top: "ssd/conv6/depthwise"
 }
 layer {
-  name: "layer_19_2_4"
+  name: "ssd/conv6"
   type: "Convolution"
-  bottom: "layer_19_2_4/depthwise"
-  top: "layer_19_2_4"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv6/depthwise"
+  top: "ssd/conv6"
+
   convolution_param {
     num_output: 256
     bias_term: false
@@ -2812,40 +2704,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4/bn"
+  name: "ssd/conv6/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_4"
-  top: "layer_19_2_4"
+  bottom: "ssd/conv6"
+  top: "ssd/conv6"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_4/scale"
+  name: "ssd/conv6/scale"
   type: "Scale"
-  bottom: "layer_19_2_4"
-  top: "layer_19_2_4"
+  bottom: "ssd/conv6"
+  top: "ssd/conv6"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_4/relu"
+  name: "ssd/conv6/relu"
   type: "ReLU"
-  bottom: "layer_19_2_4"
-  top: "layer_19_2_4"
+  bottom: "ssd/conv6"
+  top: "ssd/conv6"
 }
 layer {
-  name: "layer_19_1_5"
+  name: "ssd/conv7"
   type: "Convolution"
-  bottom: "layer_19_2_4"
-  top: "layer_19_1_5"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv6"
+  top: "ssd/conv7"
+
   convolution_param {
     num_output: 64
     bias_term: false
@@ -2856,40 +2745,37 @@ layer {
   }
 }
 layer {
-  name: "layer_19_1_5/bn"
+  name: "ssd/conv7/bn"
   type: "BatchNorm"
-  bottom: "layer_19_1_5"
-  top: "layer_19_1_5"
+  bottom: "ssd/conv7"
+  top: "ssd/conv7"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_1_5/scale"
+  name: "ssd/conv7/scale"
   type: "Scale"
-  bottom: "layer_19_1_5"
-  top: "layer_19_1_5"
+  bottom: "ssd/conv7"
+  top: "ssd/conv7"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_1_5/relu"
+  name: "ssd/conv7/relu"
   type: "ReLU"
-  bottom: "layer_19_1_5"
-  top: "layer_19_1_5"
+  bottom: "ssd/conv7"
+  top: "ssd/conv7"
 }
 layer {
-  name: "layer_19_2_5/depthwise"
+  name: "ssd/conv8/depthwise"
   type: "DepthwiseConvolution"
-  bottom: "layer_19_1_5"
-  top: "layer_19_2_5/depthwise"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv7"
+  top: "ssd/conv8/depthwise"
+
   convolution_param {
     num_output: 64
     bias_term: false
@@ -2905,40 +2791,37 @@ layer {
 }
 
 layer {
-  name: "layer_19_2_5/depthwise/bn"
+  name: "ssd/conv8/depthwise/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_5/depthwise"
-  top: "layer_19_2_5/depthwise"
+  bottom: "ssd/conv8/depthwise"
+  top: "ssd/conv8/depthwise"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_5/depthwise/scale"
+  name: "ssd/conv8/depthwise/scale"
   type: "Scale"
-  bottom: "layer_19_2_5/depthwise"
-  top: "layer_19_2_5/depthwise"
+  bottom: "ssd/conv8/depthwise"
+  top: "ssd/conv8/depthwise"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_5/depthwise/relu"
+  name: "ssd/conv8/depthwise/relu"
   type: "ReLU"
-  bottom: "layer_19_2_5/depthwise"
-  top: "layer_19_2_5/depthwise"
+  bottom: "ssd/conv8/depthwise"
+  top: "ssd/conv8/depthwise"
 }
 layer {
-  name: "layer_19_2_5"
+  name: "ssd/conv8"
   type: "Convolution"
-  bottom: "layer_19_2_5/depthwise"
-  top: "layer_19_2_5"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
+  bottom: "ssd/conv8/depthwise"
+  top: "ssd/conv8"
+
   convolution_param {
     num_output: 128
     bias_term: false
@@ -2949,156 +2832,38 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5/bn"
+  name: "ssd/conv8/bn"
   type: "BatchNorm"
-  bottom: "layer_19_2_5"
-  top: "layer_19_2_5"
+  bottom: "ssd/conv8"
+  top: "ssd/conv8"
   batch_norm_param {
     eps: 9.999999747378752e-06
   }
 
 }
 layer {
-  name: "layer_19_2_5/scale"
+  name: "ssd/conv8/scale"
   type: "Scale"
-  bottom: "layer_19_2_5"
-  top: "layer_19_2_5"
+  bottom: "ssd/conv8"
+  top: "ssd/conv8"
   scale_param {
     bias_term: true
   }
 
 }
 layer {
-  name: "layer_19_2_5/relu"
+  name: "ssd/conv8/relu"
   type: "ReLU"
-  bottom: "layer_19_2_5"
-  top: "layer_19_2_5"
+  bottom: "ssd/conv8"
+  top: "ssd/conv8"
 }
 #==========SSD layers===========
 layer {
-  name: "conv_13/expand_mbox_loc"
+  name: "conv40/expand_mbox_loc"
   type: "Convolution"
   bottom: "conv40"
-  top: "conv_13/expand_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
-  convolution_param {
-    num_output: 12
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_loc_perm"
-  type: "Permute"
-  bottom: "conv_13/expand_mbox_loc"
-  top: "conv_13/expand_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "conv_13/expand_mbox_loc_perm"
-  top: "conv_13/expand_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_conf"
-  type: "Convolution"
-  bottom: "conv40"
-  top: "conv_13/expand_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
-  convolution_param {
-    num_output: 63
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_conf_perm"
-  type: "Permute"
-  bottom: "conv_13/expand_mbox_conf"
-  top: "conv_13/expand_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "conv_13/expand_mbox_conf_perm"
-  top: "conv_13/expand_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "conv_13/expand_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "conv40"
-  bottom: "data"
-  top: "conv_13/expand_mbox_priorbox"
-  prior_box_param {
-    min_size: 60.0
-    aspect_ratio: 2.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    #reduce_boxes: true
-    offset: 0.5
-  }
-}
-layer {
-  name: "Conv_1_mbox_loc"
-  type: "Convolution"
-  bottom: "conv52"
-  top: "Conv_1_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  top: "conv40/expand_mbox_loc"
+
   convolution_param {
     num_output: 24
     kernel_size: 1
@@ -3112,10 +2877,10 @@ layer {
   }
 }
 layer {
-  name: "Conv_1_mbox_loc_perm"
+  name: "conv40/expand_mbox_loc_perm"
   type: "Permute"
-  bottom: "Conv_1_mbox_loc"
-  top: "Conv_1_mbox_loc_perm"
+  bottom: "conv40/expand_mbox_loc"
+  top: "conv40/expand_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -3124,27 +2889,118 @@ layer {
   }
 }
 layer {
-  name: "Conv_1_mbox_loc_flat"
+  name: "conv40/expand_mbox_loc_flat"
   type: "Flatten"
-  bottom: "Conv_1_mbox_loc_perm"
-  top: "Conv_1_mbox_loc_flat"
+  bottom: "conv40/expand_mbox_loc_perm"
+  top: "conv40/expand_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "Conv_1_mbox_conf"
+  name: "conv40/expand_mbox_conf"
+  type: "Convolution"
+  bottom: "conv40"
+  top: "conv_13/expand_mbox_conf"
+
+  convolution_param {
+    num_output: 126
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "conv40/expand_mbox_conf_perm"
+  type: "Permute"
+  bottom: "conv_13/expand_mbox_conf"
+  top: "conv40/expand_mbox_conf_perm"
+  permute_param {
+    order: 0
+    order: 2
+    order: 3
+    order: 1
+  }
+}
+layer {
+  name: "conv40/expand_mbox_conf_flat"
+  type: "Flatten"
+  bottom: "conv40/expand_mbox_conf_perm"
+  top: "conv40/expand_mbox_conf_flat"
+  flatten_param {
+    axis: 1
+  }
+}
+layer {
+  name: "conv40/expand_mbox_priorbox"
+  type: "PriorBox"
+  bottom: "conv40"
+  bottom: "data"
+  top: "conv40/expand_mbox_priorbox"
+  prior_box_param {
+    min_size: 45.0
+    max_size: 105.0
+    aspect_ratio: 2.0
+	  aspect_ratio: 3.0
+    flip: true
+    clip: false
+    variance: 0.1
+    variance: 0.1
+    variance: 0.2
+    variance: 0.2
+    offset: 0.5
+  }
+}
+layer {
+  name: "conv52_mbox_loc"
   type: "Convolution"
   bottom: "conv52"
-  top: "Conv_1_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
+  top: "conv52_mbox_loc"
+
+  convolution_param {
+    num_output: 24
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
   }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
+}
+layer {
+  name: "conv52_mbox_loc_perm"
+  type: "Permute"
+  bottom: "conv52_mbox_loc"
+  top: "conv52_mbox_loc_perm"
+  permute_param {
+    order: 0
+    order: 2
+    order: 3
+    order: 1
   }
+}
+layer {
+  name: "conv52_mbox_loc_flat"
+  type: "Flatten"
+  bottom: "conv52_mbox_loc_perm"
+  top: "conv52_mbox_loc_flat"
+  flatten_param {
+    axis: 1
+  }
+}
+layer {
+  name: "conv52_mbox_conf"
+  type: "Convolution"
+  bottom: "conv52"
+  top: "conv52_mbox_conf"
+
   convolution_param {
     num_output: 126
     pad: 1
@@ -3159,10 +3015,10 @@ layer {
   }
 }
 layer {
-  name: "Conv_1_mbox_conf_perm"
+  name: "conv52_mbox_conf_perm"
   type: "Permute"
-  bottom: "Conv_1_mbox_conf"
-  top: "Conv_1_mbox_conf_perm"
+  bottom: "conv52_mbox_conf"
+  top: "conv52_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -3171,20 +3027,20 @@ layer {
   }
 }
 layer {
-  name: "Conv_1_mbox_conf_flat"
+  name: "conv52_mbox_conf_flat"
   type: "Flatten"
-  bottom: "Conv_1_mbox_conf_perm"
-  top: "Conv_1_mbox_conf_flat"
+  bottom: "conv52_mbox_conf_perm"
+  top: "conv52_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "Conv_1_mbox_priorbox"
+  name: "conv52_mbox_priorbox"
   type: "PriorBox"
   bottom: "conv52"
   bottom: "data"
-  top: "Conv_1_mbox_priorbox"
+  top: "conv52_mbox_priorbox"
   prior_box_param {
     min_size: 105.0
     max_size: 150.0
@@ -3200,18 +3056,11 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_loc"
+  name: "ssd/conv2_mbox_loc"
   type: "Convolution"
-  bottom: "layer_19_2_2"
-  top: "layer_19_2_2_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv2"
+  top: "ssd/conv2_mbox_loc"
+
   convolution_param {
     num_output: 24
     kernel_size: 1
@@ -3225,10 +3074,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_loc_perm"
+  name: "ssd/conv2_mbox_loc_perm"
   type: "Permute"
-  bottom: "layer_19_2_2_mbox_loc"
-  top: "layer_19_2_2_mbox_loc_perm"
+  bottom: "ssd/conv2_mbox_loc"
+  top: "ssd/conv2_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -3237,27 +3086,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_loc_flat"
+  name: "ssd/conv2_mbox_loc_flat"
   type: "Flatten"
-  bottom: "layer_19_2_2_mbox_loc_perm"
-  top: "layer_19_2_2_mbox_loc_flat"
+  bottom: "ssd/conv2_mbox_loc_perm"
+  top: "ssd/conv2_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_conf"
+  name: "ssd/conv2_mbox_conf"
   type: "Convolution"
-  bottom: "layer_19_2_2"
-  top: "layer_19_2_2_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv2"
+  top: "ssd/conv2_mbox_conf"
+
   convolution_param {
     num_output: 126
     kernel_size: 1
@@ -3271,10 +3113,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_conf_perm"
+  name: "ssd/conv2_mbox_conf_perm"
   type: "Permute"
-  bottom: "layer_19_2_2_mbox_conf"
-  top: "layer_19_2_2_mbox_conf_perm"
+  bottom: "ssd/conv2_mbox_conf"
+  top: "ssd/conv2_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -3283,20 +3125,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_conf_flat"
+  name: "ssd/conv2_mbox_conf_flat"
   type: "Flatten"
-  bottom: "layer_19_2_2_mbox_conf_perm"
-  top: "layer_19_2_2_mbox_conf_flat"
+  bottom: "ssd/conv2_mbox_conf_perm"
+  top: "ssd/conv2_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_2_mbox_priorbox"
+  name: "ssd/conv2_mbox_priorbox"
   type: "PriorBox"
-  bottom: "layer_19_2_2"
+  bottom: "ssd/conv2"
   bottom: "data"
-  top: "layer_19_2_2_mbox_priorbox"
+  top: "ssd/conv2_mbox_priorbox"
   prior_box_param {
     min_size: 150.0
     max_size: 195.0
@@ -3312,18 +3154,11 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_loc"
+  name: "ssd/conv4_mbox_loc"
   type: "Convolution"
-  bottom: "layer_19_2_3"
-  top: "layer_19_2_3_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv4"
+  top: "ssd/conv4_mbox_loc"
+
   convolution_param {
     num_output: 24
     kernel_size: 1
@@ -3337,10 +3172,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_loc_perm"
+  name: "ssd/conv4_mbox_loc_perm"
   type: "Permute"
-  bottom: "layer_19_2_3_mbox_loc"
-  top: "layer_19_2_3_mbox_loc_perm"
+  bottom: "ssd/conv4_mbox_loc"
+  top: "ssd/conv4_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -3349,27 +3184,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_loc_flat"
+  name: "ssd/conv4_mbox_loc_flat"
   type: "Flatten"
-  bottom: "layer_19_2_3_mbox_loc_perm"
-  top: "layer_19_2_3_mbox_loc_flat"
+  bottom: "ssd/conv4_mbox_loc_perm"
+  top: "ssd/conv4_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_conf"
+  name: "ssd/conv4_mbox_conf"
   type: "Convolution"
-  bottom: "layer_19_2_3"
-  top: "layer_19_2_3_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv4"
+  top: "ssd/conv4_mbox_conf"
+
   convolution_param {
     num_output: 126
     pad: 1
@@ -3384,10 +3212,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_conf_perm"
+  name: "ssd/conv4_mbox_conf_perm"
   type: "Permute"
-  bottom: "layer_19_2_3_mbox_conf"
-  top: "layer_19_2_3_mbox_conf_perm"
+  bottom: "ssd/conv4_mbox_conf"
+  top: "ssd/conv4_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -3396,20 +3224,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_conf_flat"
+  name: "ssd/conv4_mbox_conf_flat"
   type: "Flatten"
-  bottom: "layer_19_2_3_mbox_conf_perm"
-  top: "layer_19_2_3_mbox_conf_flat"
+  bottom: "ssd/conv4_mbox_conf_perm"
+  top: "ssd/conv4_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_3_mbox_priorbox"
+  name: "ssd/conv4_mbox_priorbox"
   type: "PriorBox"
-  bottom: "layer_19_2_3"
+  bottom: "ssd/conv4"
   bottom: "data"
-  top: "layer_19_2_3_mbox_priorbox"
+  top: "ssd/conv4_mbox_priorbox"
   prior_box_param {
     min_size: 195.0
     max_size: 240.0
@@ -3425,18 +3253,11 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_loc"
+  name: "ssd/conv6_mbox_loc"
   type: "Convolution"
-  bottom: "layer_19_2_4"
-  top: "layer_19_2_4_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv6"
+  top: "ssd/conv6_mbox_loc"
+
   convolution_param {
     num_output: 24
     pad: 1
@@ -3451,10 +3272,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_loc_perm"
+  name: "ssd/conv6_mbox_loc_perm"
   type: "Permute"
-  bottom: "layer_19_2_4_mbox_loc"
-  top: "layer_19_2_4_mbox_loc_perm"
+  bottom: "ssd/conv6_mbox_loc"
+  top: "ssd/conv6_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -3463,27 +3284,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_loc_flat"
+  name: "ssd/conv6_mbox_loc_flat"
   type: "Flatten"
-  bottom: "layer_19_2_4_mbox_loc_perm"
-  top: "layer_19_2_4_mbox_loc_flat"
+  bottom: "ssd/conv6_mbox_loc_perm"
+  top: "ssd/conv6_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_conf"
+  name: "ssd/conv6_mbox_conf"
   type: "Convolution"
-  bottom: "layer_19_2_4"
-  top: "layer_19_2_4_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv6"
+  top: "ssd/conv6_mbox_conf"
+
   convolution_param {
     num_output: 126
     kernel_size: 1
@@ -3497,10 +3311,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_conf_perm"
+  name: "ssd/conv6_mbox_conf_perm"
   type: "Permute"
-  bottom: "layer_19_2_4_mbox_conf"
-  top: "layer_19_2_4_mbox_conf_perm"
+  bottom: "ssd/conv6_mbox_conf"
+  top: "ssd/conv6_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -3509,20 +3323,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_conf_flat"
+  name: "ssd/conv6_mbox_conf_flat"
   type: "Flatten"
-  bottom: "layer_19_2_4_mbox_conf_perm"
-  top: "layer_19_2_4_mbox_conf_flat"
+  bottom: "ssd/conv6_mbox_conf_perm"
+  top: "ssd/conv6_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_4_mbox_priorbox"
+  name: "ssd/conv6_mbox_priorbox"
   type: "PriorBox"
-  bottom: "layer_19_2_4"
+  bottom: "ssd/conv6"
   bottom: "data"
-  top: "layer_19_2_4_mbox_priorbox"
+  top: "ssd/conv6_mbox_priorbox"
   prior_box_param {
     min_size: 240.0
     max_size: 285.0
@@ -3538,18 +3352,11 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_loc"
+  name: "ssd/conv8_mbox_loc"
   type: "Convolution"
-  bottom: "layer_19_2_5"
-  top: "layer_19_2_5_mbox_loc"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv8"
+  top: "ssd/conv8_mbox_loc"
+
   convolution_param {
     num_output: 24
     kernel_size: 1
@@ -3563,10 +3370,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_loc_perm"
+  name: "ssd/conv8_mbox_loc_perm"
   type: "Permute"
-  bottom: "layer_19_2_5_mbox_loc"
-  top: "layer_19_2_5_mbox_loc_perm"
+  bottom: "ssd/conv8_mbox_loc"
+  top: "ssd/conv8_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -3575,27 +3382,20 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_loc_flat"
+  name: "ssd/conv8_mbox_loc_flat"
   type: "Flatten"
-  bottom: "layer_19_2_5_mbox_loc_perm"
-  top: "layer_19_2_5_mbox_loc_flat"
+  bottom: "ssd/conv8_mbox_loc_perm"
+  top: "ssd/conv8_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_conf"
+  name: "ssd/conv8_mbox_conf"
   type: "Convolution"
-  bottom: "layer_19_2_5"
-  top: "layer_19_2_5_mbox_conf"
-  param {
-    lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 2.0
-    decay_mult: 0.0
-  }
+  bottom: "ssd/conv8"
+  top: "ssd/conv8_mbox_conf"
+
   convolution_param {
     num_output: 126
     kernel_size: 1
@@ -3609,10 +3409,10 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_conf_perm"
+  name: "ssd/conv8_mbox_conf_perm"
   type: "Permute"
-  bottom: "layer_19_2_5_mbox_conf"
-  top: "layer_19_2_5_mbox_conf_perm"
+  bottom: "ssd/conv8_mbox_conf"
+  top: "ssd/conv8_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -3621,23 +3421,23 @@ layer {
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_conf_flat"
+  name: "ssd/conv8_mbox_conf_flat"
   type: "Flatten"
-  bottom: "layer_19_2_5_mbox_conf_perm"
-  top: "layer_19_2_5_mbox_conf_flat"
+  bottom: "ssd/conv8_mbox_conf_perm"
+  top: "ssd/conv8_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "layer_19_2_5_mbox_priorbox"
+  name: "ssd/conv8_mbox_priorbox"
   type: "PriorBox"
-  bottom: "layer_19_2_5"
+  bottom: "ssd/conv8"
   bottom: "data"
-  top: "layer_19_2_5_mbox_priorbox"
+  top: "ssd/conv8_mbox_priorbox"
   prior_box_param {
     min_size: 285.0
-    max_size: 300.0
+    max_size: 350.0
     aspect_ratio: 2.0
     aspect_ratio: 3.0
     flip: true
@@ -3652,12 +3452,12 @@ layer {
 layer {
   name: "mbox_loc"
   type: "Concat"
-  bottom: "conv_13/expand_mbox_loc_flat"
-  bottom: "Conv_1_mbox_loc_flat"
-  bottom: "layer_19_2_2_mbox_loc_flat"
-  bottom: "layer_19_2_3_mbox_loc_flat"
-  bottom: "layer_19_2_4_mbox_loc_flat"
-  bottom: "layer_19_2_5_mbox_loc_flat"
+  bottom: "conv40/expand_mbox_loc_flat"
+  bottom: "conv52_mbox_loc_flat"
+  bottom: "ssd/conv2_mbox_loc_flat"
+  bottom: "ssd/conv4_mbox_loc_flat"
+  bottom: "ssd/conv6_mbox_loc_flat"
+  bottom: "ssd/conv8_mbox_loc_flat"
   top: "mbox_loc"
   concat_param {
     axis: 1
@@ -3666,12 +3466,12 @@ layer {
 layer {
   name: "mbox_conf"
   type: "Concat"
-  bottom: "conv_13/expand_mbox_conf_flat"
-  bottom: "Conv_1_mbox_conf_flat"
-  bottom: "layer_19_2_2_mbox_conf_flat"
-  bottom: "layer_19_2_3_mbox_conf_flat"
-  bottom: "layer_19_2_4_mbox_conf_flat"
-  bottom: "layer_19_2_5_mbox_conf_flat"
+  bottom: "conv40/expand_mbox_conf_flat"
+  bottom: "conv52_mbox_conf_flat"
+  bottom: "ssd/conv2_mbox_conf_flat"
+  bottom: "ssd/conv4_mbox_conf_flat"
+  bottom: "ssd/conv6_mbox_conf_flat"
+  bottom: "ssd/conv8_mbox_conf_flat"
   top: "mbox_conf"
   concat_param {
     axis: 1
@@ -3680,12 +3480,12 @@ layer {
 layer {
   name: "mbox_priorbox"
   type: "Concat"
-  bottom: "conv_13/expand_mbox_priorbox"
-  bottom: "Conv_1_mbox_priorbox"
-  bottom: "layer_19_2_2_mbox_priorbox"
-  bottom: "layer_19_2_3_mbox_priorbox"
-  bottom: "layer_19_2_4_mbox_priorbox"
-  bottom: "layer_19_2_5_mbox_priorbox"
+  bottom: "conv40/expand_mbox_priorbox"
+  bottom: "conv52_mbox_priorbox"
+  bottom: "ssd/conv2_mbox_priorbox"
+  bottom: "ssd/conv4_mbox_priorbox"
+  bottom: "ssd/conv6_mbox_priorbox"
+  bottom: "ssd/conv8_mbox_priorbox"
   top: "mbox_priorbox"
   concat_param {
     axis: 2
