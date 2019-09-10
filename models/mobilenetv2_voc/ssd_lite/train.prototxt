@@ -17,29 +17,7 @@ layer {
 
 
     resize_param {
-      prob: 0.167
-      resize_mode: WARP
-      height: 400
-      width: 400
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.166
-      resize_mode: WARP
-      height: 368
-      width: 368
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.166
+      prob: 1
       resize_mode: WARP
       height: 336
       width: 336
@@ -49,39 +27,7 @@ layer {
       interp_mode: CUBIC
       interp_mode: LANCZOS4
     }
-    resize_param {
-      prob: 0.166
-      resize_mode: WARP
-      height: 304
-      width: 304
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.166
-      resize_mode: WARP
-      height: 300
-      width: 300
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
-    }
-    resize_param {
-      prob: 0.166
-      resize_mode: WARP
-      height: 272
-      width: 272
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
-    }
+
     emit_constraint {
       emit_type: CENTER
     }

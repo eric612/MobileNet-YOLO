@@ -1,35 +1,15 @@
 name: "MobileNetV2"
 layer {
   name: "data"
-  type: "AnnotatedData"
+  type: "Input"
   top: "data"
-  top: "label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-    scale: 0.007843
-    mean_value: 127.5
-    mean_value: 127.5
-    mean_value: 127.5
-
-    resize_param {
-      prob: 1.0
-      resize_mode: WARP
-      height: 336
-      width: 336
-      interp_mode: LINEAR
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 336
+      dim: 336
     }
-  }
-  data_param {
-    source: "examples/VOC0712/VOC0712_test_lmdb"
-    batch_size: 1
-    backend: LMDB
-  }
-  annotated_data_param {
-    batch_sampler {
-    }
-    label_map_file: "data/VOC0712/labelmap_voc.prototxt"
   }
 }
 layer {
@@ -3462,21 +3442,5 @@ layer {
     code_type: CENTER_SIZE
     keep_top_k: 200
     confidence_threshold: 0.01
-  }
-}
-layer {
-  name: "detection_eval"
-  type: "DetectionEvaluate"
-  bottom: "detection_out"
-  bottom: "label"
-  top: "detection_eval"
-  include {
-    phase: TEST
-  }
-  detection_evaluate_param {
-    num_classes: 21
-    background_label_id: 0
-    overlap_threshold: 0.5
-    evaluate_difficult_gt: false
   }
 }
