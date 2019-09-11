@@ -138,7 +138,7 @@ void Pruner::import(){
 								break;
 							}
 						}
-						else if (it->type() == "ConvolutionDepthwise"){
+						else if (it->type() == "ConvolutionDepthwise"|| it->type() == "DepthwiseConvolution"){
 
 							if (prunedConvName == it->bottom(0)){
 								b1.push_back(convParam(it->name(), param(ratio, it->blobs(0).shape().dim(0))));
@@ -160,7 +160,7 @@ void Pruner::import(){
 							}
 
 							for (auto it1 = it; it1 != layer->end(); it1++){
-								if (it1->type() == "Convolution" || it1->type() == "ConvolutionDepthwise"){
+								if (it1->type() == "Convolution" || it1->type() == "ConvolutionDepthwise"|| it->type() == "DepthwiseConvolution"){
 									if (find(top_names_.begin(), top_names_.end(), it1->bottom(0)) != top_names_.end()){
 										b1.push_back(convParam(it1->name(), param(ratio, it1->blobs(0).shape().dim(0))));
 									}
@@ -408,6 +408,7 @@ void Pruner::pruningBottomByratio(const precord r, vector<int>* pchannelNeedPrun
 					break;
 				}
 				else if (it->type() == "ConvolutionDepthwise" || it->type() == "DepthwiseConvolution"){
+
 					this->filterPruning(it, pchannelNeedPrune);
 					it++;
 
