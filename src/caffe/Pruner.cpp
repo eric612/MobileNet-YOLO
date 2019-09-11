@@ -407,7 +407,7 @@ void Pruner::pruningBottomByratio(const precord r, vector<int>* pchannelNeedPrun
 					this->channelPruning(it, pchannelNeedPrune);
 					break;
 				}
-				else if (it->type() == "ConvolutionDepthwise"){
+				else if (it->type() == "ConvolutionDepthwise" || it->type() == "DepthwiseConvolution"){
 					this->filterPruning(it, pchannelNeedPrune);
 					it++;
 
