@@ -8,7 +8,7 @@
 
 <!-- 8:norm 11:L1  12:L2  16:VARIANCE-->
 <ConvCalculateMode>
-	<mode>16</mode>
+	<mode>11</mode>
 </ConvCalculateMode>
 
 <!-- Do not use filterpruning on a conv layer which before split layer 
@@ -17,26 +17,38 @@ eg:: shotcut?
 
 <filterpruning>
 
-<!--<layer name="conv0" cut="0.05"></layer> --> 
-<layer name="conv1" cut="0.05"></layer>
-<layer name="conv2" cut="0.05"></layer>
 <layer name="conv3" cut="0.05"></layer>
 <layer name="conv4" cut="0.05"></layer>
-<layer name="conv5" cut="0.05"></layer>
-<layer name="conv6" cut="0.05"></layer>
 <layer name="conv7" cut="0.05"></layer>
-<layer name="conv8" cut="0.05"></layer>
-<layer name="conv9" cut="0.05"></layer>
+<layer name="conv10" cut="0.05"></layer>
+<layer name="conv13" cut="0.05"></layer>
+<layer name="conv16" cut="0.05"></layer>
+<layer name="conv19" cut="0.05"></layer>
+<layer name="conv22" cut="0.1"></layer>
+<layer name="conv25" cut="0.1"></layer>
+<layer name="conv28" cut="0.1"></layer>
+<layer name="conv31" cut="0.05"></layer>
+<layer name="conv34" cut="0.1"></layer>
+<layer name="conv37" cut="0.1"></layer>
+<layer name="conv43" cut="0.1"></layer>
+<layer name="conv46" cut="0.1"></layer>
+<layer name="conv49" cut="0.1"></layer>
+<layer name="conv51" cut="0.1"></layer>
+<layer name="conv52" cut="0.25"></layer>
+
+<layer name="yolo/conv3" cut="0.05"></layer>
+
 
 </filterpruning>
 
 <!-- channelpruning ONLY can be used on convolution layer which subsequent to Eltwise layer --> 
 <eltwise>
-<!-- <layer name="res5c" cut="0.15"></layer> --> 
+
+<!--<layer name="yolo/conv2/sum" cut="0.05"></layer>--> 
 </eltwise>
 
-<caffemodelpath>models/yolov3/mobilenet_yolov3_lite_deploy_iter_120000.caffemodel</caffemodelpath>
-<protopath>models/yolov3/mobilenet_yolov3_lite_bn_deploy.prototxt</protopath>
-<prunedcaffemodelpath>models/yolov3/pruned.caffemodel</prunedcaffemodelpath>
-<prunedprotopath>models/yolov3/pruned.prototxt</prunedprotopath>
-<txtprotopath>models/yolov3/pruned.txt</txtprotopath>
+<caffemodelpath>models/mobilenet-v2/yolov3_lite_deploy_iter_120000.caffemodel</caffemodelpath>
+<protopath>models/mobilenet-v2/yolov3_lite_deploy.prototxt</protopath>
+<prunedcaffemodelpath>models/mobilenet-v2/pruned.caffemodel</prunedcaffemodelpath>
+<prunedprotopath>models/mobilenet-v2/pruned.prototxt</prunedprotopath>
+<txtprotopath>models/mobilenet-v2/pruned.txt</txtprotopath>
