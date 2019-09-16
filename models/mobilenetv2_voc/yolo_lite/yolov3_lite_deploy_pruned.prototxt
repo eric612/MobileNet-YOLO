@@ -104,7 +104,7 @@ layer {
   bottom: "conv2"
   top: "conv3"
   convolution_param {
-    num_output: 16
+    num_output: 15
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -141,7 +141,7 @@ layer {
   bottom: "conv3"
   top: "conv4"
   convolution_param {
-    num_output: 92
+    num_output: 87
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2172,7 +2172,7 @@ layer {
   bottom: "conv50"
   top: "conv51"
   convolution_param {
-    num_output: 288
+    num_output: 272
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2209,7 +2209,7 @@ layer {
   bottom: "conv51"
   top: "conv52"
   convolution_param {
-    num_output: 960
+    num_output: 896
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2257,11 +2257,11 @@ layer {
     decay_mult: 1
   }
   convolution_param {
-    num_output: 960
+    num_output: 896
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 960
+    group: 896
     engine: CAFFE
     weight_filler {
       type: "msra"

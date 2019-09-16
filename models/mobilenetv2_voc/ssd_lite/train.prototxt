@@ -2803,12 +2803,140 @@ layer {
   bottom: "ssd/conv8"
   top: "ssd/conv8"
 }
-#==========SSD layers===========
 layer {
-  name: "conv40/expand_mbox_loc"
+  name: "ssd/conv9"
   type: "Convolution"
   bottom: "conv40"
-  top: "conv40/expand_mbox_loc"
+  top: "ssd/conv9"
+
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "ssd/conv9/bn"
+  type: "BatchNorm"
+  bottom: "ssd/conv9"
+  top: "ssd/conv9"
+  batch_norm_param {
+    eps: 9.999999747378752e-06
+  }
+
+}
+layer {
+  name: "ssd/conv9/scale"
+  type: "Scale"
+  bottom: "ssd/conv9"
+  top: "ssd/conv9"
+  scale_param {
+    bias_term: true
+  }
+
+}
+layer {
+  name: "ssd/conv9/relu"
+  type: "ReLU"
+  bottom: "ssd/conv9"
+  top: "ssd/conv9"
+}
+layer {
+  name: "ssd/conv10/depthwise"
+  type: "DepthwiseConvolution"
+  bottom: "ssd/conv9"
+  top: "ssd/conv10/depthwise"
+
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    group: 256
+    #engine: CAFFE
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+
+layer {
+  name: "ssd/conv10/depthwise/bn"
+  type: "BatchNorm"
+  bottom: "ssd/conv10/depthwise"
+  top: "ssd/conv10/depthwise"
+  batch_norm_param {
+    eps: 9.999999747378752e-06
+  }
+
+}
+layer {
+  name: "ssd/conv10/depthwise/scale"
+  type: "Scale"
+  bottom: "ssd/conv10/depthwise"
+  top: "ssd/conv10/depthwise"
+  scale_param {
+    bias_term: true
+  }
+
+}
+layer {
+  name: "ssd/conv10/depthwise/relu"
+  type: "ReLU"
+  bottom: "ssd/conv10/depthwise"
+  top: "ssd/conv10/depthwise"
+}
+layer {
+  name: "ssd/conv10"
+  type: "Convolution"
+  bottom: "ssd/conv10/depthwise"
+  top: "ssd/conv10"
+
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "ssd/conv10/bn"
+  type: "BatchNorm"
+  bottom: "ssd/conv10"
+  top: "ssd/conv10"
+  batch_norm_param {
+    eps: 9.999999747378752e-06
+  }
+
+}
+layer {
+  name: "ssd/conv10/scale"
+  type: "Scale"
+  bottom: "ssd/conv10"
+  top: "ssd/conv10"
+  scale_param {
+    bias_term: true
+  }
+
+}
+layer {
+  name: "ssd/conv10/relu"
+  type: "ReLU"
+  bottom: "ssd/conv10"
+  top: "ssd/conv10"
+}
+#==========SSD layers===========
+layer {
+  name: "ssd/conv10/expand_mbox_loc"
+  type: "Convolution"
+  bottom: "ssd/conv10"
+  top: "ssd/conv10/expand_mbox_loc"
 
   convolution_param {
     num_output: 24
@@ -2823,10 +2951,10 @@ layer {
   }
 }
 layer {
-  name: "conv40/expand_mbox_loc_perm"
+  name: "ssd/conv10/expand_mbox_loc_perm"
   type: "Permute"
-  bottom: "conv40/expand_mbox_loc"
-  top: "conv40/expand_mbox_loc_perm"
+  bottom: "ssd/conv10/expand_mbox_loc"
+  top: "ssd/conv10/expand_mbox_loc_perm"
   permute_param {
     order: 0
     order: 2
@@ -2835,19 +2963,19 @@ layer {
   }
 }
 layer {
-  name: "conv40/expand_mbox_loc_flat"
+  name: "ssd/conv10/expand_mbox_loc_flat"
   type: "Flatten"
-  bottom: "conv40/expand_mbox_loc_perm"
-  top: "conv40/expand_mbox_loc_flat"
+  bottom: "ssd/conv10/expand_mbox_loc_perm"
+  top: "ssd/conv10/expand_mbox_loc_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "conv40/expand_mbox_conf"
+  name: "ssd/conv10/expand_mbox_conf"
   type: "Convolution"
-  bottom: "conv40"
-  top: "conv_13/expand_mbox_conf"
+  bottom: "ssd/conv10"
+  top: "ssd/conv10/expand_mbox_conf"
 
   convolution_param {
     num_output: 126
@@ -2862,10 +2990,10 @@ layer {
   }
 }
 layer {
-  name: "conv40/expand_mbox_conf_perm"
+  name: "ssd/conv10/expand_mbox_conf_perm"
   type: "Permute"
-  bottom: "conv_13/expand_mbox_conf"
-  top: "conv40/expand_mbox_conf_perm"
+  bottom: "ssd/conv10/expand_mbox_conf"
+  top: "ssd/conv10/expand_mbox_conf_perm"
   permute_param {
     order: 0
     order: 2
@@ -2874,20 +3002,20 @@ layer {
   }
 }
 layer {
-  name: "conv40/expand_mbox_conf_flat"
+  name: "ssd/conv10/expand_mbox_conf_flat"
   type: "Flatten"
-  bottom: "conv40/expand_mbox_conf_perm"
-  top: "conv40/expand_mbox_conf_flat"
+  bottom: "ssd/conv10/expand_mbox_conf_perm"
+  top: "ssd/conv10/expand_mbox_conf_flat"
   flatten_param {
     axis: 1
   }
 }
 layer {
-  name: "conv40/expand_mbox_priorbox"
+  name: "ssd/conv10/expand_mbox_priorbox"
   type: "PriorBox"
-  bottom: "conv40"
+  bottom: "ssd/conv10"
   bottom: "data"
-  top: "conv40/expand_mbox_priorbox"
+  top: "ssd/conv10/expand_mbox_priorbox"
   prior_box_param {
     min_size: 45.0
     max_size: 105.0
@@ -3398,7 +3526,7 @@ layer {
 layer {
   name: "mbox_loc"
   type: "Concat"
-  bottom: "conv40/expand_mbox_loc_flat"
+  bottom: "ssd/conv10/expand_mbox_loc_flat"
   bottom: "conv52_mbox_loc_flat"
   bottom: "ssd/conv2_mbox_loc_flat"
   bottom: "ssd/conv4_mbox_loc_flat"
@@ -3412,7 +3540,7 @@ layer {
 layer {
   name: "mbox_conf"
   type: "Concat"
-  bottom: "conv40/expand_mbox_conf_flat"
+  bottom: "ssd/conv10/expand_mbox_conf_flat"
   bottom: "conv52_mbox_conf_flat"
   bottom: "ssd/conv2_mbox_conf_flat"
   bottom: "ssd/conv4_mbox_conf_flat"
@@ -3426,7 +3554,7 @@ layer {
 layer {
   name: "mbox_priorbox"
   type: "Concat"
-  bottom: "conv40/expand_mbox_priorbox"
+  bottom: "ssd/conv10/expand_mbox_priorbox"
   bottom: "conv52_mbox_priorbox"
   bottom: "ssd/conv2_mbox_priorbox"
   bottom: "ssd/conv4_mbox_priorbox"

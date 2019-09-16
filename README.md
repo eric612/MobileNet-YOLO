@@ -31,7 +31,7 @@ network|mAP|resolution|macc|param|
 MobileNetV2-YOLOv3|0.707|352|1.22G|4.05M|
 [Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|
 [Mobilenet-SSD](https://github.com/chuanqi305/MobileNet-SSD)|0.68|300|1.21G|5.43M|
-[MobilenetV2-SSD-lite](models/mobilenetv2_voc/ssd_lite)|0.702|336|0.977G|[4.93M](https://drive.google.com/open?id=1Lb9LJOrl5fYZ7Mp65beBQ44d6cH_vlbv)|
+[MobilenetV2-SSD-lite](models/mobilenetv2_voc/ssd_lite)|0.709|336|1.10G|[5.2M](https://drive.google.com/open?id=1Lb9LJOrl5fYZ7Mp65beBQ44d6cH_vlbv)|
 
 * MobileNetV2-YOLOv3 and MobilenetV2-SSD-lite were not offcial model
 
