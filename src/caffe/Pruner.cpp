@@ -4,6 +4,8 @@
 #include <fstream>
 #include "caffe/util/math_functions.hpp"
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 using namespace caffe;
 using namespace std;
 
@@ -103,6 +105,7 @@ void Pruner::read_XML(const string xml_path){
 				if (*it3 == it->name()){
 					conv_temp.first = *it3;
 					conv_temp.second.first = ratio;
+          //cout << ratio << "----" << endl;
 					conv_temp.second.second = it->blobs(0).shape().dim(0);
 					conv_filters_temps.push_back(conv_temp);
 					convNeedRewriteOnPrototxt.push_back(convParam(it->name(), param(ratio, it->blobs(0).shape().dim(0))));
@@ -132,6 +135,7 @@ void Pruner::import(){
 			if (it->bottom_size() != 0){
 				for (int i = 0; i < it->bottom_size(); i++){
 					if (prunedConvName == it->bottom(i)){
+            
 						if (it->type() == "Convolution"){
 							if (prunedConvName == it->bottom(0)){
 								b1.push_back(convParam(it->name(), param(ratio, it->blobs(0).shape().dim(0))));
@@ -139,7 +143,7 @@ void Pruner::import(){
 							}
 						}
 						else if (it->type() == "ConvolutionDepthwise"|| it->type() == "DepthwiseConvolution"){
-
+              cout<<it->name()<<"\n";
 							if (prunedConvName == it->bottom(0)){
 								b1.push_back(convParam(it->name(), param(ratio, it->blobs(0).shape().dim(0))));
 								convNeedRewriteOnPrototxt.push_back(convParam(it->name(), param(ratio, it->blobs(0).shape().dim(0))));
@@ -408,7 +412,7 @@ void Pruner::pruningBottomByratio(const precord r, vector<int>* pchannelNeedPrun
 					break;
 				}
 				else if (it->type() == "ConvolutionDepthwise" || it->type() == "DepthwiseConvolution"){
-
+          cout<<it->name()<<"\n";
 					this->filterPruning(it, pchannelNeedPrune);
 					it++;
 
@@ -677,9 +681,9 @@ pair<vector<string>, vector<string>> Pruner::eltwiseTravel(const string eltwiseN
 		if (it->name() == eltwiseName && it->type() == "Eltwise"){
 			break;
 		}
-		else if (it->name() == eltwiseName && it->type() != "Eltwise")
+		else if (it->name() == eltwiseName && (it->type() != "Eltwise" && it->type() != "Split"))
 		{
-			cout << eltwiseName << " is not an eltwise layer" << endl;
+			cout << eltwiseName << " is not an eltwise or split layer" <<endl;
 			system("pause");
 		}
 	}
@@ -706,10 +710,13 @@ vector<string> Pruner::findUpChannels(const vector<string>* eltwiseLayers, const
 		auto it = layer->begin();
 		while (it->name() != splitLayers->at(k))it++;
 		if (it->top_size() != 0){
+      
 			for (int i = 0; i < it->top_size(); i++){
 				string temp = hasBottom(it->top(i));
+        
 				if (temp != ""){
 					Channels.push_back(temp);
+          
 				}
 			}
 		}
@@ -721,8 +728,11 @@ vector<string> Pruner::findUpFilters(const vector<string>* eltwiseLayers, const 
 	vector<string> Filters;
 	for (string::size_type k = 0; k < eltwiseLayers->size(); k++){
 		auto it = layer->begin();
+    
 		while (it->name() != eltwiseLayers->at(k))it++;
 		if (it->bottom_size() != 0){
+      if ( it->type() == "Split" ) 
+        continue;
 			for (int i = 0; i < it->bottom_size(); i++){
 				if (it->bottom(i).find("split") != string::npos){
 					continue;
@@ -815,10 +825,12 @@ string Pruner::findUp(const string layerName, vector<string>* eltwiseLayers, vec
 		}
 	}
 	else if (it->type() == "Split"){
+    //cout <<it->name()<<"--------------\n";
 		splitLayers->push_back(it->name());
 		return "stop";
 	}
 	else if (it->type() == "Convolution"){
+    
 		return it->name();
 	}
 }

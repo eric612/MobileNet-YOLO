@@ -6,6 +6,7 @@ The bias_term error was cause from dismatch caffemodel , please make sure your m
 
 * yolov3_lite_deploy.prototxt : not merged
 
+* yolov3_lite_deploy_pruned.prototxt : not merged and pruned channel
 
 See issue :
 
@@ -18,6 +19,8 @@ https://github.com/eric612/MobileNet-YOLO/issues/50
 [yolov3_m2](https://drive.google.com/open?id=18SL6tnGCUap6LCfqX2sT11cZnF6ECZ_j)
 
 [yolov3_lite_deploy](https://drive.google.com/open?id=1FIoG2HSSuVQ-c4JOVZFvCTpp-CPPzJlJ)
+
+[yolov3_lite_deploy_pruned](https://drive.google.com/open?id=16EUhq8c_wlda9JPybGILfSDs5nQqII3g)
 
 # Pre-trained ilsvrc2012 weights
 
