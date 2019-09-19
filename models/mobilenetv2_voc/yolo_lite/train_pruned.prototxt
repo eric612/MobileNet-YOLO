@@ -2839,18 +2839,18 @@ layer {
     use_logic_gradient : false
 	#iou_loss : GIOU
     #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    biases: 18
-    biases: 34
-    biases: 45
-    biases: 84
-    biases: 65
-    biases: 181
-    biases: 141
-    biases: 111
-    biases: 129
-    biases: 241
-    biases: 254
-    biases: 254
+    biases: 20
+    biases: 37
+    biases: 49
+    biases: 94
+    biases: 73
+    biases: 201
+    biases: 143
+    biases: 265
+    biases: 153
+    biases: 121
+    biases: 280
+    biases: 279
 	
     mask:3
     mask:4
@@ -2877,18 +2877,18 @@ layer {
     use_logic_gradient : false
 	#iou_loss : GIOU
     #10,14,  23,27,  37,58,  81,82,  135,169,  344,319
-    biases: 18
-    biases: 34
-    biases: 45
-    biases: 84
-    biases: 65
-    biases: 181
-    biases: 141
-    biases: 111
-    biases: 129
-    biases: 241
-    biases: 254
-    biases: 254
+    biases: 20
+    biases: 37
+    biases: 49
+    biases: 94
+    biases: 73
+    biases: 201
+    biases: 143
+    biases: 265
+    biases: 153
+    biases: 121
+    biases: 280
+    biases: 279
 	
     mask:0
     mask:1
