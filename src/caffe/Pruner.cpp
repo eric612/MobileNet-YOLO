@@ -576,6 +576,7 @@ int  Pruner::writePrototxt(const string prototxt1, const string prototxt2){
 	bool final_flag = false;
 	bool nor_flag = false;
 	int prunedNum;
+  bool overwrite = false;   
 	while (getline(fin_in, str)){
 		if (str.find("prob") != -1){
 			final_flag = true;
@@ -605,10 +606,22 @@ int  Pruner::writePrototxt(const string prototxt1, const string prototxt2){
 			else{
 				fin_out << "    num_output: " + to_string(prunedNum) << '\n';
 				nor_flag = false;
+        overwrite = true;   
 			}
 		}
 		else{
-			fin_out << str << '\n';
+      if(str.find("group:") != -1 and overwrite)
+      {
+        std::string previous = str.substr(0, str.find(":")+2);
+        std::string group_num = str.substr(str.find(":")+2);
+        int group_num_value = stoi(group_num);
+        if(group_num_value > prunedNum)
+        {
+          str = previous + to_string(prunedNum);
+        }
+        overwrite = false;
+      }
+      fin_out << str << '\n';
 		}
 	}
 	return 1;
