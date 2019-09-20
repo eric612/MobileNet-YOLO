@@ -20,7 +20,7 @@ https://github.com/eric612/MobileNet-YOLO/issues/50
 
 [yolov3_lite_deploy](https://drive.google.com/open?id=1FIoG2HSSuVQ-c4JOVZFvCTpp-CPPzJlJ)
 
-[yolov3_lite_deploy_pruned](https://drive.google.com/open?id=16EUhq8c_wlda9JPybGILfSDs5nQqII3g)
+[yolov3_lite_deploy_pruned](https://drive.google.com/open?id=1w3j-a7pFiYiTVTtDNRTWGWI84MQ3JewG)
 
 # Pre-trained ilsvrc2012 weights
 

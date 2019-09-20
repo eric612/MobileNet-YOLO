@@ -29,7 +29,7 @@ Use this [tool](https://dgschwend.github.io/netscope/quickstart.html) to compare
 network|mAP|resolution|macc|param|pruned
 :---:|:---:|:---:|:---:|:---:|:---:|
 MobileNetV2-YOLOv3|0.707|352|1.22G|4.05M|N|
-MobileNetV2-YOLOv3|0.693|352|1.01G|2.88M|Y|
+MobileNetV2-YOLOv3|0.702|352|1.01G|2.88M|Y|
 [Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|N|
 [Mobilenet-SSD](https://github.com/chuanqi305/MobileNet-SSD)|0.68|300|1.21G|5.43M|N|
 [MobilenetV2-SSD-lite](models/mobilenetv2_voc/ssd_lite)|0.709|336|1.10G|[5.2M](https://drive.google.com/open?id=1Lb9LJOrl5fYZ7Mp65beBQ44d6cH_vlbv)|N|
