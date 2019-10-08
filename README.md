@@ -1,15 +1,4 @@
-CODE UPDATED FOR OPENCV 3
-
-# MobileNet-YOLO Caffe
-
-This project also support ssd framework , and here lists the difference from ssd caffe
-
-* Multi-scale training , you can select input resoluton when inference
-* Modified from last update caffe (2018)
-* Support multi-task model 
-* [pelee + driverable map](data/bdd100k)
- 
-## MobileNet-YOLO 
+## MobileNet-YOLO Caffe
 
 A caffe implementation of MobileNet-YOLO detection network , train on 07+12 , test on VOC2007
 
@@ -21,6 +10,18 @@ MobileNetV2-YOLOv3|70.7|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[grap
 * the [benchmark](/benchmark) of cpu performance on Tencent/ncnn  framework
 * the deploy model was made by [merge_bn.py](https://github.com/Robert-JunWang/Pelee/blob/master/tools/gen_merged_model.py), set eps = your prototxt batchnorm eps
 * old models please see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
+
+This project also support ssd framework , and here lists the difference from ssd caffe
+
+* Multi-scale training , you can select input resoluton when inference
+* Modified from last update caffe (2018)
+* Support multi-task model 
+* [pelee + driverable map](data/bdd100k)
+
+## Update
+
+1. CODE UPDATED FOR OPENCV 3
+2. Channel pruning
 
 ### CNN Analyzer
 
