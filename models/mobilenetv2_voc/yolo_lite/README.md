@@ -11,7 +11,7 @@ The bias_term error was cause from dismatch caffemodel , please make sure your m
 
 * yolov3_lite_deploy.prototxt : not merged
 
-* yolov3_lite_deploy_pruned.prototxt : not merged and pruned channel
+* yolov3_lite_deploy_pruned.prototxt : not merged and channel pruned
 
 See issue :
 
