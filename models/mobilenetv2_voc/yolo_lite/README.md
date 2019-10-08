@@ -1,5 +1,10 @@
 ## Deploy model
 
+network|mAP|resolution|macc|param|pruned
+:---:|:---:|:---:|:---:|:---:|:---:|
+MobileNetV2-YOLOv3|0.707|352|1.22G|4.05M|N|
+MobileNetV2-YOLOv3|0.702|352|1.01G|2.88M|Y|
+
 The bias_term error was cause from dismatch caffemodel , please make sure your model was merged batchnorm or not 
 
 * yolov3_m2.prototxt : merged 
