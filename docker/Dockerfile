@@ -270,7 +270,9 @@ WORKDIR $MobileNetYOLO_ROOT
 RUN cd / && \
     git clone https://github.com/eric612/MobileNet-YOLO.git  && \
     sed -i 's/set(Caffe_known_gpu_archs "20 21(20) 30 35 50 60 61")/set(Caffe_known_gpu_archs "30 35 50 60 61 75")/g' cmake/Cuda.cmake && \
-    sed -i 's/set(__cuda_arch_bin "60 61")/set(__cuda_arch_bin "75")/g' cmake/Cuda.cmake && \ 
+    sed -i 's/set(__cuda_arch_bin "60 61")/set(__cuda_arch_bin "75")/g' cmake/Cuda.cmake && \
+    sed -i 's/SET(CMAKE_C_COMPILER gcc-5)/# SET(CMAKE_C_COMPILER gcc-5)/g' CMakeLists.txt && \
+    sed -i 's/SET(CMAKE_CXX_COMPILER g++-5)/# SET(CMAKE_CXX_COMPILER g++-5)/g' CMakeLists.txt && \
     mkdir build && cd build && \
     cmake -DUSE_CUDNN=1 .. && \
     make -j"$(nproc)"   
