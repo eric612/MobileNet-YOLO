@@ -24,9 +24,10 @@ SHELL ["/bin/bash", "-c"]
 #         cd .. 
 
 # Add CUDA libs paths
-RUN sed -i s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g /etc/apt/sources.list \
-        && export DEBIAN_FRONTEND=noninteractive \
-        && apt-get clean && apt-get update && \
+#RUN sed -i s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g /etc/apt/sources.list \
+RUN export DEBIAN_FRONTEND=noninteractive \
+#         && apt-get clean && apt-get update && \
+        && apt-get update && \
         CUDA_PATH=(/usr/local/cuda-*) && \
     CUDA=`basename $CUDA_PATH` && \
     echo "$CUDA_PATH/compat" >> /etc/ld.so.conf.d/${CUDA/./-}.conf && \
@@ -100,7 +101,7 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g /etc/apt/sour
     wget https://bootstrap.pypa.io/get-pip.py --progress=bar:force:noscroll && \
     python${PYTHON_VERSION} get-pip.py && \
     rm get-pip.py && \
-    pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \ 
+#     pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \ 
     pip${PYTHON_VERSION} install numpy && \
 
 # install CMake
