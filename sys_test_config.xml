@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 0:rate  1:size-->
+<PruningMode>
+	<mode>0</mode>
+</PruningMode>
+
+
+<!-- 8:norm 11:L1  12:L2  16:VARIANCE-->
+<ConvCalculateMode>
+	<mode>11</mode>
+</ConvCalculateMode>
+
+<!-- Do not use filterpruning on a conv layer which before split layer 
+eg:: shotcut? 
+ --> 
+
+<filterpruning>
+
+<!--<layer name="conv0" cut="0.05"></layer> 
+<layer name="conv1" cut="0.05"></layer>--> 
+<layer name="conv3" cut="0.1"></layer>
+<layer name="conv4" cut="0.1"></layer>
+<layer name="conv7" cut="0.1"></layer>
+<layer name="conv10" cut="0.1"></layer>
+<layer name="conv13" cut="0.1"></layer>
+<layer name="conv16" cut="0.1"></layer>
+<layer name="conv19" cut="0.1"></layer>
+<layer name="conv22" cut="0.1"></layer>
+<layer name="conv25" cut="0.15"></layer>
+<layer name="conv28" cut="0.15"></layer>
+<layer name="conv31" cut="0.15"></layer>
+<layer name="conv34" cut="0.2"></layer>
+<layer name="conv37" cut="0.2"></layer>
+<!--<layer name="conv40" cut="0.1"></layer>
+<layer name="conv41" cut="0.1"></layer>--> 
+<layer name="conv43" cut="0.2"></layer>
+<layer name="conv46" cut="0.2"></layer>
+<layer name="conv49" cut="0.2"></layer>
+<layer name="conv51" cut="0.3"></layer>
+<layer name="conv52" cut="0.5"></layer>
+<!--<layer name="upsample" cut="0.15"></layer>
+<layer name="yolo/conv2/dw" cut="0.1"></layer>
+<layer name="yolo/conv2" cut="0.15"></layer>
+<layer name="yolo/conv3/dw" cut="0.15"></layer>--> 
+
+
+</filterpruning>
+
+<!-- channelpruning ONLY can be used on convolution layer which subsequent to Eltwise layer 
+	 Supported with split layer ... Eric
+--> 
+<eltwise>
+<!--<layer name="yolo/conv1_yolo/conv1/relu_0_split" cut="0.15"></layer>-->
+<layer name="add1" cut="0.1"></layer>
+<layer name="add8" cut="0.1"></layer>
+<layer name="add10" cut="0.2"></layer>
+</eltwise>
+
+<caffemodelpath>models/mobilenet-v2/yolov3_lite_deploy_iter_120000.caffemodel</caffemodelpath>
+<protopath>models/mobilenet-v2/deploy.prototxt</protopath>
+<prunedcaffemodelpath>models/mobilenet-v2/pruned.caffemodel</prunedcaffemodelpath>
+<prunedprotopath>models/mobilenet-v2/pruned.prototxt</prunedprotopath>
+<txtprotopath>models/mobilenet-v2/pruned.txt</txtprotopath>

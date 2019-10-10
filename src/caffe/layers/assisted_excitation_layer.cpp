@@ -87,7 +87,7 @@ void AssistedExcitationLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bot
   //cv::Mat img(width, height, CV_8UC1);
   //img = cv::Scalar(0);
 
-  float alpha =  cos ((this->iter_ / (float) this->max_iter_)*M_PI/2.0f);
+  float alpha =  BOUND(cos ((this->iter_ / (float) (this->max_iter_*0.75))*M_PI/2.0f),0,1.0f);
   //LOG(INFO) << alpha ;
   for (int b = 0; b < bottom[0]->num(); b++) {
     caffe_set(bottom[2]->count(), Dtype(0), mask_data);

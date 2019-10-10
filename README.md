@@ -1,15 +1,4 @@
-CODE UPDATED FOR OPENCV 3
-
-# MobileNet-YOLO Caffe
-
-This project also support ssd framework , and here lists the difference from ssd caffe
-
-* Multi-scale training , you can select input resoluton when inference
-* Modified from last update caffe (2018)
-* Support multi-task model 
-* [pelee + driverable map](data/bdd100k)
- 
-## MobileNet-YOLO 
+## MobileNet-YOLO Caffe
 
 A caffe implementation of MobileNet-YOLO detection network , train on 07+12 , test on VOC2007
 
@@ -22,15 +11,31 @@ MobileNetV2-YOLOv3|70.7|352|[caffemodel](models/mobilenetv2_voc/yolo_lite)|[grap
 * the deploy model was made by [merge_bn.py](https://github.com/Robert-JunWang/Pelee/blob/master/tools/gen_merged_model.py), set eps = your prototxt batchnorm eps
 * old models please see [here](https://github.com/eric612/MobileNet-YOLO/tree/83827a038efdd891f4d01bf711e520bf2539c036)
 
+This project also support ssd framework , and here lists the difference from ssd caffe
+
+* Multi-scale training , you can select input resoluton when inference
+* Modified from last update caffe (2018)
+* Support multi-task model 
+* [pelee + driverable map](data/bdd100k)
+
+## Update
+
+1. CODE UPDATED FOR OPENCV 3
+2. Channel pruning
+
 ### CNN Analyzer
 
 Use this [tool](https://dgschwend.github.io/netscope/quickstart.html) to compare macc and param , train on 07+12 , test on VOC2007
 
-network|mAP|resolution|macc|param|
-:---:|:---:|:---:|:---:|:---:|
-MobileNetV2-YOLOv3|0.707|352|1.22G|4.05M|
-[Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|
-[Mobilenet-SSD](https://github.com/chuanqi305/MobileNet-SSD)|0.68|300|1.21G|5.43M|
+network|mAP|resolution|macc|param|pruned
+:---:|:---:|:---:|:---:|:---:|:---:|
+MobileNetV2-YOLOv3|0.707|352|1.22G|4.05M|N|
+MobileNetV2-YOLOv3|0.702|352|1.01G|2.88M|Y|
+[Pelee-SSD](https://github.com/Robert-JunWang/Pelee)|0.709|304|1.2G|5.42M|N|
+[Mobilenet-SSD](https://github.com/chuanqi305/MobileNet-SSD)|0.68|300|1.21G|5.43M|N|
+[MobilenetV2-SSD-lite](models/mobilenetv2_voc/ssd_lite)|0.709|336|1.10G|[5.2M](https://drive.google.com/open?id=1Lb9LJOrl5fYZ7Mp65beBQ44d6cH_vlbv)|N|
+
+* MobileNetV2-YOLOv3 and MobilenetV2-SSD-lite were not offcial model
 
 ### Coverted TensorRT models
 
@@ -98,6 +103,8 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 > https://github.com/Robert-JunWang/Pelee
 
 > https://github.com/hujie-frank/SENet
+
+> https://github.com/lusenkong/Caffemodel_Compress
 
 Cudnn convolution
 

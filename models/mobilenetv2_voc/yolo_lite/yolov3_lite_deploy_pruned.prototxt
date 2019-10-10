@@ -1,62 +1,15 @@
 name: "MobileNetV2"
 layer {
   name: "data"
-  type: "AnnotatedData"
+  type: "Input"
   top: "data"
-  top: "label"
-  include {
-    phase: TRAIN
-  }
-  
-  transform_param {
-    scale: 0.007843
-    mirror: true
-    mean_value: 127.5
-    mean_value: 127.5
-    mean_value: 127.5
-
-
-    resize_param {
-      prob: 1
-      resize_mode: WARP
-      height: 336
-      width: 336
-      interp_mode: LINEAR
-      interp_mode: AREA
-      interp_mode: NEAREST
-      interp_mode: CUBIC
-      interp_mode: LANCZOS4
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 352
+      dim: 352
     }
-
-    emit_constraint {
-      emit_type: CENTER
-    }
-    distort_param {
-      brightness_prob: 0.5
-      brightness_delta: 32.0
-      contrast_prob: 0.5
-      contrast_lower: 0.5
-      contrast_upper: 1.5
-      hue_prob: 0.5
-      hue_delta: 18.0
-      saturation_prob: 0.5
-      saturation_lower: 0.5
-      saturation_upper: 1.5
-      random_order_prob: 0.0
-    }
-    expand_param {
-      prob: 0.5
-      max_expand_ratio: 4.0
-    }
-  }
-  data_param {
-    source: "examples/VOC0712/VOC0712_trainval_lmdb"
-    batch_size: 8
-    backend: LMDB
-  }
-  annotated_data_param {
-	yolo_data_jitter : 0.7
-    label_map_file: "data/VOC0712/labelmap_voc.prototxt"
   }
 }
 layer {
@@ -151,7 +104,7 @@ layer {
   bottom: "conv2"
   top: "conv3"
   convolution_param {
-    num_output: 16
+    num_output: 15
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -188,7 +141,7 @@ layer {
   bottom: "conv3"
   top: "conv4"
   convolution_param {
-    num_output: 96
+    num_output: 87
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -231,11 +184,11 @@ layer {
   bottom: "conv4"
   top: "conv5"
   convolution_param {
-    num_output: 96
+    num_output: 87
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 96
+    group: 87
     stride: 2
     weight_filler {
       type: "msra"
@@ -274,7 +227,7 @@ layer {
   bottom: "conv5"
   top: "conv6"
   convolution_param {
-    num_output: 24
+    num_output: 22
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -311,7 +264,7 @@ layer {
   bottom: "conv6"
   top: "conv7"
   convolution_param {
-    num_output: 144
+    num_output: 130
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -354,11 +307,11 @@ layer {
   bottom: "conv7"
   top: "conv8"
   convolution_param {
-    num_output: 144
+    num_output: 130
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 144
+    group: 130
     stride: 1
     weight_filler {
       type: "msra"
@@ -397,7 +350,7 @@ layer {
   bottom: "conv8"
   top: "conv9"
   convolution_param {
-    num_output: 24
+    num_output: 22
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -444,7 +397,7 @@ layer {
   bottom: "add1"
   top: "conv10"
   convolution_param {
-    num_output: 144
+    num_output: 130
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -487,11 +440,11 @@ layer {
   bottom: "conv10"
   top: "conv11"
   convolution_param {
-    num_output: 144
+    num_output: 130
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 144
+    group: 130
     stride: 2
     weight_filler {
       type: "msra"
@@ -567,7 +520,7 @@ layer {
   bottom: "conv12"
   top: "conv13"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -610,11 +563,11 @@ layer {
   bottom: "conv13"
   top: "conv14"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 192
+    group: 173
     stride: 1
     weight_filler {
       type: "msra"
@@ -700,7 +653,7 @@ layer {
   bottom: "add2"
   top: "conv16"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -743,11 +696,11 @@ layer {
   bottom: "conv16"
   top: "conv17"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 192
+    group: 173
     stride: 1
     weight_filler {
       type: "msra"
@@ -833,7 +786,7 @@ layer {
   bottom: "add3"
   top: "conv19"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -876,11 +829,11 @@ layer {
   bottom: "conv19"
   top: "conv20"
   convolution_param {
-    num_output: 192
+    num_output: 173
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 192
+    group: 173
     stride: 2
     weight_filler {
       type: "msra"
@@ -956,7 +909,7 @@ layer {
   bottom: "conv21"
   top: "conv22"
   convolution_param {
-    num_output: 384
+    num_output: 346
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -999,11 +952,11 @@ layer {
   bottom: "conv22"
   top: "conv23"
   convolution_param {
-    num_output: 384
+    num_output: 346
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 384
+    group: 346
     stride: 1
     weight_filler {
       type: "msra"
@@ -1089,7 +1042,7 @@ layer {
   bottom: "add4"
   top: "conv25"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1132,11 +1085,11 @@ layer {
   bottom: "conv25"
   top: "conv26"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 384
+    group: 327
     stride: 1
     weight_filler {
       type: "msra"
@@ -1222,7 +1175,7 @@ layer {
   bottom: "add5"
   top: "conv28"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1265,11 +1218,11 @@ layer {
   bottom: "conv28"
   top: "conv29"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 384
+    group: 327
     stride: 1
     weight_filler {
       type: "msra"
@@ -1355,7 +1308,7 @@ layer {
   bottom: "add6"
   top: "conv31"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1398,11 +1351,11 @@ layer {
   bottom: "conv31"
   top: "conv32"
   convolution_param {
-    num_output: 384
+    num_output: 327
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 384
+    group: 327
     stride: 1
     weight_filler {
       type: "msra"
@@ -1441,7 +1394,7 @@ layer {
   bottom: "conv32"
   top: "conv33"
   convolution_param {
-    num_output: 96
+    num_output: 87
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1478,7 +1431,7 @@ layer {
   bottom: "conv33"
   top: "conv34"
   convolution_param {
-    num_output: 576
+    num_output: 461
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1521,11 +1474,11 @@ layer {
   bottom: "conv34"
   top: "conv35"
   convolution_param {
-    num_output: 576
+    num_output: 461
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 576
+    group: 461
     stride: 1
     weight_filler {
       type: "msra"
@@ -1564,7 +1517,7 @@ layer {
   bottom: "conv35"
   top: "conv36"
   convolution_param {
-    num_output: 96
+    num_output: 87
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1611,7 +1564,7 @@ layer {
   bottom: "add7"
   top: "conv37"
   convolution_param {
-    num_output: 576
+    num_output: 461
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1654,11 +1607,11 @@ layer {
   bottom: "conv37"
   top: "conv38"
   convolution_param {
-    num_output: 576
+    num_output: 461
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 576
+    group: 461
     stride: 1
     weight_filler {
       type: "msra"
@@ -1697,7 +1650,7 @@ layer {
   bottom: "conv38"
   top: "conv39"
   convolution_param {
-    num_output: 96
+    num_output: 87
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1830,7 +1783,7 @@ layer {
   bottom: "conv41"
   top: "conv42"
   convolution_param {
-    num_output: 160
+    num_output: 128
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1867,7 +1820,7 @@ layer {
   bottom: "conv42"
   top: "conv43"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -1910,11 +1863,11 @@ layer {
   bottom: "conv43"
   top: "conv44"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 960
+    group: 768
     stride: 1
     weight_filler {
       type: "msra"
@@ -1953,7 +1906,7 @@ layer {
   bottom: "conv44"
   top: "conv45"
   convolution_param {
-    num_output: 160
+    num_output: 128
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2000,7 +1953,7 @@ layer {
   bottom: "add9"
   top: "conv46"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2043,11 +1996,11 @@ layer {
   bottom: "conv46"
   top: "conv47"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 960
+    group: 768
     stride: 1
     weight_filler {
       type: "msra"
@@ -2086,7 +2039,7 @@ layer {
   bottom: "conv47"
   top: "conv48"
   convolution_param {
-    num_output: 160
+    num_output: 128
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2133,7 +2086,7 @@ layer {
   bottom: "add10"
   top: "conv49"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2176,11 +2129,11 @@ layer {
   bottom: "conv49"
   top: "conv50"
   convolution_param {
-    num_output: 960
+    num_output: 768
     bias_term: false
     pad: 1
     kernel_size: 3
-    group: 960
+    group: 768
     stride: 1
     weight_filler {
       type: "msra"
@@ -2219,7 +2172,7 @@ layer {
   bottom: "conv50"
   top: "conv51"
   convolution_param {
-    num_output: 320
+    num_output: 224
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2256,7 +2209,7 @@ layer {
   bottom: "conv51"
   top: "conv52"
   convolution_param {
-    num_output: 1280
+    num_output: 640
     bias_term: false
     pad: 0
     kernel_size: 1
@@ -2293,101 +2246,86 @@ layer {
   bottom: "conv52"
   top: "conv52"
 }
+
 layer {
-  name: "ssd/conv1"
-  type: "Convolution"
+  name: "yolo/conv1/dw"
+  type: "DepthwiseConvolution"
   bottom: "conv52"
-  top: "ssd/conv1"
-
+  top: "yolo/conv1/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
   convolution_param {
-    num_output: 256
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv1/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv1"
-  top: "ssd/conv1"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv1/scale"
-  type: "Scale"
-  bottom: "ssd/conv1"
-  top: "ssd/conv1"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv1/relu"
-  type: "ReLU"
-  bottom: "ssd/conv1"
-  top: "ssd/conv1"
-}
-layer {
-  name: "ssd/conv2/depthwise"
-  type: "DepthwiseConvolution"
-  bottom: "ssd/conv1"
-  top: "ssd/conv2/depthwise"
-
-  convolution_param {
-    num_output: 256
+    num_output: 640
     bias_term: false
     pad: 1
     kernel_size: 3
-    stride: 2
-    group: 256
-    #engine: CAFFE
+    group: 640
+    engine: CAFFE
     weight_filler {
       type: "msra"
     }
   }
 }
-
 layer {
-  name: "ssd/conv2/depthwise/bn"
+  name: "yolo/conv1/dw/bn"
   type: "BatchNorm"
-  bottom: "ssd/conv2/depthwise"
-  top: "ssd/conv2/depthwise"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
+  bottom: "yolo/conv1/dw"
+  top: "yolo/conv1/dw"
+  param {
+    lr_mult: 0
+    decay_mult: 0
   }
-
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
 }
 layer {
-  name: "ssd/conv2/depthwise/scale"
+  name: "yolo/conv1/dw/scale"
   type: "Scale"
-  bottom: "ssd/conv2/depthwise"
-  top: "ssd/conv2/depthwise"
-  scale_param {
-    bias_term: true
+  bottom: "yolo/conv1/dw"
+  top: "yolo/conv1/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
   }
-
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
 }
 layer {
-  name: "ssd/conv2/depthwise/relu"
+  name: "yolo/conv1/dw/relu"
   type: "ReLU"
-  bottom: "ssd/conv2/depthwise"
-  top: "ssd/conv2/depthwise"
+  bottom: "yolo/conv1/dw"
+  top: "yolo/conv1/dw"
 }
 layer {
-  name: "ssd/conv2"
+  name: "yolo/conv1"
   type: "Convolution"
-  bottom: "ssd/conv2/depthwise"
-  top: "ssd/conv2"
-
+  bottom: "yolo/conv1/dw"
+  top: "yolo/conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
   convolution_param {
-    num_output: 512
+    num_output: 576
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2396,421 +2334,162 @@ layer {
   }
 }
 layer {
-  name: "ssd/conv2/bn"
+  name: "yolo/conv1/bn"
   type: "BatchNorm"
-  bottom: "ssd/conv2"
-  top: "ssd/conv2"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
+  bottom: "yolo/conv1"
+  top: "yolo/conv1"
+  param {
+    lr_mult: 0
+    decay_mult: 0
   }
-
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
 }
 layer {
-  name: "ssd/conv2/scale"
+  name: "yolo/conv1/scale"
   type: "Scale"
-  bottom: "ssd/conv2"
-  top: "ssd/conv2"
-  scale_param {
-    bias_term: true
+  bottom: "yolo/conv1"
+  top: "yolo/conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
   }
-
-}
-layer {
-  name: "ssd/conv2/relu"
-  type: "ReLU"
-  bottom: "ssd/conv2"
-  top: "ssd/conv2"
-}
-layer {
-  name: "ssd/conv3"
-  type: "Convolution"
-  bottom: "ssd/conv2"
-  top: "ssd/conv3"
-
-  convolution_param {
-    num_output: 128
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
     }
   }
 }
 layer {
-  name: "ssd/conv3/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv3"
-  top: "ssd/conv3"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv3/scale"
-  type: "Scale"
-  bottom: "ssd/conv3"
-  top: "ssd/conv3"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv3/relu"
+  name: "yolo/conv1/relu"
   type: "ReLU"
-  bottom: "ssd/conv3"
-  top: "ssd/conv3"
+  bottom: "yolo/conv1"
+  top: "yolo/conv1"
+}
+
+layer {
+  name: "upsample"
+  type: "Deconvolution"
+  bottom: "yolo/conv1"
+  top: "upsample"
+  param { lr_mult: 0  decay_mult: 0 }
+  convolution_param {
+    num_output: 576
+    group: 576
+    kernel_size: 1  stride: 2  pad: 0
+    weight_filler: { 
+      type: "constant"
+	  value : 1
+    }
+    bias_term: false
+  }
+}
+
+layer {   
+    top: "maxpool"
+    name: "maxpool"
+    bottom: "upsample"
+    type: "Pooling"
+    pooling_param {
+      kernel_size: 2
+      stride: 1
+      pool: MAX
+      pad: 1
+    }
 }
 layer {
-  name: "ssd/conv4/depthwise"
+  name: "yolo/conv2/dw"
   type: "DepthwiseConvolution"
-  bottom: "ssd/conv3"
-  top: "ssd/conv4/depthwise"
-
-  convolution_param {
-    num_output: 128
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 2
-    group: 128
-    #engine: CAFFE
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv4/depthwise/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv4/depthwise"
-  top: "ssd/conv4/depthwise"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv4/depthwise/scale"
-  type: "Scale"
-  bottom: "ssd/conv4/depthwise"
-  top: "ssd/conv4/depthwise"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv4/depthwise/relu"
-  type: "ReLU"
-  bottom: "ssd/conv4/depthwise"
-  top: "ssd/conv4/depthwise"
-}
-layer {
-  name: "ssd/conv4"
-  type: "Convolution"
-  bottom: "ssd/conv4/depthwise"
-  top: "ssd/conv4"
-
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv4/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv4"
-  top: "ssd/conv4"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv4/scale"
-  type: "Scale"
-  bottom: "ssd/conv4"
-  top: "ssd/conv4"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv4/relu"
-  type: "ReLU"
-  bottom: "ssd/conv4"
-  top: "ssd/conv4"
-}
-layer {
-  name: "ssd/conv5"
-  type: "Convolution"
-  bottom: "ssd/conv4"
-  top: "ssd/conv5"
-
-  convolution_param {
-    num_output: 128
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv5/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv5"
-  top: "ssd/conv5"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv5/scale"
-  type: "Scale"
-  bottom: "ssd/conv5"
-  top: "ssd/conv5"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv5/relu"
-  type: "ReLU"
-  bottom: "ssd/conv5"
-  top: "ssd/conv5"
-}
-layer {
-  name: "ssd/conv6/depthwise"
-  type: "DepthwiseConvolution"
-  bottom: "ssd/conv5"
-  top: "ssd/conv6/depthwise"
-
-  convolution_param {
-    num_output: 128
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 2
-    group: 128
-    #engine: CAFFE
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv6/depthwise/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv6/depthwise"
-  top: "ssd/conv6/depthwise"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv6/depthwise/scale"
-  type: "Scale"
-  bottom: "ssd/conv6/depthwise"
-  top: "ssd/conv6/depthwise"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv6/depthwise/relu"
-  type: "ReLU"
-  bottom: "ssd/conv6/depthwise"
-  top: "ssd/conv6/depthwise"
-}
-layer {
-  name: "ssd/conv6"
-  type: "Convolution"
-  bottom: "ssd/conv6/depthwise"
-  top: "ssd/conv6"
-
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv6/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv6"
-  top: "ssd/conv6"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv6/scale"
-  type: "Scale"
-  bottom: "ssd/conv6"
-  top: "ssd/conv6"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv6/relu"
-  type: "ReLU"
-  bottom: "ssd/conv6"
-  top: "ssd/conv6"
-}
-layer {
-  name: "ssd/conv7"
-  type: "Convolution"
-  bottom: "ssd/conv6"
-  top: "ssd/conv7"
-
-  convolution_param {
-    num_output: 64
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv7/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv7"
-  top: "ssd/conv7"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv7/scale"
-  type: "Scale"
-  bottom: "ssd/conv7"
-  top: "ssd/conv7"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv7/relu"
-  type: "ReLU"
-  bottom: "ssd/conv7"
-  top: "ssd/conv7"
-}
-layer {
-  name: "ssd/conv8/depthwise"
-  type: "DepthwiseConvolution"
-  bottom: "ssd/conv7"
-  top: "ssd/conv8/depthwise"
-
-  convolution_param {
-    num_output: 64
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 2
-    group: 64
-    #engine: CAFFE
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-
-layer {
-  name: "ssd/conv8/depthwise/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv8/depthwise"
-  top: "ssd/conv8/depthwise"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv8/depthwise/scale"
-  type: "Scale"
-  bottom: "ssd/conv8/depthwise"
-  top: "ssd/conv8/depthwise"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv8/depthwise/relu"
-  type: "ReLU"
-  bottom: "ssd/conv8/depthwise"
-  top: "ssd/conv8/depthwise"
-}
-layer {
-  name: "ssd/conv8"
-  type: "Convolution"
-  bottom: "ssd/conv8/depthwise"
-  top: "ssd/conv8"
-
-  convolution_param {
-    num_output: 128
-    bias_term: false
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-  }
-}
-layer {
-  name: "ssd/conv8/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv8"
-  top: "ssd/conv8"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv8/scale"
-  type: "Scale"
-  bottom: "ssd/conv8"
-  top: "ssd/conv8"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv8/relu"
-  type: "ReLU"
-  bottom: "ssd/conv8"
-  top: "ssd/conv8"
-}
-layer {
-  name: "ssd/conv9"
-  type: "Convolution"
   bottom: "conv40"
-  top: "ssd/conv9"
-
+  top: "yolo/conv2/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
   convolution_param {
-    num_output: 256
+    num_output: 576
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 576
+    engine: CAFFE
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "yolo/conv2/dw/bn"
+  type: "BatchNorm"
+  bottom: "yolo/conv2/dw"
+  top: "yolo/conv2/dw"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "yolo/conv2/dw/scale"
+  type: "Scale"
+  bottom: "yolo/conv2/dw"
+  top: "yolo/conv2/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "yolo/conv2/dw/relu"
+  type: "ReLU"
+  bottom: "yolo/conv2/dw"
+  top: "yolo/conv2/dw"
+}
+layer {
+  name: "yolo/conv2"
+  type: "Convolution"
+  bottom: "yolo/conv2/dw"
+  top: "yolo/conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 576
     bias_term: false
     kernel_size: 1
     weight_filler {
@@ -2819,785 +2498,284 @@ layer {
   }
 }
 layer {
-  name: "ssd/conv9/bn"
+  name: "yolo/conv2/bn"
   type: "BatchNorm"
-  bottom: "ssd/conv9"
-  top: "ssd/conv9"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
+  bottom: "yolo/conv2"
+  top: "yolo/conv2"
+  param {
+    lr_mult: 0
+    decay_mult: 0
   }
-
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
 }
 layer {
-  name: "ssd/conv9/scale"
+  name: "yolo/conv2/scale"
   type: "Scale"
-  bottom: "ssd/conv9"
-  top: "ssd/conv9"
-  scale_param {
-    bias_term: true
+  bottom: "yolo/conv2"
+  top: "yolo/conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
   }
-
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
 }
 layer {
-  name: "ssd/conv9/relu"
+  name: "yolo/conv2/relu"
   type: "ReLU"
-  bottom: "ssd/conv9"
-  top: "ssd/conv9"
+  bottom: "yolo/conv2"
+  top: "yolo/conv2"
 }
 layer {
-  name: "ssd/conv10/depthwise"
+  name: "yolo/conv2/sum"
+  type: "Eltwise"
+  bottom: "maxpool"
+  bottom: "yolo/conv2"
+  top: "yolo/conv2/sum"
+}
+
+layer {
+  name: "yolo/conv3/dw"
   type: "DepthwiseConvolution"
-  bottom: "ssd/conv9"
-  top: "ssd/conv10/depthwise"
-
+  bottom: "yolo/conv2/sum"
+  top: "yolo/conv3/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
   convolution_param {
-    num_output: 256
+    num_output: 576
     bias_term: false
     pad: 1
     kernel_size: 3
+    group: 576
+    engine: CAFFE
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "yolo/conv3/dw/bn"
+  type: "BatchNorm"
+  bottom: "yolo/conv3/dw"
+  top: "yolo/conv3/dw"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "yolo/conv3/dw/scale"
+  type: "Scale"
+  bottom: "yolo/conv3/dw"
+  top: "yolo/conv3/dw"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "yolo/conv3/dw/relu"
+  type: "ReLU"
+  bottom: "yolo/conv3/dw"
+  top: "yolo/conv3/dw"
+}
+layer {
+  name: "yolo/conv3"
+  type: "Convolution"
+  bottom: "yolo/conv3/dw"
+  top: "yolo/conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 576
+    bias_term: false
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "yolo/conv3/bn"
+  type: "BatchNorm"
+  bottom: "yolo/conv3"
+  top: "yolo/conv3"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "yolo/conv3/scale"
+  type: "Scale"
+  bottom: "yolo/conv3"
+  top: "yolo/conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0.0
+  }
+  scale_param {
+    filler {
+      value: 1
+    }
+    bias_term: true
+    bias_filler {
+      value: 0
+    }
+  }
+}
+layer {
+  name: "yolo/conv3/relu"
+  type: "ReLU"
+  bottom: "yolo/conv3"
+  top: "yolo/conv3"
+}
+
+layer {
+  name: "yolo/conv4"
+  type: "Convolution"
+  bottom: "yolo/conv1"
+  top: "yolo/conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 75
+    kernel_size: 1
+    pad: 0
     stride: 1
-    group: 256
-    #engine: CAFFE
     weight_filler {
       type: "msra"
     }
+	bias_filler {
+      value: 0
+    }
   }
 }
-
 layer {
-  name: "ssd/conv10/depthwise/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv10/depthwise"
-  top: "ssd/conv10/depthwise"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv10/depthwise/scale"
-  type: "Scale"
-  bottom: "ssd/conv10/depthwise"
-  top: "ssd/conv10/depthwise"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv10/depthwise/relu"
-  type: "ReLU"
-  bottom: "ssd/conv10/depthwise"
-  top: "ssd/conv10/depthwise"
-}
-layer {
-  name: "ssd/conv10"
+  name: "yolo/conv5"
   type: "Convolution"
-  bottom: "ssd/conv10/depthwise"
-  top: "ssd/conv10"
-
+  bottom: "yolo/conv3"
+  top: "yolo/conv5"
+    param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
-    num_output: 512
-    bias_term: false
+    num_output: 75
     kernel_size: 1
+    pad: 0
+    stride: 1
     weight_filler {
       type: "msra"
     }
-  }
-}
-layer {
-  name: "ssd/conv10/bn"
-  type: "BatchNorm"
-  bottom: "ssd/conv10"
-  top: "ssd/conv10"
-  batch_norm_param {
-    eps: 9.999999747378752e-06
-  }
-
-}
-layer {
-  name: "ssd/conv10/scale"
-  type: "Scale"
-  bottom: "ssd/conv10"
-  top: "ssd/conv10"
-  scale_param {
-    bias_term: true
-  }
-
-}
-layer {
-  name: "ssd/conv10/relu"
-  type: "ReLU"
-  bottom: "ssd/conv10"
-  top: "ssd/conv10"
-}
-#==========SSD layers===========
-layer {
-  name: "ssd/conv10/expand_mbox_loc"
-  type: "Convolution"
-  bottom: "ssd/conv10"
-  top: "ssd/conv10/expand_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
+	bias_filler {
+      value: 0
     }
   }
 }
 layer {
-  name: "ssd/conv10/expand_mbox_loc_perm"
-  type: "Permute"
-  bottom: "ssd/conv10/expand_mbox_loc"
-  top: "ssd/conv10/expand_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv10/expand_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "ssd/conv10/expand_mbox_loc_perm"
-  top: "ssd/conv10/expand_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv10/expand_mbox_conf"
-  type: "Convolution"
-  bottom: "ssd/conv10"
-  top: "ssd/conv10/expand_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv10/expand_mbox_conf_perm"
-  type: "Permute"
-  bottom: "ssd/conv10/expand_mbox_conf"
-  top: "ssd/conv10/expand_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv10/expand_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "ssd/conv10/expand_mbox_conf_perm"
-  top: "ssd/conv10/expand_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv10/expand_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "ssd/conv10"
-  bottom: "data"
-  top: "ssd/conv10/expand_mbox_priorbox"
-  prior_box_param {
-    min_size: 45.0
-    max_size: 105.0
-    aspect_ratio: 2.0
-	  aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "conv52_mbox_loc"
-  type: "Convolution"
-  bottom: "conv52"
-  top: "conv52_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "conv52_mbox_loc_perm"
-  type: "Permute"
-  bottom: "conv52_mbox_loc"
-  top: "conv52_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "conv52_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "conv52_mbox_loc_perm"
-  top: "conv52_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "conv52_mbox_conf"
-  type: "Convolution"
-  bottom: "conv52"
-  top: "conv52_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    pad: 1
-    kernel_size: 3
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "conv52_mbox_conf_perm"
-  type: "Permute"
-  bottom: "conv52_mbox_conf"
-  top: "conv52_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "conv52_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "conv52_mbox_conf_perm"
-  top: "conv52_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "conv52_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "conv52"
-  bottom: "data"
-  top: "conv52_mbox_priorbox"
-  prior_box_param {
-    min_size: 105.0
-    max_size: 150.0
-    aspect_ratio: 2.0
-    aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_loc"
-  type: "Convolution"
-  bottom: "ssd/conv2"
-  top: "ssd/conv2_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_loc_perm"
-  type: "Permute"
-  bottom: "ssd/conv2_mbox_loc"
-  top: "ssd/conv2_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "ssd/conv2_mbox_loc_perm"
-  top: "ssd/conv2_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_conf"
-  type: "Convolution"
-  bottom: "ssd/conv2"
-  top: "ssd/conv2_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_conf_perm"
-  type: "Permute"
-  bottom: "ssd/conv2_mbox_conf"
-  top: "ssd/conv2_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "ssd/conv2_mbox_conf_perm"
-  top: "ssd/conv2_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv2_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "ssd/conv2"
-  bottom: "data"
-  top: "ssd/conv2_mbox_priorbox"
-  prior_box_param {
-    min_size: 150.0
-    max_size: 195.0
-    aspect_ratio: 2.0
-    aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_loc"
-  type: "Convolution"
-  bottom: "ssd/conv4"
-  top: "ssd/conv4_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_loc_perm"
-  type: "Permute"
-  bottom: "ssd/conv4_mbox_loc"
-  top: "ssd/conv4_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "ssd/conv4_mbox_loc_perm"
-  top: "ssd/conv4_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_conf"
-  type: "Convolution"
-  bottom: "ssd/conv4"
-  top: "ssd/conv4_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    pad: 1
-    kernel_size: 3
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_conf_perm"
-  type: "Permute"
-  bottom: "ssd/conv4_mbox_conf"
-  top: "ssd/conv4_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "ssd/conv4_mbox_conf_perm"
-  top: "ssd/conv4_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv4_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "ssd/conv4"
-  bottom: "data"
-  top: "ssd/conv4_mbox_priorbox"
-  prior_box_param {
-    min_size: 195.0
-    max_size: 240.0
-    aspect_ratio: 2.0
-    aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_loc"
-  type: "Convolution"
-  bottom: "ssd/conv6"
-  top: "ssd/conv6_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    pad: 1
-    kernel_size: 3
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_loc_perm"
-  type: "Permute"
-  bottom: "ssd/conv6_mbox_loc"
-  top: "ssd/conv6_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "ssd/conv6_mbox_loc_perm"
-  top: "ssd/conv6_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_conf"
-  type: "Convolution"
-  bottom: "ssd/conv6"
-  top: "ssd/conv6_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_conf_perm"
-  type: "Permute"
-  bottom: "ssd/conv6_mbox_conf"
-  top: "ssd/conv6_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "ssd/conv6_mbox_conf_perm"
-  top: "ssd/conv6_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv6_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "ssd/conv6"
-  bottom: "data"
-  top: "ssd/conv6_mbox_priorbox"
-  prior_box_param {
-    min_size: 240.0
-    max_size: 285.0
-    aspect_ratio: 2.0
-    aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_loc"
-  type: "Convolution"
-  bottom: "ssd/conv8"
-  top: "ssd/conv8_mbox_loc"
-
-  convolution_param {
-    num_output: 24
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_loc_perm"
-  type: "Permute"
-  bottom: "ssd/conv8_mbox_loc"
-  top: "ssd/conv8_mbox_loc_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_loc_flat"
-  type: "Flatten"
-  bottom: "ssd/conv8_mbox_loc_perm"
-  top: "ssd/conv8_mbox_loc_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_conf"
-  type: "Convolution"
-  bottom: "ssd/conv8"
-  top: "ssd/conv8_mbox_conf"
-
-  convolution_param {
-    num_output: 126
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.0
-    }
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_conf_perm"
-  type: "Permute"
-  bottom: "ssd/conv8_mbox_conf"
-  top: "ssd/conv8_mbox_conf_perm"
-  permute_param {
-    order: 0
-    order: 2
-    order: 3
-    order: 1
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_conf_flat"
-  type: "Flatten"
-  bottom: "ssd/conv8_mbox_conf_perm"
-  top: "ssd/conv8_mbox_conf_flat"
-  flatten_param {
-    axis: 1
-  }
-}
-layer {
-  name: "ssd/conv8_mbox_priorbox"
-  type: "PriorBox"
-  bottom: "ssd/conv8"
-  bottom: "data"
-  top: "ssd/conv8_mbox_priorbox"
-  prior_box_param {
-    min_size: 285.0
-    max_size: 350.0
-    aspect_ratio: 2.0
-    aspect_ratio: 3.0
-    flip: true
-    clip: false
-    variance: 0.1
-    variance: 0.1
-    variance: 0.2
-    variance: 0.2
-    offset: 0.5
-  }
-}
-layer {
-  name: "mbox_loc"
-  type: "Concat"
-  bottom: "ssd/conv10/expand_mbox_loc_flat"
-  bottom: "conv52_mbox_loc_flat"
-  bottom: "ssd/conv2_mbox_loc_flat"
-  bottom: "ssd/conv4_mbox_loc_flat"
-  bottom: "ssd/conv6_mbox_loc_flat"
-  bottom: "ssd/conv8_mbox_loc_flat"
-  top: "mbox_loc"
-  concat_param {
-    axis: 1
-  }
-}
-layer {
-  name: "mbox_conf"
-  type: "Concat"
-  bottom: "ssd/conv10/expand_mbox_conf_flat"
-  bottom: "conv52_mbox_conf_flat"
-  bottom: "ssd/conv2_mbox_conf_flat"
-  bottom: "ssd/conv4_mbox_conf_flat"
-  bottom: "ssd/conv6_mbox_conf_flat"
-  bottom: "ssd/conv8_mbox_conf_flat"
-  top: "mbox_conf"
-  concat_param {
-    axis: 1
-  }
-}
-layer {
-  name: "mbox_priorbox"
-  type: "Concat"
-  bottom: "ssd/conv10/expand_mbox_priorbox"
-  bottom: "conv52_mbox_priorbox"
-  bottom: "ssd/conv2_mbox_priorbox"
-  bottom: "ssd/conv4_mbox_priorbox"
-  bottom: "ssd/conv6_mbox_priorbox"
-  bottom: "ssd/conv8_mbox_priorbox"
-  top: "mbox_priorbox"
-  concat_param {
-    axis: 2
-  }
-}
-layer {
-  name: "mbox_loss"
-  type: "MultiBoxLoss"
-  bottom: "mbox_loc"
-  bottom: "mbox_conf"
-  bottom: "mbox_priorbox"
-  bottom: "label"
-  top: "mbox_loss"
+  name: "detection_out"
+  type: "Yolov3DetectionOutput"
+  bottom: "yolo/conv4"
+  bottom: "yolo/conv5"
+  top: "detection_out"
   include {
-    phase: TRAIN
+	phase: TEST
   }
-  propagate_down: true
-  propagate_down: true
-  propagate_down: false
-  propagate_down: false
-  loss_param {
-    normalization: VALID
-  }
-  multibox_loss_param {
-    loc_loss_type: SMOOTH_L1
-    conf_loss_type: LOGISTIC
-    loc_weight: 1.0
-    num_classes: 21
-    share_location: true
-    match_type: PER_PREDICTION
-    overlap_threshold: 0.5
-    use_prior_for_matching: true
-    background_label_id: 0
-    use_difficult_gt: true
-    neg_pos_ratio: 3.0
-    neg_overlap: 0.5
-    code_type: CENTER_SIZE
-    ignore_cross_boundary_bbox: false
-    mining_type: MAX_NEGATIVE
+  yolov3_detection_output_param {
+    confidence_threshold: 0.01
+	nms_threshold: 0.45
+    num_classes: 20
+	
+	
+	#10,14,  23,27,  37,58,  81,82,  135,169,  344,319
+    biases: 20
+    biases: 37
+    biases: 49
+    biases: 94
+    biases: 73
+    biases: 201
+    biases: 143
+    biases: 265
+    biases: 153
+    biases: 121
+    biases: 280
+    biases: 279
+	
+    mask:3
+    mask:4
+    mask:5	
+    mask:0
+    mask:1
+    mask:2
+    anchors_scale:32
+    anchors_scale:16
+    mask_group_num:2
   }
 }
+
