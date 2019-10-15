@@ -224,52 +224,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 ENV PATH=/opt/cmake-3.14.7-Linux-x86_64/bin:$PATH
 
-ENV CAFFE_ROOT=/opt/caffe
-WORKDIR $CAFFE_ROOT
-
-# FIXME: use ARG instead of ENV once DockerHub supports this
-# https://github.com/docker/hub-feedback/issues/460
-ENV CLONE_TAG=master
 
 
-RUN echo `pwd` && \ 
-    ldconfig && \
-    cd /home && \
-    git clone -b ${CLONE_TAG} --depth 1 https://github.com/intel/caffe.git .  && \
-# RUN  echo `pwd` && \
-    unzip caffe.zip && \
-#     tar -xvf nccl.tar.gz && \
-    mv caffe /opt && \
-    cd $CAFFE_ROOT && \
-#     echo `pwd` && \
-#     pip install --upgrade pip && \
-#     sed -i 's/from pip import main/from pip import __main__/g' /usr/bin/pip && \
-#     sed -i 's/sys.exit(main())/sys.exit(__main__._main())/g' /usr/bin/pip && \
-#     pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \ 
-    sed -i 's/python-dateutil>=1.4,<2/python-dateutil/g' python/requirements.txt && \
-    sed -i 's/networkx>=1.8.1/networkx==2.2/g' python/requirements.txt && \
-    cd python && for req in $(cat requirements.txt) pydot; do pip install $req; done && cd .. && \
-    sed -i 's/set(Caffe_known_gpu_archs "20 21(20) 30 35 50 60 61")/set(Caffe_known_gpu_archs "30 35 50 60 61 75")/g' cmake/Cuda.cmake && \
-    sed -i 's/set(__cuda_arch_bin "60 61")/set(__cuda_arch_bin "75")/g' cmake/Cuda.cmake && \
-    sed -i 's/cv_img = cv::imread(image.first, CV_LOAD_IMAGE_COLOR);/cv_img = cv::imread(image.first, cv::IMREAD_COLOR);/g' src/caffe/layers/window_data_layer.cpp && \
-    sed -i 's/out_img = cv::imdecode(buf, CV_LOAD_IMAGE_COLOR);/out_img = cv::imdecode(buf, cv::IMREAD_COLOR);/g' src/caffe/layers/window_data_layer.cpp && \
-    sed -i 's/CV_LOAD_IMAGE_GRAYSCALE);/cv::IMREAD_GRAYSCALE);/g' src/caffe/util/io.cpp && \
-    sed -i 's/int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :/int cv_read_flag = (is_color ? cv::IMREAD_COLOR :/g' src/caffe/util/io.cpp && \
-    sed -i 's/int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :/int cv_read_flag = (is_color ? cv::IMREAD_COLOR :/g' src/caffe/test/test_io.cpp && \
-    sed -i 's/CV_LOAD_IMAGE_GRAYSCALE);/cv::IMREAD_GRAYSCALE);/g' src/caffe/test/test_io.cpp && \
-    sed -i 's/caffe_option(USE_NCCL "Build Caffe with NCCL library support" OFF)/caffe_option(USE_NCCL "Build Caffe with NCCL library support" ON)/g'  CMakeLists.txt && \
-    sed -i 's/caffe_option(USE_OPENMP "Link with OpenMP (when your BLAS wants OpenMP and you get linker errors)" OFF)/caffe_option(USE_OPENMP "Link with OpenMP (when your BLAS wants OpenMP and you get linker errors)" ON)/g' CMakeLists.txt && \
-    git clone https://github.com/NVIDIA/nccl.git && cd nccl && make -j install && cd .. && rm -rf nccl && \
-#     cd /home/nccl && make -j install && cd .. && rm -rf nccl && cd $CAFFE_ROOT && \
-    mkdir build && cd build && \
-    cmake -DUSE_CUDNN=1 .. && \
-    make -j"$(nproc)"
-
-ENV MobileNetYOLO_ROOT=/MobileNet-YOLO
+ENV MobileNetYOLO_ROOT=/workspace/MobileNet-YOLO
 WORKDIR $MobileNetYOLO_ROOT
 
-RUN cd / && \
-    git clone https://github.com/eric612/MobileNet-YOLO.git  && \
+RUN cd /workspace && \
+	git clone https://github.com/eric612/MobileNet-YOLO.git  && \
+	#unzip caffe.zip && \
+	cd $MobileNetYOLO_ROOT && \
+    
     sed -i 's/set(Caffe_known_gpu_archs "20 21(20) 30 35 50 60 61")/set(Caffe_known_gpu_archs "30 35 50 60 61 75")/g' cmake/Cuda.cmake && \
     sed -i 's/set(__cuda_arch_bin "60 61")/set(__cuda_arch_bin "75")/g' cmake/Cuda.cmake && \
     sed -i 's/SET(CMAKE_C_COMPILER gcc-5)/# SET(CMAKE_C_COMPILER gcc-5)/g' CMakeLists.txt && \
