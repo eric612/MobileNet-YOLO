@@ -59,41 +59,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         python-skimage \
         libopencv-dev \
         libtbb2 \
-        gfortran \
         apt-utils \
         pkg-config \
         checkinstall \
         qt5-default \
-        build-essential \
-        libatlas-base-dev \
-        libgtk2.0-dev \
-        libavcodec57 \
-        libavcodec-dev \
-        libavformat57 \
-        libavformat-dev \
-        libavutil-dev \
-        libswscale4 \
-        libswscale-dev \
-        libjpeg8-dev \
-        libpng-dev \
-        libtiff5-dev \
-        libdc1394-22 \
-        libdc1394-22-dev \
-        libxine2-dev \
-        libv4l-dev \
-        libgstreamer1.0 \
-        libgstreamer1.0-dev \
-        libgstreamer-plugins-base1.0-0 \
-        libgstreamer-plugins-base1.0-dev \
         libglew-dev \
-        libpostproc-dev \
-        libeigen3-dev \
-        libtbb-dev \
-        zlib1g-dev \
-        libsm6 \
-        libxext6 \
-        libxrender1 \
 		python-opencv \
+		cmake \
     && \
 #     rm -rf /var/lib/apt/lists/* && \
 
@@ -105,13 +77,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 #     pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \ 
     pip${PYTHON_VERSION} install numpy && \
 
-# install CMake
-    cd /home && \
-    wget https://github.com/Kitware/CMake/releases/download/v3.14.7/cmake-3.14.7-Linux-x86_64.tar.gz && \
-    tar -xvf cmake-3.14.7-Linux-x86_64.tar.gz && \
-    mv cmake-3.14.7-Linux-x86_64 /opt && \
-    echo "export PATH=/opt/cmake-3.14.7-Linux-x86_64/bin:$PATH" >> /etc/profile && \
-    . /etc/profile && \
 
 # # install nccl
 #     tar -xvf nccl.tar.gz && \
