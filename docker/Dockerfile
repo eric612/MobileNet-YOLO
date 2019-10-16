@@ -59,10 +59,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         python-skimage \
         libopencv-dev \
         libtbb2 \
+        gfortran \
         apt-utils \
         pkg-config \
         checkinstall \
         qt5-default \
+        build-essential \
+        libatlas-base-dev \
         libglew-dev \
 		python-opencv \
     && \
