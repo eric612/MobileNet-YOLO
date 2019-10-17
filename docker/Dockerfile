@@ -68,7 +68,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         libatlas-base-dev \
         libglew-dev \
 		python-opencv \
-		cmake \
     && \
 #     rm -rf /var/lib/apt/lists/* && \
 
@@ -80,6 +79,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 #     pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \ 
     pip${PYTHON_VERSION} install numpy && \
 
+# install CMake
+    cd /home && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.14.7/cmake-3.14.7-Linux-x86_64.tar.gz && \
+    tar -xvf cmake-3.14.7-Linux-x86_64.tar.gz && \
+    mv cmake-3.14.7-Linux-x86_64 /opt && \
+    echo "export PATH=/opt/cmake-3.14.7-Linux-x86_64/bin:$PATH" >> /etc/profile && \
+    . /etc/profile && \
 
 # # install nccl
 #     tar -xvf nccl.tar.gz && \
