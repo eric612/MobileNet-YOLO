@@ -89,6 +89,8 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 
 > https://pjreddie.com/darknet/yolo/
 
+> https://github.com/chuanqi305/MobileNet-SSD
+
 > https://github.com/gklz1982/caffe-yolov2
 
 > https://github.com/yonghenglh6/DepthwiseConvolution
