@@ -91,6 +91,7 @@ class Yolov3DetectionOutputLayer : public Layer<Dtype> {
   vector<Dtype> anchors_scale_;
   vector<Dtype> mask_;
   Blob<Dtype> swap_;
+  bool gaussian_box_;
   
 
 };
