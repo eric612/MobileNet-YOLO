@@ -1189,7 +1189,7 @@ message Yolov3DetectionOutputParameter {
   repeated uint32 anchors_scale = 6 ;
   optional uint32 mask_group_num = 7 [default = 2];
   repeated uint32 mask = 8;
-  
+  optional bool gaussian_box = 9 [default = false];
 }
 message DropoutParameter {
   optional float dropout_ratio = 1 [default = 0.5]; // dropout ratio

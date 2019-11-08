@@ -208,7 +208,7 @@ void Yolov3DetectionOutputLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& b
     anchors_scale_.push_back(yolov3_detection_output_param.anchors_scale(c));
   }
   groups_num_ = yolov3_detection_output_param.mask_size() / mask_group_num_;
-  
+  gaussian_box_ = yolov3_detection_output_param.gaussian_box();
   CHECK_EQ(bottom.size(), mask_group_num_);
 }
 
@@ -238,6 +238,8 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
   const int num = bottom[0]->num();
   
   int len = 4 + num_class_ + 1;
+  if(gaussian_box_) 
+    len = 8 + num_class_ + 1;
   int stride = side_w_*side_h_;
 
 
@@ -254,7 +256,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
       Dtype* swap_data = swap_.mutable_cpu_data();
       const Dtype* input_data = bottom[t]->cpu_data();
       int nw = side_w_*anchors_scale_[t];
-      int nh = side_h_*anchors_scale_[t];
+      int nh = side_w_*anchors_scale_[t];
       for (int b = 0; b < bottom[t]->num(); b++) {
         for (int s = 0; s < side_w_*side_h_; s++) {
           //LOG(INFO) << s;
@@ -266,30 +268,59 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
             for (int c = 0; c < len; ++c) {
               int index2 = c*stride + index;
               //LOG(INFO)<<index2;
-
-              if (c == 2 || c == 3) {
-                swap_data[index2] = (input_data[index2 + 0]);
-              }
-              else {
-                if (c > 4) {
-                  //LOG(INFO) << c - 5;
-                  class_score[c - 5] = sigmoid(input_data[index2 + 0]);
+              if(gaussian_box_) {
+                if (c == 4 || c == 6) {
+                  swap_data[index2] = (input_data[index2 + 0]);
                 }
                 else {
-                  swap_data[index2] = sigmoid(input_data[index2 + 0]);
+                  if (c > 7) {
+                    //LOG(INFO) << c - 5;
+                    class_score[c - 8] = sigmoid(input_data[index2 + 0]);
+                  }
+                  else {
+                    swap_data[index2] = sigmoid(input_data[index2 + 0]);
+                  }
+                }                
+              }
+              else {
+                if (c == 2 || c == 3) {
+                  swap_data[index2] = (input_data[index2 + 0]);
+                }
+                else {
+                  if (c > 4) {
+                    //LOG(INFO) << c - 5;
+                    class_score[c - 5] = sigmoid(input_data[index2 + 0]);
+                  }
+                  else {
+                    swap_data[index2] = sigmoid(input_data[index2 + 0]);
+                  }
                 }
               }
+
             }
             int y2 = s / side_w_;
             int x2 = s % side_w_;
-            Dtype obj_score = swap_data[index + 4 * stride];
+            Dtype obj_score;
+            if(gaussian_box_) {
+              Dtype uc_ver = 4.0 - swap_data[index + 1 * stride] - swap_data[index + 1 * stride] - swap_data[index + 3 * stride] - swap_data[index + 5 * stride] - swap_data[index + 7 * stride];             
+              obj_score = swap_data[index + 8 * stride] * uc_ver/4.0;
+            }
+            else {
+              obj_score = swap_data[index + 4 * stride];
+            }
             PredictionResult<Dtype> predict;
             for (int c = 0; c < num_class_; ++c) {
               class_score[c] *= obj_score;
               //LOG(INFO) << class_score[c];
               if (class_score[c] > confidence_threshold_)
               {
-                get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_w_, side_h_, nw, nh, stride);
+                if(gaussian_box_) {
+                  get_gaussian_yolo_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_w_, side_h_, nw, nh, stride);
+                }
+                else {
+                  get_region_box(pred, swap_data, biases_, mask_[n + mask_offset], index, x2, y2, side_w_, side_h_, nw, nh, stride);
+                }
+                
                 predict.x = pred[0];
                 predict.y = pred[1];
                 predict.w = pred[2];
