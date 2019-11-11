@@ -7,11 +7,7 @@ assignees: ''
 
 ---
 
-Model : yolov2 , yolov3 , ssd or segmentaion
-
-Backbone : mobilenet , ... , etc
-
-Questions :
+Questions : please describe problem here
 
 Log files : please upload files , do not copy and paste
 
