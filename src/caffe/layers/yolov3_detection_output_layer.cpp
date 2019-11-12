@@ -302,7 +302,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
             int x2 = s % side_w_;
             Dtype obj_score;
             if(gaussian_box_) {
-              Dtype uc_ver = 4.0 - swap_data[index + 1 * stride] - swap_data[index + 1 * stride] - swap_data[index + 3 * stride] - swap_data[index + 5 * stride] - swap_data[index + 7 * stride];             
+              Dtype uc_ver = 4.0 - swap_data[index + 1 * stride] - swap_data[index + 3 * stride] - swap_data[index + 5 * stride] - swap_data[index + 7 * stride];             
               obj_score = swap_data[index + 8 * stride] * uc_ver/4.0;
             }
             else {
