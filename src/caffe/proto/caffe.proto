@@ -874,7 +874,7 @@ message AnnotatedDataParameter {
   optional AnnotatedDatum.AnnotationType anno_type = 3;
   optional int32 yolo_data_type = 4 [default = 0];
   optional float yolo_data_jitter = 5 [default = 0.3];
-  optional bool train_diffcult = 6 [default = false];
+  optional bool train_diffcult = 6 [default = true];
   optional bool single_class =7 [default = true]; // for yolo segementation
   optional int32 seg_scales = 8 [default = 8]; // for yolo segementation
   optional int32 seg_resize_width = 9 [default = 0]; // for yolo segementation
