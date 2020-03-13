@@ -163,6 +163,10 @@ class DataTransformer {
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob,
                  NormalizedBBox* crop_bbox, bool* do_mirror, int policy_num = 0);
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
+  /**
+   *@brief For classfication task data augmentation
+   */
+  void Transform3(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
 
   /**
    * @brief Crops img according to bbox.
