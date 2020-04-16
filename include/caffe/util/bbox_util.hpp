@@ -30,7 +30,7 @@ typedef struct dxrep {
 
 // box.h
 typedef struct ious {
-  float iou, giou , ciou , diou;
+  float iou, giou , diou , ciou;
   dxrep dx_iou;
 } ious;
 typedef struct boxabs {
@@ -51,7 +51,8 @@ template <typename Dtype>
 boxabs to_tblr(vector<Dtype> a);
 template <typename Dtype>
 Dtype box_giou(vector<Dtype> a, vector<Dtype> b);
-
+template <typename Dtype>
+Dtype box_diou(vector<Dtype> a, vector<Dtype> b);
 template <typename Dtype>
 void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
 

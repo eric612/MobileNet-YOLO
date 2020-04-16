@@ -505,8 +505,8 @@ message Yolov3Parameter{
     IOU = 0;
     GIOU = 1;
     MSE = 2;
-    CIOU = 3;
-    DIOU = 4;
+    DIOU = 3;
+    CIOU = 4;
   }
   optional IOU_LOSS iou_loss = 15 [default = MSE];
   optional float iou_normalizer = 16 [default = 0.25];

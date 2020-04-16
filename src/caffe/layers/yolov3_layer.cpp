@@ -312,8 +312,13 @@ namespace caffe {
       // https://github.com/generalized-iou/g-darknet
       // https://arxiv.org/abs/1902.09630v2
       // https://giou.stanford.edu/
-      float giou = box_giou(pred, truth);
+      
+      //float giou = box_giou(pred, truth);
       ious all_ious = { 0 };
+      all_ious.iou = box_iou(pred, truth);
+      all_ious.giou = box_giou(pred, truth);
+      all_ious.diou = box_diou(pred, truth);
+      //all_ious.ciou = box_ciou(pred, truth);
       if (pred[2] == 0) { pred[2] = 1.0; }
       if (pred[3] == 0) { pred[3] = 1.0; }
       // i - step in layer width
@@ -363,7 +368,10 @@ namespace caffe {
       delta[index + 1 * stride] += -dy;
       delta[index + 2 * stride] += -dw;
       delta[index + 3 * stride] += -dh;
-      return giou;
+      if (iou_loss == GIOU)
+        return all_ious.giou;
+      else
+        return all_ious.diou;
     }
     
   }
@@ -655,6 +663,9 @@ namespace caffe {
             float iou;
             if (iou_loss_ == GIOU) {
               iou = box_giou(pred, truth_shift); 
+            }
+            else if (iou_loss_ == DIOU) {
+              iou = box_diou(pred, truth_shift); 
             }
             else {
               iou = box_iou(pred, truth_shift); 
