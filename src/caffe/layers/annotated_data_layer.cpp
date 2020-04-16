@@ -572,7 +572,7 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
               const NormalizedBBox& bbox = anno.bbox();
               if (yolo_data_type_ == 1) {  
                 //LOG(INFO) << "difficult: " << bbox.difficult() << ", train_difficult: " << train_diffcult_;
-                if (!bbox.difficult() || train_diffcult_) {
+                if (!bbox.difficult() || (train_diffcult_ && this->iter_>this->max_iter_/10)) {
                   float x = (bbox.xmin() + bbox.xmax()) / 2.0;
                   float y = (bbox.ymin() + bbox.ymax()) / 2.0;
                   float w = bbox.xmax() - bbox.xmin();
