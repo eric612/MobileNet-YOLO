@@ -73,6 +73,7 @@ public:
   bool use_focal_loss_;
   IOU_LOSS iou_loss_;
   float iou_normalizer_;
+  float iou_thresh_;
 };
 
 }  // namespace caffe

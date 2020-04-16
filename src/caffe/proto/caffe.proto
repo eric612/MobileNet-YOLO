@@ -508,6 +508,7 @@ message Yolov3Parameter{
   }
   optional IOU_LOSS iou_loss = 15 [default = MSE];
   optional float iou_normalizer = 16 [default = 0.25];
+  optional float iou_thresh = 17 [default = 0.5];
 }
 message RegionLossParameter{
   //Yolo 9000

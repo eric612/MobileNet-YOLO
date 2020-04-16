@@ -240,6 +240,7 @@ namespace caffe {
     iou_loss_ = (IOU_LOSS) param.iou_loss();
     
     iou_normalizer_ = param.iou_normalizer();
+    iou_thresh_= param.iou_thresh();
     for (int c = 0; c < param.biases_size(); ++c) {
       biases_.push_back(param.biases(c));
     } 
@@ -489,6 +490,54 @@ namespace caffe {
           ++class_count_;
         }
 
+        for (int n = 0; n < biases_size_; ++n) {
+          int mask_n = int_index(mask_, n, num_);
+          if (mask_n >= 0 && n != best_n && iou_thresh_ < 1.0f) {
+            vector<Dtype> pred(4);
+            pred[2] = biases_[2 * n] / (float)(side_w_*anchors_scale_);
+            pred[3] = biases_[2 * n + 1] / (float)(side_h_*anchors_scale_);
+
+            pred[0] = 0;
+            pred[1] = 0;
+            float iou;
+            if (iou_loss_ == GIOU) {
+              iou = box_giou(pred, truth_shift); 
+            }
+            else {
+              iou = box_iou(pred, truth_shift); 
+            }
+            if (iou > iou_thresh_) {
+              bool overlap = false;
+              float iou;
+              //LOG(INFO) << best_n;
+              best_index = mask_n*len*stride + pos + b * bottom[0]->count(1);
+              
+              iou = delta_region_box(truth, swap_data, biases_,mask_[mask_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_);
+
+              if (iou > 0.5)
+                recall += 1;
+              if (iou > 0.75)
+                recall75 += 1;
+              avg_iou += iou;
+              avg_iou_loss += (1 - iou);
+              avg_obj += swap_data[best_index + 4 * stride];
+              if (use_logic_gradient_) {
+                diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) * object_scale_;
+              }
+              else {
+                diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]);
+                //diff[best_index + 4 * stride] = (-1) * (1 - exp(input_data[best_index + 4 * stride] - exp(input_data[best_index + 4 * stride])));
+              }
+
+              //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
+
+              delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+
+              ++count;
+              ++class_count_;
+            }
+          }
+        }
       }
     }
     //LOG(INFO) << " ===================================================== " ;
