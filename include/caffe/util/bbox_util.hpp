@@ -20,19 +20,18 @@
 
 namespace caffe {
 typedef enum {
-  IOU, GIOU, MSE
+  IOU, GIOU, MSE, DIOU, CIOU
 } IOU_LOSS;  
 // box.h
 
 typedef struct dxrep {
-    float dt, db, dl, dr;
+  float dt, db, dl, dr;
 } dxrep;
 
 // box.h
 typedef struct ious {
-    float iou, giou;
-    dxrep dx_iou;
-    dxrep dx_giou;
+  float iou, giou , ciou , diou;
+  dxrep dx_iou;
 } ious;
 typedef struct boxabs {
   float left, right, top, bot;
