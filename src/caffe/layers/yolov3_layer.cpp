@@ -318,6 +318,7 @@ namespace caffe {
       all_ious.iou = box_iou(pred, truth);
       all_ious.giou = box_giou(pred, truth);
       all_ious.diou = box_diou(pred, truth);
+      all_ious.ciou = box_ciou(pred, truth);
       //all_ious.ciou = box_ciou(pred, truth);
       if (pred[2] == 0) { pred[2] = 1.0; }
       if (pred[3] == 0) { pred[3] = 1.0; }
@@ -370,6 +371,8 @@ namespace caffe {
       delta[index + 3 * stride] += -dh;
       if (iou_loss == GIOU)
         return all_ious.giou;
+      else if (iou_loss == CIOU)
+        return all_ious.ciou;
       else
         return all_ious.diou;
     }
@@ -666,6 +669,9 @@ namespace caffe {
             }
             else if (iou_loss_ == DIOU) {
               iou = box_diou(pred, truth_shift); 
+            }
+            else if (iou_loss_ == CIOU) {
+              iou = box_ciou(pred, truth_shift); 
             }
             else {
               iou = box_iou(pred, truth_shift); 
