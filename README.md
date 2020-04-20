@@ -113,3 +113,7 @@ Please cite MobileNet-YOLO in your publications if it helps your research:
 Cudnn convolution
 
 > https://github.com/chuanqi305/MobileNetv2-SSDLite/tree/master/src
+
+## Acknowledgements
+
+https://github.com/AlexeyAB/darknet
