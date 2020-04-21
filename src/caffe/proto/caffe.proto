@@ -505,10 +505,14 @@ message Yolov3Parameter{
     IOU = 0;
     GIOU = 1;
     MSE = 2;
+    DIOU = 3;
+    CIOU = 4;
   }
   optional IOU_LOSS iou_loss = 15 [default = MSE];
   optional float iou_normalizer = 16 [default = 0.25];
   optional float iou_thresh = 17 [default = 0.5];
+  optional float max_delta = 18 [default = 10];
+  optional bool accumulate = 19 [default = true];
 }
 message RegionLossParameter{
   //Yolo 9000

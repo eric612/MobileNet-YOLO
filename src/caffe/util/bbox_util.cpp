@@ -114,6 +114,7 @@ Dtype box_giou(vector<Dtype> a, vector<Dtype> b)
 
   return iou - giou_term;
 }
+
 template <>
 float box_giou(vector<float> a, vector<float> b)
 {
@@ -146,7 +147,141 @@ double box_giou(vector<double> a, vector<double> b)
 
   return iou - giou_term;
 }
-  
+// https://github.com/Zzh-tju/DIoU-darknet
+// https://arxiv.org/abs/1911.08287
+template <typename Dtype>
+Dtype box_diou(vector<Dtype> a, vector<Dtype> b)
+{
+    boxabs ba = box_c(a, b);
+    Dtype w = ba.right - ba.left;
+    Dtype h = ba.bot - ba.top;
+    Dtype c = w * w + h * h;
+    Dtype iou = box_iou(a, b);
+    if (c == 0) {
+        return iou;
+    }
+    Dtype d = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+    Dtype u = pow(d / c, 0.6);
+    Dtype diou_term = u;
+
+    return iou - diou_term;
+}
+template <>
+float box_diou(vector<float> a, vector<float> b)
+{
+    boxabs ba = box_c(a, b);
+    float w = ba.right - ba.left;
+    float h = ba.bot - ba.top;
+    float c = w * w + h * h;
+    float iou = box_iou(a, b);
+    if (c == 0) {
+        return iou;
+    }
+    float d = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+    float u = pow(d / c, 0.6);
+    float diou_term = u;
+
+    return iou - diou_term;
+}
+template <>
+double box_diou(vector<double> a, vector<double> b)
+{
+    boxabs ba = box_c(a, b);
+    double w = ba.right - ba.left;
+    double h = ba.bot - ba.top;
+    double c = w * w + h * h;
+    double iou = box_iou(a, b);
+    if (c == 0) {
+        return iou;
+    }
+    double d = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+    double u = pow(d / c, 0.6);
+    double diou_term = u;
+
+    return iou - diou_term;
+}
+float box_diounms(vector<float> a, vector<float> b, float beta1)
+{
+    boxabs ba = box_c(a, b);
+    float w = ba.right - ba.left;
+    float h = ba.bot - ba.top;
+    float c = w * w + h * h;
+    float iou = box_iou(a, b);
+    if (c == 0) {
+        return iou;
+    }
+    float d = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+    float u = pow(d / c, beta1);
+    float diou_term = u;
+#ifdef DEBUG_PRINTS
+    printf("  c: %f, u: %f, riou_term: %f\n", c, u, diou_term);
+#endif
+    return iou - diou_term;
+}
+// https://github.com/Zzh-tju/DIoU-darknet
+// https://arxiv.org/abs/1911.08287
+template <typename Dtype>
+Dtype box_ciou(vector<Dtype> a, vector<Dtype> b)
+{
+  boxabs ba = box_c(a, b);
+  Dtype w = ba.right - ba.left;
+  Dtype h = ba.bot - ba.top;
+  Dtype c = w * w + h * h;
+  Dtype iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  Dtype u = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+  Dtype d = u / c;
+  Dtype ar_gt = b[2] / b[3];
+  Dtype ar_pred = a[2] / a[3];
+  Dtype ar_loss = 4 / (M_PI * M_PI) * (atan(ar_gt) - atan(ar_pred)) * (atan(ar_gt) - atan(ar_pred));
+  Dtype alpha = ar_loss / (1 - iou + ar_loss + 0.000001);
+  Dtype ciou_term = d + alpha * ar_loss;                   //ciou
+  return iou - ciou_term;
+}  
+template <>
+float box_ciou(vector<float> a, vector<float> b)
+{
+  boxabs ba = box_c(a, b);
+  float w = ba.right - ba.left;
+  float h = ba.bot - ba.top;
+  float c = w * w + h * h;
+  float iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  float u = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+  float d = u / c;
+  float ar_gt = b[2] / b[3];
+  float ar_pred = a[2] / a[3];
+  float ar_loss = 4 / (M_PI * M_PI) * (atan(ar_gt) - atan(ar_pred)) * (atan(ar_gt) - atan(ar_pred));
+  float alpha = ar_loss / (1 - iou + ar_loss + 0.000001);
+  float ciou_term = d + alpha * ar_loss;                   //ciou
+  return iou - ciou_term;
+
+} 
+template <>
+double box_ciou(vector<double> a, vector<double> b)
+{
+  boxabs ba = box_c(a, b);
+  double w = ba.right - ba.left;
+  double h = ba.bot - ba.top;
+  double c = w * w + h * h;
+  double iou = box_iou(a, b);
+  if (c == 0) {
+      return iou;
+  }
+  double u = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+  double d = u / c;
+  double ar_gt = b[2] / b[3];
+  double ar_pred = a[2] / a[3];
+  double ar_loss = 4 / (M_PI * M_PI) * (atan(ar_gt) - atan(ar_pred)) * (atan(ar_gt) - atan(ar_pred));
+  double alpha = ar_loss / (1 - iou + ar_loss + 0.000001);
+  double ciou_term = d + alpha * ar_loss;                   //ciou
+  return iou - ciou_term;
+
+}  
 template <typename Dtype>
 void get_gaussian_yolo_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
 

@@ -20,19 +20,18 @@
 
 namespace caffe {
 typedef enum {
-  IOU, GIOU, MSE
+  IOU, GIOU, MSE, DIOU, CIOU
 } IOU_LOSS;  
 // box.h
 
 typedef struct dxrep {
-    float dt, db, dl, dr;
+  float dt, db, dl, dr;
 } dxrep;
 
 // box.h
 typedef struct ious {
-    float iou, giou;
-    dxrep dx_iou;
-    dxrep dx_giou;
+  float iou, giou , diou , ciou;
+  dxrep dx_iou;
 } ious;
 typedef struct boxabs {
   float left, right, top, bot;
@@ -52,7 +51,10 @@ template <typename Dtype>
 boxabs to_tblr(vector<Dtype> a);
 template <typename Dtype>
 Dtype box_giou(vector<Dtype> a, vector<Dtype> b);
-
+template <typename Dtype>
+Dtype box_diou(vector<Dtype> a, vector<Dtype> b);
+template <typename Dtype>
+Dtype box_ciou(vector<Dtype> a, vector<Dtype> b);
 template <typename Dtype>
 void get_region_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride);
 
