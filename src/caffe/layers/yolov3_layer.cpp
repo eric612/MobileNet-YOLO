@@ -551,7 +551,19 @@ namespace caffe {
             truth.push_back(y);
             truth.push_back(w);
             truth.push_back(h);
-            Dtype iou = box_iou(pred, truth);
+            float iou;
+            if (iou_loss_ == GIOU) {
+              iou = box_giou(pred, truth); 
+            }
+            else if (iou_loss_ == DIOU) {
+              iou = box_diou(pred, truth); 
+            }
+            else if (iou_loss_ == CIOU) {
+              iou = box_ciou(pred, truth); 
+            }
+            else {
+              iou = box_iou(pred, truth); 
+            }
             if (iou > best_iou) {
               best_class = label_data[b * 300 * 5 + t * 5];
               best_iou = iou;
@@ -614,7 +626,19 @@ namespace caffe {
 
           pred[0] = 0;
           pred[1] = 0;
-          float iou = box_iou(pred, truth_shift);
+          float iou;
+          if (iou_loss_ == GIOU) {
+            iou = box_giou(pred, truth_shift); 
+          }
+          else if (iou_loss_ == DIOU) {
+            iou = box_diou(pred, truth_shift); 
+          }
+          else if (iou_loss_ == CIOU) {
+            iou = box_ciou(pred, truth_shift); 
+          }
+          else {
+            iou = box_iou(pred, truth_shift); 
+          }
           if (iou > best_iou) {
             best_n = n;
             best_iou = iou;
@@ -749,7 +773,7 @@ namespace caffe {
     if (!(iter_ % 16))
     {
       if(time_count_>0 ) {
-        LOG(INFO) << "noobj: " << score_.avg_anyobj / 10. << " obj: " << score_.avg_obj / time_count_ <<
+        LOG(INFO) << "noobj: " << score_.avg_anyobj / time_count_ << " obj: " << score_.avg_obj / time_count_ <<
           " iou: " << score_.avg_iou / time_count_ << " cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
         //LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
         score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
