@@ -73,54 +73,126 @@ namespace caffe {
     }
 
   }
+  static inline float fix_nan_inf(float val)
+  {
+    if (isnan(val) || isinf(val)) val = 0;
+    return val;
+  }
+  static inline float clip_value(float val, const float max_val)
+  {
+    if (val > max_val) {
+        //printf("\n val = %f > max_val = %f \n", val, max_val);
+        val = max_val;
+    }
+    else if (val < -max_val) {
+        //printf("\n val = %f < -max_val = %f \n", val, -max_val);
+        val = -max_val;
+    }
+    return val;
+  }
+
   // Reference : https://github.com/jwchoi384/Gaussian_YOLOv3/blob/master/src/gaussian_yolo_layer.c
   template <typename Dtype>
-  Dtype delta_region_box(vector<Dtype> truth, Dtype *x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, Dtype *delta, float scale, int stride)
-  {
+  Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h,
+  Dtype* delta, float scale, int stride,IOU_LOSS iou_loss,float iou_normalizer,float max_delta,bool accumulate) {
     vector<Dtype> pred;
     pred.clear();
     
     get_gaussian_yolo_box(pred, x, biases, n, index, i, j,lw,lh, w, h, stride);
     Dtype iou = box_iou(pred, truth);
 
-    float tx = (truth[0]*lw - i);
-    float ty = (truth[1]*lh - j);
-    float tw = log(truth[2]*w / biases[2*n]);
-    float th = log(truth[3]*h / biases[2*n + 1]);
+    Dtype tx = (truth[0]*lw - i);
+    Dtype ty = (truth[1]*lh - j);
+    Dtype tw = log(truth[2]*w / biases[2*n]);
+    Dtype th = log(truth[3]*h / biases[2*n + 1]);
 
-    float sigma_const = 0.3;
-    float epsi = pow(10,-9);
+    Dtype sigma_const = 0.3;
+    Dtype epsi = pow(10,-9);
 
-    float in_exp_x = (tx - x[index + 0*stride])/x[index+1*stride];
-    float in_exp_x_2 = pow(in_exp_x, 2);
-    float normal_dist_x = exp(in_exp_x_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+1*stride]+sigma_const));
+    Dtype in_exp_x = (tx - x[index + 0*stride])/x[index+1*stride];
+    Dtype in_exp_x_2 = pow(in_exp_x, 2);
+    Dtype normal_dist_x = exp(in_exp_x_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+1*stride]+sigma_const));
 
-    float in_exp_y = (ty - x[index + 2*stride])/x[index+3*stride];
-    float in_exp_y_2 = pow(in_exp_y, 2);
-    float normal_dist_y = exp(in_exp_y_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+3*stride]+sigma_const));
+    Dtype in_exp_y = (ty - x[index + 2*stride])/x[index+3*stride];
+    Dtype in_exp_y_2 = pow(in_exp_y, 2);
+    Dtype normal_dist_y = exp(in_exp_y_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+3*stride]+sigma_const));
 
-    float in_exp_w = (tw - x[index + 4*stride])/x[index+5*stride];
-    float in_exp_w_2 = pow(in_exp_w, 2);
-    float normal_dist_w = exp(in_exp_w_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+5*stride]+sigma_const));
+    Dtype in_exp_w = (tw - x[index + 4*stride])/x[index+5*stride];
+    Dtype in_exp_w_2 = pow(in_exp_w, 2);
+    Dtype normal_dist_w = exp(in_exp_w_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+5*stride]+sigma_const));
 
-    float in_exp_h = (th - x[index + 6*stride])/x[index+7*stride];
-    float in_exp_h_2 = pow(in_exp_h, 2);
-    float normal_dist_h = exp(in_exp_h_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+7*stride]+sigma_const));
+    Dtype in_exp_h = (th - x[index + 6*stride])/x[index+7*stride];
+    Dtype in_exp_h_2 = pow(in_exp_h, 2);
+    Dtype normal_dist_h = exp(in_exp_h_2*(-1./2.))/(sqrt(M_PI * 2.0)*(x[index+7*stride]+sigma_const));
 
-    float temp_x = (1./2.) * 1./(normal_dist_x+epsi) * normal_dist_x * scale;
-    float temp_y = (1./2.) * 1./(normal_dist_y+epsi) * normal_dist_y * scale;
-    float temp_w = (1./2.) * 1./(normal_dist_w+epsi) * normal_dist_w * scale;
-    float temp_h = (1./2.) * 1./(normal_dist_h+epsi) * normal_dist_h * scale;
+    Dtype temp_x = (1./2.) * 1./(normal_dist_x+epsi) * normal_dist_x * scale;
+    Dtype temp_y = (1./2.) * 1./(normal_dist_y+epsi) * normal_dist_y * scale;
+    Dtype temp_w = (1./2.) * 1./(normal_dist_w+epsi) * normal_dist_w * scale;
+    Dtype temp_h = (1./2.) * 1./(normal_dist_h+epsi) * normal_dist_h * scale;
+    
+    Dtype dx = temp_x * in_exp_x  * (1./x[index+1*stride]);
+    Dtype dy = temp_y * in_exp_y  * (1./x[index+3*stride]);
+    Dtype dw = temp_w * in_exp_w  * (1./x[index+5*stride]);
+    Dtype dh = temp_h * in_exp_h  * (1./x[index+7*stride]);
+    
+    dx *= iou_normalizer;
+    dy *= iou_normalizer;
+    dw *= iou_normalizer;
+    dh *= iou_normalizer;
+    
+    dx = fix_nan_inf(dx);
+    dy = fix_nan_inf(dy);
+    dw = fix_nan_inf(dw);
+    dh = fix_nan_inf(dh);
+    
+    if (max_delta != FLT_MAX) {
+      dx = clip_value(dx, max_delta);
+      dy = clip_value(dy, max_delta);
+      dw = clip_value(dw, max_delta);
+      dh = clip_value(dh, max_delta);
+    }
+    
+    if (!accumulate) {
+      delta[index + 0 * stride] = 0;
+      delta[index + 1 * stride] = 0;
+      delta[index + 2 * stride] = 0;
+      delta[index + 3 * stride] = 0;
+      delta[index + 4 * stride] = 0;
+      delta[index + 5 * stride] = 0;
+      delta[index + 6 * stride] = 0;
+      delta[index + 7 * stride] = 0;
+    }
 
-    delta[index + 0*stride] = (-1) * temp_x * in_exp_x  * (1./x[index+1*stride]);
-    delta[index + 2*stride] = (-1) * temp_y * in_exp_y  * (1./x[index+3*stride]);
-    delta[index + 4*stride] = (-1) * temp_w * in_exp_w  * (1./x[index+5*stride]);
-    delta[index + 6*stride] = (-1) * temp_h * in_exp_h  * (1./x[index+7*stride]);
-
-    delta[index + 1*stride] = (-1) * temp_x * (in_exp_x_2/x[index+1*stride] - 1./(x[index+1*stride]+sigma_const));
-    delta[index + 3*stride] = (-1) * temp_y * (in_exp_y_2/x[index+3*stride] - 1./(x[index+3*stride]+sigma_const));
-    delta[index + 5*stride] = (-1) * temp_w * (in_exp_w_2/x[index+5*stride] - 1./(x[index+5*stride]+sigma_const));
-    delta[index + 7*stride] = (-1) * temp_h * (in_exp_h_2/x[index+7*stride] - 1./(x[index+7*stride]+sigma_const));
+    delta[index + 0*stride] += (-1) * dx;
+    delta[index + 2*stride] += (-1) * dy;
+    delta[index + 4*stride] += (-1) * dw;
+    delta[index + 6*stride] += (-1) * dh;
+    
+    dx = temp_x * (in_exp_x_2/x[index+1*stride] - 1./(x[index+1*stride]+sigma_const));
+    dy = temp_y * (in_exp_y_2/x[index+3*stride] - 1./(x[index+3*stride]+sigma_const));
+    dw = temp_w * (in_exp_w_2/x[index+5*stride] - 1./(x[index+5*stride]+sigma_const));
+    dh = temp_h * (in_exp_h_2/x[index+7*stride] - 1./(x[index+7*stride]+sigma_const));
+    
+    dx *= iou_normalizer;
+    dy *= iou_normalizer;
+    dw *= iou_normalizer;
+    dh *= iou_normalizer;
+    
+    dx = fix_nan_inf(dx);
+    dy = fix_nan_inf(dy);
+    dw = fix_nan_inf(dw);
+    dh = fix_nan_inf(dh);
+    
+    if (max_delta != FLT_MAX) {
+      dx = clip_value(dx, max_delta);
+      dy = clip_value(dy, max_delta);
+      dw = clip_value(dw, max_delta);
+      dh = clip_value(dh, max_delta);
+    }
+    delta[index + 1*stride] += (-1) * dx;
+    delta[index + 3*stride] += (-1) * dy;
+    delta[index + 5*stride] += (-1) * dw;
+    delta[index + 7*stride] += (-1) * dh;
     return iou;
   }
 
@@ -145,6 +217,9 @@ namespace caffe {
     iou_loss_ = (IOU_LOSS) param.iou_loss();
     
     iou_normalizer_ = param.iou_normalizer();
+    iou_thresh_= param.iou_thresh();
+    max_delta_= param.max_delta();
+    accumulate_= param.accumulate();
     for (int c = 0; c < param.biases_size(); ++c) {
       biases_.push_back(param.biases(c));
     } 
@@ -313,7 +388,7 @@ namespace caffe {
 
             delta_region_class_v3(swap_data, diff, index + 9 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
             delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
-              side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride);
+              side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
           }
         }
       }
@@ -370,7 +445,8 @@ namespace caffe {
           //LOG(INFO) << best_n;
           best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
           
-          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - truth[2] * truth[3]), stride);
+          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
+          diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
 
           if (iou > 0.5)
             recall += 1;
@@ -395,18 +471,78 @@ namespace caffe {
           ++class_count_;
         }
 
+        for (int n = 0; n < biases_size_; ++n) {
+          int mask_n = int_index(mask_, n, num_);
+          if (mask_n >= 0 && n != best_n && iou_thresh_ < 1.0f) {
+            vector<Dtype> pred(4);
+            pred[2] = biases_[2 * n] / (float)(side_w_*anchors_scale_);
+            pred[3] = biases_[2 * n + 1] / (float)(side_h_*anchors_scale_);
+
+            pred[0] = 0;
+            pred[1] = 0;
+            float iou;
+
+            iou = box_iou(pred, truth_shift); 
+            if (iou > iou_thresh_) {
+              bool overlap = false;
+              float iou;
+              //LOG(INFO) << best_n;
+              best_index = mask_n*len*stride + pos + b * bottom[0]->count(1);
+              
+              iou = delta_region_box(truth, swap_data, biases_,mask_[mask_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
+              diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
+
+              if (iou > 0.5)
+                recall += 1;
+              if (iou > 0.75)
+                recall75 += 1;
+              avg_iou += iou;
+              avg_iou_loss += (1 - iou);
+              avg_obj += swap_data[best_index + 8 * stride];
+              if (use_logic_gradient_) {
+                diff[best_index + 8 * stride] = (-1.0) * (1 - swap_data[best_index + 8 * stride]) * object_scale_;
+              }
+              else {
+                diff[best_index + 8 * stride] = (-1.0) * (1 - swap_data[best_index + 8 * stride]);
+                //diff[best_index + 4 * stride] = (-1) * (1 - exp(input_data[best_index + 4 * stride] - exp(input_data[best_index + 4 * stride])));
+              }
+
+              //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
+
+              delta_region_class_v3(swap_data, diff, best_index + 9 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+
+              ++count;
+              ++class_count_;
+            }
+          }
+        }
       }
     }
-    for (int i = 0; i < diff_.count(); ++i) {
-      loss += diff[i] * diff[i];
+
+    for (int b = 0; b < bottom[0]->num(); b++) {
+      for (int s = 0; s < stride; s++) {
+        for (int n = 0; n < num_; n++) {
+          int index = n*len*stride + s + b*bottom[0]->count(1);
+          for (int c = 0; c < len; ++c) {
+            int index2 = c*stride + index;
+            //LOG(INFO)<<index2;
+            if (c < 8) {
+              swap_data[index2] = (input_data[index2 + 0]);
+            }
+            else {						
+              loss += diff[index2] * diff[index2];
+            }
+          }
+        }
+      }
     }
-    top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
     //LOG(INFO) << avg_iou_loss;
     if (count > 0) {
       loss += iou_normalizer_*avg_iou_loss/count;
     }
     
     top[0]->mutable_cpu_data()[0] = loss / bottom[0]->num();
+
     //LOG(INFO) << "avg_noobj: " << avg_anyobj / (side_ * side_ * num_ * bottom[0]->num());	
     iter_++;
     //LOG(INFO) << "iter: " << iter <<" loss: " << loss;
