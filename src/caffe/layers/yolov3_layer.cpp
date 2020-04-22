@@ -749,7 +749,7 @@ namespace caffe {
     if (!(iter_ % 16))
     {
       if(time_count_>0 ) {
-        LOG(INFO) << "noobj: " << score_.avg_anyobj / 10. << " obj: " << score_.avg_obj / time_count_ <<
+        LOG(INFO) << "noobj: " << score_.avg_anyobj / time_count_ << " obj: " << score_.avg_obj / time_count_ <<
           " iou: " << score_.avg_iou / time_count_ << " cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
         //LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
         score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
