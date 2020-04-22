@@ -551,19 +551,7 @@ namespace caffe {
             truth.push_back(y);
             truth.push_back(w);
             truth.push_back(h);
-            float iou;
-            if (iou_loss_ == GIOU) {
-              iou = box_giou(pred, truth); 
-            }
-            else if (iou_loss_ == DIOU) {
-              iou = box_diou(pred, truth); 
-            }
-            else if (iou_loss_ == CIOU) {
-              iou = box_ciou(pred, truth); 
-            }
-            else {
-              iou = box_iou(pred, truth); 
-            }
+            float iou = box_iou(pred, truth,iou_loss_); 
             if (iou > best_iou) {
               best_class = label_data[b * 300 * 5 + t * 5];
               best_iou = iou;
@@ -626,19 +614,7 @@ namespace caffe {
 
           pred[0] = 0;
           pred[1] = 0;
-          float iou;
-          if (iou_loss_ == GIOU) {
-            iou = box_giou(pred, truth_shift); 
-          }
-          else if (iou_loss_ == DIOU) {
-            iou = box_diou(pred, truth_shift); 
-          }
-          else if (iou_loss_ == CIOU) {
-            iou = box_ciou(pred, truth_shift); 
-          }
-          else {
-            iou = box_iou(pred, truth_shift); 
-          }
+          float iou = box_iou(pred, truth_shift,iou_loss_); 
           if (iou > best_iou) {
             best_n = n;
             best_iou = iou;
@@ -687,19 +663,8 @@ namespace caffe {
 
             pred[0] = 0;
             pred[1] = 0;
-            float iou;
-            if (iou_loss_ == GIOU) {
-              iou = box_giou(pred, truth_shift); 
-            }
-            else if (iou_loss_ == DIOU) {
-              iou = box_diou(pred, truth_shift); 
-            }
-            else if (iou_loss_ == CIOU) {
-              iou = box_ciou(pred, truth_shift); 
-            }
-            else {
-              iou = box_iou(pred, truth_shift); 
-            }
+            float iou = box_iou(pred, truth_shift,iou_loss_); 
+   
             if (iou > iou_thresh_) {
               bool overlap = false;
               float iou;

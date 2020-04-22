@@ -46,6 +46,8 @@ Dtype box_union(vector<Dtype> a, vector<Dtype> b);
 template <typename Dtype>
 Dtype box_iou(vector<Dtype> a, vector<Dtype> b);
 template <typename Dtype>
+Dtype box_iou(vector<Dtype> a, vector<Dtype> b,IOU_LOSS type);
+template <typename Dtype>
 boxabs box_c(vector<Dtype> a, vector<Dtype> b);
 template <typename Dtype>
 boxabs to_tblr(vector<Dtype> a);
