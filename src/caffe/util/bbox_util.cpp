@@ -281,7 +281,61 @@ double box_ciou(vector<double> a, vector<double> b)
   double ciou_term = d + alpha * ar_loss;                   //ciou
   return iou - ciou_term;
 
-}  
+}
+template <typename Dtype>
+Dtype box_iou(vector<Dtype> a, vector<Dtype> b,IOU_LOSS type)
+{
+  Dtype iou;
+  if (type == GIOU) {
+    iou = box_giou(a, b); 
+  }
+  else if (type == DIOU) {
+    iou = box_diou(a, b); 
+  }
+  else if (type == CIOU) {
+    iou = box_ciou(a, b); 
+  }
+  else {
+    iou = box_iou(a, b); 
+  }  
+  return iou;
+}
+template <>
+float box_iou(vector<float> a, vector<float> b,IOU_LOSS type)
+{
+  float iou;
+  if (type == GIOU) {
+    iou = box_giou(a, b); 
+  }
+  else if (type == DIOU) {
+    iou = box_diou(a, b); 
+  }
+  else if (type == CIOU) {
+    iou = box_ciou(a, b); 
+  }
+  else {
+    iou = box_iou(a, b); 
+  }  
+  return iou;
+}
+template <>
+double box_iou(vector<double> a, vector<double> b,IOU_LOSS type)
+{
+  double iou;
+  if (type == GIOU) {
+    iou = box_giou(a, b); 
+  }
+  else if (type == DIOU) {
+    iou = box_diou(a, b); 
+  }
+  else if (type == CIOU) {
+    iou = box_ciou(a, b); 
+  }
+  else {
+    iou = box_iou(a, b); 
+  }  
+  return iou;
+}
 template <typename Dtype>
 void get_gaussian_yolo_box(vector<Dtype> &b, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h, int stride) {
 
