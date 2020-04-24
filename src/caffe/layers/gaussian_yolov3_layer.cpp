@@ -31,7 +31,7 @@ namespace caffe {
   
 
   template <typename Dtype>
-  void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
+  void delta_region_gaussian_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
   {
     if (diff[index]) {
       diff[index + stride*class_label] = (-1.0) * (1 - input_data[index + stride*class_label]);
@@ -93,7 +93,7 @@ namespace caffe {
 
   // Reference : https://github.com/jwchoi384/Gaussian_YOLOv3/blob/master/src/gaussian_yolo_layer.c
   template <typename Dtype>
-  Dtype delta_region_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h,
+  Dtype delta_region_gaussian_box(vector<Dtype> truth, Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int lw, int lh, int w, int h,
   Dtype* delta, float scale, int stride,IOU_LOSS iou_loss,float iou_normalizer,float max_delta,bool accumulate) {
     vector<Dtype> pred;
     pred.clear();
@@ -386,8 +386,8 @@ namespace caffe {
             LOG(INFO) << "best_iou > 1"; // plz tell me ..
             diff[index + 8 * stride] = (-1) * (1 - swap_data[index + 8 * stride]);
 
-            delta_region_class_v3(swap_data, diff, index + 9 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
-            delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
+            delta_region_gaussian_class_v3(swap_data, diff, index + 9 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
+            delta_region_gaussian_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
               side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
           }
         }
@@ -445,7 +445,7 @@ namespace caffe {
           //LOG(INFO) << best_n;
           best_index = best_n*len*stride + pos + b * bottom[0]->count(1);
           
-          iou = delta_region_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
+          iou = delta_region_gaussian_box(truth, swap_data, biases_,mask_[best_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
           diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
 
           if (iou > 0.5)
@@ -465,7 +465,7 @@ namespace caffe {
 
           //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-          delta_region_class_v3(swap_data, diff, best_index + 9 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+          delta_region_gaussian_class_v3(swap_data, diff, best_index + 9 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
 
           ++count;
           ++class_count_;
@@ -489,7 +489,7 @@ namespace caffe {
               //LOG(INFO) << best_n;
               best_index = mask_n*len*stride + pos + b * bottom[0]->count(1);
               
-              iou = delta_region_box(truth, swap_data, biases_,mask_[mask_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
+              iou = delta_region_gaussian_box(truth, swap_data, biases_,mask_[mask_n], best_index, i, j, side_w_, side_h_, side_w_*anchors_scale_, side_h_*anchors_scale_, 
               diff, coord_scale_*(2 - truth[2] * truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
 
               if (iou > 0.5)
@@ -509,7 +509,7 @@ namespace caffe {
 
               //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-              delta_region_class_v3(swap_data, diff, best_index + 9 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+              delta_region_gaussian_class_v3(swap_data, diff, best_index + 9 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
 
               ++count;
               ++class_count_;
