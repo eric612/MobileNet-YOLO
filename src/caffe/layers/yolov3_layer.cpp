@@ -221,11 +221,23 @@ namespace caffe {
   }
 
   template <typename Dtype>
-  void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss)
+  void delta_region_class_v3(Dtype* input_data, Dtype* &diff, int index, int class_label, int classes, float scale, Dtype* avg_cat, int stride, bool use_focal_loss,float label_smooth_eps)
   {
-    if (diff[index]) {
-      diff[index + stride*class_label] = (-1.0) * (1 - input_data[index + stride*class_label]);
-      *avg_cat += input_data[index + stride*class_label];
+    if (diff[index + stride*class_label]) {
+      
+      float y_true = 1;
+      if(label_smooth_eps) 
+        y_true = y_true *  (1 - label_smooth_eps) + 0.5*label_smooth_eps;
+      float result_delta = y_true - input_data[index + stride*class_label];
+      if(!isnan(result_delta) && !isinf(result_delta)) 
+        diff[index + stride*class_label] = (-1.0) * scale * result_delta;
+      //delta[index + stride*class_id] = 1 - output[index + stride*class_id];
+
+      if(avg_cat) 
+        *avg_cat += input_data[index + stride*class_label];
+      
+      //diff[index + stride*class_label] = (-1.0) * (1 - input_data[index + stride*class_label]);
+      //*avg_cat += input_data[index + stride*class_label]*scale;
       //LOG(INFO)<<"test";
       return;
     }
@@ -253,12 +265,22 @@ namespace caffe {
     }
     else {
       for (int n = 0; n < classes; ++n) {
-        diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
+        float y_true = ((n == class_label) ? 1 : 0);
+        if(label_smooth_eps) 
+          y_true = y_true *  (1 - label_smooth_eps) + 0.5*label_smooth_eps;
+        float result_delta = y_true - input_data[index + stride*n];
+        if(!isnan(result_delta) && !isinf(result_delta)) 
+          diff[index + stride*n] = (-1.0) * scale * result_delta;
+        //delta[index + stride*class_id] = 1 - output[index + stride*class_id];
+
+        if(n == class_label && avg_cat) 
+          *avg_cat += input_data[index + stride*class_label];
+        //diff[index + n*stride] = (-1.0) * scale * (((n == class_label) ? 1 : 0) - input_data[index + n*stride]);
         //std::cout<<diff[index+n]<<",";
-        if (n == class_label) {
-          *avg_cat += input_data[index + n*stride];
+        //if (n == class_label) {
+        //  *avg_cat += input_data[index + n*stride]*scale;
           //std::cout<<"avg_cat:"<<input_data[index+n]<<std::endl; 
-        }
+        //}
       }
     }
 
@@ -402,6 +424,7 @@ namespace caffe {
     iou_thresh_= param.iou_thresh();
     max_delta_= param.max_delta();
     accumulate_= param.accumulate();
+    label_smooth_eps_= param.label_smooth_eps();
     for (int c = 0; c < param.biases_size(); ++c) {
       biases_.push_back(param.biases(c));
     } 
@@ -569,7 +592,7 @@ namespace caffe {
             LOG(INFO) << "best_iou > 1"; // plz tell me ..
             diff[index + 4 * stride] = (-1) * (1 - swap_data[index + 4 * stride]);
 
-            delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_);
+            delta_region_class_v3(swap_data, diff, index + 5 * stride, best_class, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_,label_smooth_eps_);
             delta_region_box(best_truth, swap_data, biases_, mask_[n], index, x2, y2, side_w_, side_h_,
               side_w_*anchors_scale_, side_h_*anchors_scale_, diff, coord_scale_*(2 - best_truth[2] * best_truth[3]), stride,iou_loss_,iou_normalizer_,max_delta_,accumulate_);
           }
@@ -648,7 +671,7 @@ namespace caffe {
 
           //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-          delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+          delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_,label_smooth_eps_); //softmax_tree_
 
           ++count;
           ++class_count_;
@@ -691,7 +714,7 @@ namespace caffe {
 
               //diff[best_index + 4 * stride] = (-1.0) * (1 - swap_data[best_index + 4 * stride]) ;
 
-              delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_); //softmax_tree_
+              delta_region_class_v3(swap_data, diff, best_index + 5 * stride, class_label, num_class_, class_scale_, &avg_cat, stride, use_focal_loss_,label_smooth_eps_); //softmax_tree_
 
               ++count;
               ++class_count_;
@@ -738,7 +761,7 @@ namespace caffe {
     if (!(iter_ % 16))
     {
       if(time_count_>0 ) {
-        LOG(INFO) << "noobj: " << score_.avg_anyobj / time_count_ << " obj: " << score_.avg_obj / time_count_ <<
+        LOG(INFO) << "noobj: " << score_.avg_anyobj / 16 << " obj: " << score_.avg_obj / time_count_ <<
           " iou: " << score_.avg_iou / time_count_ << " cat: " << score_.avg_cat / time_count_ << " recall: " << score_.recall / time_count_ << " recall75: " << score_.recall75 / time_count_<< " count: " << class_count_/time_count_;
         //LOG(INFO) << "avg_noobj: "<< avg_anyobj/(side_*side_*num_*bottom[0]->num()) << " avg_obj: " << avg_obj/count <<" avg_iou: " << avg_iou/count << " avg_cat: " << avg_cat/class_count << " recall: " << recall/count << " recall75: " << recall75 / count;
         score_.avg_anyobj = score_.avg_obj = score_.avg_iou = score_.avg_cat = score_.recall = score_.recall75 = 0;
