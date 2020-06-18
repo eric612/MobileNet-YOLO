@@ -47,6 +47,7 @@ class AnnotatedDataLayer : public BasePrefetchingDataLayer<Dtype> {
   int seg_scales_;
   int seg_resize_width_;
   int seg_resize_height_;
+  bool difficult_label_warmup_;
 };
 
 }  // namespace caffe

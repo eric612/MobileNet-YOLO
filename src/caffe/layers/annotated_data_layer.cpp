@@ -47,6 +47,7 @@ void AnnotatedDataLayer<Dtype>::DataLayerSetUp(
   seg_scales_ = anno_data_param.seg_scales();
   seg_resize_width_ = anno_data_param.seg_resize_width();
   seg_resize_height_ = anno_data_param.seg_resize_height();
+  difficult_label_warmup_ = anno_data_param.difficult_label_warmup();
   // Make sure dimension is consistent within batch.
   const TransformationParameter& transform_param =
     this->layer_param_.transform_param();
@@ -572,7 +573,10 @@ void AnnotatedDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
               const NormalizedBBox& bbox = anno.bbox();
               if (yolo_data_type_ == 1) {  
                 //LOG(INFO) << "difficult: " << bbox.difficult() << ", train_difficult: " << train_diffcult_;
-                if (!bbox.difficult() || (train_diffcult_ && this->iter_>this->max_iter_/10)) {
+                //LOG(INFO) << this->iter_ << "," <<this->max_iter_;
+                bool train_diffcult = (train_diffcult_ && (this->iter_>this->max_iter_/20 || !difficult_label_warmup_));
+                //LOG(INFO)<<difficult_label_warmup_<<","<< int(this->iter_>this->max_iter_/20);
+                if (!bbox.difficult() || train_diffcult) {
                   float x = (bbox.xmin() + bbox.xmax()) / 2.0;
                   float y = (bbox.ymin() + bbox.ymax()) / 2.0;
                   float w = bbox.xmax() - bbox.xmin();
