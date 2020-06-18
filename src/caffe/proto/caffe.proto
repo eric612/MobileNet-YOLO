@@ -911,6 +911,7 @@ message AnnotatedDataParameter {
   optional int32 seg_scales = 8 [default = 8]; // for yolo segementation
   optional int32 seg_resize_width = 9 [default = 0]; // for yolo segementation
   optional int32 seg_resize_height = 10 [default = 0]; // for yolo segementation
+  optional bool difficult_label_warmup = 11 [default = false];
 }
 
 message ArgMaxParameter {
