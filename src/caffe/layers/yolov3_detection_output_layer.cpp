@@ -256,7 +256,7 @@ void Yolov3DetectionOutputLayer<Dtype>::Forward_cpu(
       Dtype* swap_data = swap_.mutable_cpu_data();
       const Dtype* input_data = bottom[t]->cpu_data();
       int nw = side_w_*anchors_scale_[t];
-      int nh = side_w_*anchors_scale_[t];
+      int nh = side_h_*anchors_scale_[t];
       for (int b = 0; b < bottom[t]->num(); b++) {
         for (int s = 0; s < side_w_*side_h_; s++) {
           //LOG(INFO) << s;
