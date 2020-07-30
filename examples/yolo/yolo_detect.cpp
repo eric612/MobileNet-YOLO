@@ -918,9 +918,9 @@ int main(int argc, char** argv) {
             pt2.y = (img.rows*d[6]);
             int index = static_cast<int>(d[1]);
             int green = 255 * ((index + 1) % 3);
-            int blue = 255 * (index % 3);
-            int red = 255 * ((index + 1) % 2);
-            cv::rectangle(img, pt1, pt2, cv::Scalar(red, green, blue), 1, 8, 0);
+            int red = 255 * (index % 3);
+            int blue = 255 * ((index + 1) % 2);
+            cv::rectangle(img, pt1, pt2, cv::Scalar(blue, green, red), 1, 8, 0);
 
             char label[100];
             sprintf(label, "%s,%f", YOLO_CLASSES[static_cast<int>(d[1])], score);
@@ -930,7 +930,7 @@ int main(int argc, char** argv) {
             pt3.x = pt1.x + size.width;
             pt3.y = pt1.y - size.height;
 
-            cv::rectangle(img, pt1, pt3, cv::Scalar(red, green, blue), -1);
+            cv::rectangle(img, pt1, pt3, cv::Scalar(blue, green, red), -1);
 
             cv::putText(img, label, pt1, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 
