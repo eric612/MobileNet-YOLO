@@ -60,8 +60,8 @@ test on coco_minival_lmdb (IOU 0.5)
 
 Network|mAP|Resolution|Download|NetScope|
 :---:|:---:|:---:|:---:|:---:
-yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1nYgjOg8o48qQ3Cw47CamERgJVgLlo-Cu/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
-yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/1eEFXWPFnCt6fWtmS6zTsPkAQgW0VFkt7/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
+yolov3|54.2|416|[caffemodel](https://drive.google.com/file/d/1wfajkXsZcTurXkCUPpftNaOLfxbboOMt/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/59c75a50e5b91d6dd80a879df3cfaf55)
+yolov3-spp|59.8|608|[caffemodel](https://drive.google.com/file/d/15vRLuvHYdWVux4wdjbVZIPLfdGe-vLVH/view?usp=sharing)|[graph](http://ethereon.github.io/netscope/#/gist/71edbfacf4d39c56f2d82cbcb739ae38)
 
 
 ### Model VisulizationTool
