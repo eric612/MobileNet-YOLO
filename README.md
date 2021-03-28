@@ -20,8 +20,7 @@ This project also support ssd framework , and here lists the difference from ssd
 
 ## Update
 
-1. CODE UPDATED FOR OPENCV 3
-2. Channel pruning
+* The pytorch version was released [Mobilenet-YOLO-Pytorch](https://github.com/eric612/Mobilenet-YOLO-Pytorch)
 
 ### CNN Analyzer
 
